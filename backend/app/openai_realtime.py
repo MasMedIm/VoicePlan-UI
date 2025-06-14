@@ -67,35 +67,17 @@ _CACHED_INSTRUCTIONS: Optional[str] = _load_instructions()
 TOOLS: List[Dict[str, Any]] = [
     
     {
-        "name": "create_task",
-        "description": "Add a new task under an existing move.",
+        "name": "add_to_ui",
+        "description": "Send a UI event with a type and custom data payload.",
         "type": "function",
         "parameters": {
             "type": "object",
             "properties": {
-                "move_id": {
-                    "type": "integer",
-                    "description": "ID of the move to attach the task to."
-                },
-                "title": {
-                    "type": "string",
-                    "description": "Short title of the task."
-                },
-                "description": {
-                    "type": "string",
-                    "description": "Detailed description, if any."
-                },
-                "category": {
-                    "type": "string",
-                    "description": "Optional category tag for filtering."
-                },
-                "due_date": {
-                    "type": "string",
-                    "format": "date",
-                    "description": "Optional due date (YYYY-MM-DD)."
-                }
+                "type": { "type": "string", "description": "UI event type name." },
+                "custom_data": { "type": "object", "description": "Custom JSON data for the UI event." }
             },
-            "required": ["move_id", "title"]
+            "required": ["type"],
+            "additionalProperties": False
         }
     }
 ]

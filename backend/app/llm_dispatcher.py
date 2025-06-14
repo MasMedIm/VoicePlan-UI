@@ -75,6 +75,11 @@ def handle_function_call(name: str, args: dict[str, Any], *, db: Session, user: 
         )
 
     # Extend with more operations here ...
-
+    elif name == "add_to_ui":
+        required = {"type", "custom_data"}
+        if not required.issubset(args):
+            missing = required - set(args)
+            raise FunctionCallError(f"add_to_ui missing args: {', '.join(missing)}")
+        return {"type": args["type"], "custom_data": args["custom_data"]}
     else:
         raise FunctionCallError(f"Unsupported function name: {name}")
