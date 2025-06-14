@@ -14,5 +14,12 @@ export default defineConfig({
         rewrite: (path) => path,
       },
     },
+    // Docker’s shared volume FS events sometimes don’t propagate – polling
+    // fixes HMR on macOS/Windows.  Slight CPU cost but negligible for small
+    // projects.
+    watch: {
+      usePolling: true,
+      interval: 300,
+    },
   },
 });

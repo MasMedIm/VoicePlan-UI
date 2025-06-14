@@ -159,6 +159,7 @@ def realtime_function_call(
     user: CurrentUser,
     db: Session = Depends(get_db),
 ):
+    
     """Execute an LLM function-call event emitted via data-channel and persist to DB."""
     # Log the function call for debugging
     print(f"[FunctionCall] user={user.id} name={data.name} args={data.arguments}")

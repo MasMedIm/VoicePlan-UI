@@ -30,6 +30,27 @@ To kick start the app, simply run:
 ```bash
 docker compose up
 ```
+
+### Live-Reload Development (hot code reloading)
+
+If you want code changes in `backend/` or `frontend/` to appear instantly –
+without rebuilding containers – use the dev override file:
+
+```bash
+# Start stack with live-reload enabled
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+What this does:
+
+* **Backend** – mounts `./backend` into the container and starts Uvicorn with
+  `--reload`, so Python files trigger an automatic restart.
+* **Frontend** – mounts `./frontend` and runs Vite’s dev server (`npm run dev
+  -- --host`) which provides Hot Module Replacement (HMR).
+
+Open http://localhost:5173 – the browser will refresh / swap modules whenever
+you save a file.  Stop with <kbd>Ctrl-C</kbd>. No rebuild is necessary unless
+you modify `requirements.txt` or `package.json`.
   
 ### Essentials
 
