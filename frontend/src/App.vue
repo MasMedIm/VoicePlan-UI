@@ -6,6 +6,7 @@
         <div class="title-container">
           <div class="icon">🎙️</div>
           <h1>gullieGo</h1>
+          <p class="tagline">make life happen</p>
         </div>
       </div>
 
@@ -140,28 +141,56 @@ async function onLogin() {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
-.app-container {
-  height: 100vh;
+html, body, #app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
   width: 100%;
   overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.app-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 .split-screen {
   display: flex;
+  width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 /* Left Side */
 .left-side {
-  flex: 1;
+  flex: 1 1 50%;
   background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #f0f0f0;
   padding: 2rem;
+  margin: 0;
   position: relative;
   overflow: hidden;
+  height: 100%;
+  box-sizing: border-box;
 }
 
 .left-side::before {
@@ -225,14 +254,28 @@ async function onLogin() {
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
 }
 
+.tagline {
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 1rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-transform: lowercase;
+  font-style: italic;
+}
+
 /* Right Side */
 .right-side {
-  flex: 1;
+  flex: 1 1 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  margin: 0;
   background-color: #f5f5f5;
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .login-container {
