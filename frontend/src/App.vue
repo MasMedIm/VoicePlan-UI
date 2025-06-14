@@ -62,6 +62,21 @@
 
         <pre class="log" v-if="rtc.messages.length">{{ rtc.messages }}</pre>
       </section>
+
+    <!-- --------------------------------------------- -->
+    <!-- Board (cards rendered from UI events)          -->
+    <!-- --------------------------------------------- -->
+
+    <section v-if="cardList.length">
+      <h2>Your Planning Board</h2>
+      <div class="cards-stack">
+        <Card
+          v-for="c in cardList"
+          :key="c.id"
+          :card="c"
+        />
+      </div>
+    </section>
     </div>
       </div>
     </div>
@@ -71,6 +86,8 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useRealtime } from "./composables/useRealtime.js";
+import { useUiStore } from "./composables/useUiStore.js";
+import Card from "./components/Card.vue";
 import { fetchHealth, loginUser } from "./lib/api.js";
 
 const loading = ref(true);
@@ -110,6 +127,9 @@ const statusClass = computed(() => {
 // ---------------------------------------------------------------------------
 
 const rtc = useRealtime();
+
+// Reactive list of cards (updated by realtime hook)
+const { cardList } = useUiStore();
 
 function onConnect() {
   rtc.connect();
@@ -374,6 +394,13 @@ html, body, #app {
   font-family: monospace;
   font-size: 0.875rem;
   border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   margin-top: 1rem;
 }
 
