@@ -5,8 +5,7 @@
       <div class="left-side">
         <div class="title-container">
           <div class="icon">🎙️</div>
-          <h1>VoicePlan</h1>
-          <h2>by gullie</h2>
+          <h1>gullieGo</h1>
         </div>
       </div>
 
@@ -203,27 +202,27 @@ async function onLogin() {
 }
 
 .title-container h1 {
-  font-size: 5rem;
-  font-weight: 700;
-  letter-spacing: -1.5px;
-  margin: 0;
+  font-size: 4.5rem;
+  font-weight: 800;
+  letter-spacing: -2px;
+  margin: 0.5rem 0 0;
   line-height: 1;
   color: #ffffff;
   text-transform: none;
   font-family: 'Inter', -apple-system, sans-serif;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+  display: inline-block;
 }
 
-.title-container h2 {
-  font-size: 1.5rem;
-  font-weight: 400;
-  letter-spacing: 6px;
-  margin: 1rem 0 0;
-  color: #b3b3b3;
-  text-transform: lowercase;
-  font-family: 'Inter', -apple-system, sans-serif;
-  opacity: 0.8;
-  font-style: italic;
+.title-container h1::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
 }
 
 /* Right Side */
