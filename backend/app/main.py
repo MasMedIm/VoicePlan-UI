@@ -124,15 +124,11 @@ class RealtimeSessionIn(BaseModel):
     voice: str | None = None
 
 
-# We require authentication so that only logged-in users can mint tokens. If you
-# want to make the demo publicly accessible, remove the `user: CurrentUser`
-# dependency.
 
 
 @app.post("/api/realtime/session", tags=["Realtime"])
 async def create_realtime_session(
     payload: RealtimeSessionIn,
-    user: CurrentUser,
 ):
     """Return an *ephemeral* API key for the browser to connect via WebRTC.
 

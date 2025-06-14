@@ -78,7 +78,8 @@ const status = ref(null);
 const email = ref('');
 const password = ref('');
 const error = ref('');
-const isAuthenticated = ref(!!localStorage.getItem('access_token'));
+// Always treat user as authenticated to show main page without login
+const isAuthenticated = ref(true);
 
 onMounted(async () => {
   if (isAuthenticated.value) {

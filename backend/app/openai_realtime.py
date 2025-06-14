@@ -65,30 +65,7 @@ _CACHED_INSTRUCTIONS: Optional[str] = _load_instructions()
 
 # Tool definitions exposed to the model for function-calling
 TOOLS: List[Dict[str, Any]] = [
-    {
-        "name": "create_move",
-        "description": "Create a new relocation plan for the current user.",
-        "type": "function",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "origin_country": {
-                    "type": "string",
-                    "description": "Country you are moving from."
-                },
-                "destination_country": {
-                    "type": "string",
-                    "description": "Country you are moving to."
-                },
-                "start_date": {
-                    "type": "string",
-                    "format": "date",
-                    "description": "Optional planned start date (YYYY-MM-DD)."
-                }
-            },
-            "required": ["origin_country", "destination_country"]
-        }
-    },
+    
     {
         "name": "create_task",
         "description": "Add a new task under an existing move.",
