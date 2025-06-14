@@ -6,6 +6,7 @@
         <div class="title-container">
           <div class="icon">🎙️</div>
           <h1>gullieGo</h1>
+          <p class="tagline">make life happen</p>
         </div>
       </div>
 
@@ -38,46 +39,29 @@
             <p class="error" v-if="error">{{ error }}</p>
           </form>
         </div>
-    <div v-else class="dashboard">
-      <div class="status-cards">
-        <!-- Backend Status Card -->
-        <div class="status-card">
-          <h3>Backend Status</h3>
-          <div class="status-content">
-            <span v-if="loading">Checking...</span>
-            <div v-else class="status-pill" :class="statusClass">
-              {{ statusText }}
-            </div>
-          </div>
-        </div>
+    <div v-else>
+      <section>
+        <h2>Backend Status</h2>
+        <p v-if="loading">Checking...</p>
+        <p v-else>
+          <strong :class="statusClass">{{ statusText }}</strong>
+        </p>
+      </section>
 
-        <!-- Realtime Demo Card -->
-        <div class="status-card">
-          <h3>Realtime Demo</h3>
-          <div class="status-content">
-            <div class="status-pill" :class="{ 'status-live': rtc.status === 'live', 'status-idle': rtc.status !== 'live' }">
-              {{ rtc.status === 'live' ? 'Live' : 'Idle' }}
-            </div>
-            <div class="demo-actions">
-              <button
-                class="connect-btn"
-                @click="onConnect"
-                :disabled="rtc.status === 'connecting' || rtc.status === 'live'"
-              >
-                {{ rtc.status === 'live' ? 'Connected' : 'Connect' }}
-              </button>
-              <button 
-                v-if="rtc.status === 'live'" 
-                @click="rtc.disconnect"
-                class="disconnect-btn"
-              >
-                Disconnect
-              </button>
-            </div>
-          </div>
-          <pre class="log" v-if="rtc.messages.length">{{ rtc.messages }}</pre>
-        </div>
-      </div>
+      <section>
+        <h2>Realtime Demo</h2>
+        <button
+          class="connect-btn"
+          @click="onConnect"
+          :disabled="rtc.status === 'connecting' || rtc.status === 'live'"
+        >
+          {{ rtc.status === 'live' ? 'Connected' : 'Connect' }}
+        </button>
+        <button v-if="rtc.status === 'live'" @click="rtc.disconnect">Disconnect</button>
+        <p>Status: {{ rtc.status }}</p>
+
+        <pre class="log" v-if="rtc.messages.length">{{ rtc.messages }}</pre>
+      </section>
 
     <!-- --------------------------------------------- -->
     <!-- Board (cards rendered from UI events)          -->
@@ -303,131 +287,40 @@ html, body, #app {
 
 /* Right Side */
 .right-side {
-  flex: 1;
-  padding: 2rem;
+  flex: 1 1 50%;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  background-color: #f9fafb;
-  overflow-y: auto;
-}
-
-.dashboard {
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.status-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-  width: 100%;
-}
-
-.status-card {
-  background: var(--card-bg);
-  border-radius: var(--border-radius);
-  box-shadow: var(--card-shadow);
-  padding: 1.5rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.status-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.status-card h3 {
-  color: var(--text-primary);
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.status-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.status-pill {
-  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.4rem 0.8rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-transform: capitalize;
-  width: fit-content;
+  padding: 2rem;
+  margin: 0;
+  background-color: #f5f5f5;
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
-.healthy {
-  background-color: #ecfdf5;
-  color: var(--success-color);
-  border: 1px solid #a7f3d0;
-}
-
-.unhealthy {
-  background-color: #fef2f2;
-  color: var(--error-color);
-  border: 1px solid #fecaca;
-}
-
-.status-idle {
-  background-color: #f3f4f6;
-  color: var(--idle-color);
-  border: 1px solid #e5e7eb;
-}
-
-.status-live {
-  background-color: #eff6ff;
-  color: var(--live-color);
-  border: 1px solid #bfdbfe;
-}
-
-.demo-actions {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
-}
+/* connect button retains simple styling */
 
 .connect-btn {
-  background-color: #3b82f6;
-  color: white;
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #1a1a1a;
+  color: #fff;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: 500;
+  z-index: 1000;
+  min-width: 200px;
   transition: background-color 0.2s;
 }
 
-.connect-btn:hover {
-  background-color: #2563eb;
-}
-
 .connect-btn:disabled {
-  background-color: #9ca3af;
+  background-color: #6b7280; /* gray-500 */
   cursor: not-allowed;
-}
-
-.disconnect-btn {
-  background-color: #f3f4f6;
-  color: #4b5563;
-  border: 1px solid #e5e7eb;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.disconnect-btn:hover {
-  background-color: #e5e7eb;
 }
 
 .login-container {
@@ -539,29 +432,5 @@ section {
   margin-bottom: 2rem;
 }
 
-.connect-btn {
-  position: fixed;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 1rem;
-  padding: 0.75rem 1.5rem;
-  background-color: #1a1a1a;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 1000;
-  min-width: 200px;
-  transition: background-color 0.2s;
-}
-
-.connect-btn:hover {
-  background-color: #333;
-}
-
-.connect-btn:disabled {
-  background-color: #b3b3b3;
-  cursor: not-allowed;
-}
+/* duplicate connect-btn definitions removed */
 </style>
