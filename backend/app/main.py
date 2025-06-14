@@ -31,7 +31,7 @@ from .database import engine as _engine
 Base.metadata.create_all(bind=_engine)
 
 
-app = FastAPI(title="Gullie Backend", version="0.1.0")
+app = FastAPI(title="VoicePlan Backend", version="0.1.0")
 
 # Allow all CORS origins for skeleton. Adjust in production.
 app.add_middleware(

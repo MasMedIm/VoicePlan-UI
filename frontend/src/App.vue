@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>Gullie MoveOS</h1>
+    <h1>VoicePlan MoveOS</h1>
 
     <div v-if="!isAuthenticated">
       <h2>Login</h2>
@@ -28,7 +28,11 @@
 
       <section>
         <h2>Realtime Demo</h2>
-        <button @click="onConnect" :disabled="rtc.status === 'connecting' || rtc.status === 'live'">
+        <button
+          class="connect-btn"
+          @click="onConnect"
+          :disabled="rtc.status === 'connecting' || rtc.status === 'live'"
+        >
           {{ rtc.status === 'live' ? 'Connected' : 'Connect' }}
         </button>
         <button v-if="rtc.status === 'live'" @click="rtc.disconnect">Disconnect</button>
@@ -107,8 +111,12 @@ async function onLogin() {
 <style scoped>
 .container {
   font-family: Arial, Helvetica, sans-serif;
-  max-width: 600px;
+  max-width: 800px;
   margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 .error {
@@ -129,5 +137,33 @@ async function onLogin() {
   max-height: 300px;
   overflow: auto;
   text-align: left;
+}
+
+section {
+  margin-bottom: 2rem;
+}
+.container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+.connect-btn {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.25rem;
+  padding: 1rem 2rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 1000;
+  min-width: 200px;
+}
+.connect-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
 }
 </style>

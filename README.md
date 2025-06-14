@@ -1,8 +1,8 @@
-# Gullie – AI-Powered Relocation Intelligence
+# VoicePlan – AI-Powered Relocation Intelligence
 
 > _“Moving to a new city? We got you.”_
 
-Gullie is your personal AI relocation consultant that plans and executes an
+VoicePlan is your personal AI relocation consultant that plans and executes an
 end-to-end move – from immigration paperwork to cultural onboarding.  Under the
 hood, we combine realtime conversational AI with automated
 back-office workflows, giving employees clarity, compliance and white-glove

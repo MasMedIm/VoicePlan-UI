@@ -9,7 +9,7 @@ def get_database_url() -> str:
     password = os.getenv("DB_PASSWORD", "postgres")
     host = os.getenv("DB_HOST", "db")
     port = os.getenv("DB_PORT", "5432")
-    name = os.getenv("DB_NAME", "gulliedb")
+    name = os.getenv("DB_NAME", "voiceplandb")
     return f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{name}"
 
 

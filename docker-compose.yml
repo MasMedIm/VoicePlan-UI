@@ -6,15 +6,15 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: gulliedb
+      POSTGRES_DB: voiceplandb
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - voiceplan_pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 5s
       retries: 5
     networks:
-      - gullie-net
+      - voiceplan-net
 
   backend:
     build: ./backend
@@ -23,7 +23,7 @@ services:
       DB_PASSWORD: postgres
       DB_HOST: db
       DB_PORT: 5432
-      DB_NAME: gulliedb
+      DB_NAME: voiceplandb
       # Read from host env at runtime.  You can `export OPENAI_API_KEY=sk-...` before running
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       JWT_SECRET_KEY: "development-secret-key"
@@ -33,7 +33,7 @@ services:
     ports:
       - "8000:8000"
     networks:
-      - gullie-net
+      - voiceplan-net
 
   frontend:
     build: ./frontend
@@ -42,11 +42,11 @@ services:
     ports:
       - "5173:5173"
     networks:
-      - gullie-net
+      - voiceplan-net
 
 volumes:
-  pgdata:
+  voiceplan_pgdata:
 
 networks:
-  gullie-net:
+  voiceplan-net:
     driver: bridge
