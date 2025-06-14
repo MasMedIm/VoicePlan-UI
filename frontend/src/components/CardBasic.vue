@@ -2,14 +2,13 @@
   <div class="card">
     <header class="card-header">
       <h3 class="title">{{ card.title }}</h3>
-      <span class="status" :class="statusClass">{{ card.status }}</span>
+      <span v-if="card.status" class="status" :class="statusClass">{{ card.status }}</span>
     </header>
-    <p class="description">{{ card.description }}</p>
+    <p v-if="card.description" class="description">{{ card.description }}</p>
   </div>
 </template>
 
 <script setup>
-// Simple presentational component for a planning card.
 const props = defineProps({
   card: {
     type: Object,
@@ -35,12 +34,8 @@ const statusClass = computed(() => {
   border-radius: 6px;
   padding: 12px 14px;
   background: #fff;
-  max-width: 300px;
+  max-width: 320px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-}
-
-.card + .card {
-  margin-top: 12px;
 }
 
 .card-header {
@@ -63,18 +58,10 @@ const statusClass = computed(() => {
   color: #fff;
 }
 
-.status-todo {
-  background: #737373;
-}
-.status-in-progress {
-  background: #3b82f6;
-}
-.status-done {
-  background: #16a34a;
-}
-.status-generic {
-  background: #52525b;
-}
+.status-todo { background: #737373; }
+.status-in-progress { background: #3b82f6; }
+.status-done { background: #16a34a; }
+.status-generic { background: #52525b; }
 
 .description {
   font-size: 0.875rem;

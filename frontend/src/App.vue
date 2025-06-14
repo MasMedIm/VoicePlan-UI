@@ -46,13 +46,13 @@
     <!-- Board (cards rendered from UI events)          -->
     <!-- --------------------------------------------- -->
 
-    <section v-if="cardList.length">
-      <h2>Your Planning Board</h2>
+    <section v-if="items.length">
       <div class="cards-stack">
-        <Card
-          v-for="c in cardList"
-          :key="c.id"
-          :card="c"
+        <component
+          v-for="it in items"
+          :key="it.id"
+          :is="componentMap[it.kind] || 'div'"
+          :card="it.props"
         />
       </div>
     </section>
@@ -64,7 +64,8 @@
 import { ref } from "vue";
 import { useRealtime } from "./composables/useRealtime.js";
 import { useUiStore } from "./composables/useUiStore.js";
-import Card from "./components/Card.vue";
+import CardBasic from "./components/CardBasic.vue";
+import CardImage from "./components/CardImage.vue";
 import { loginUser } from "./lib/api.js";
 
 const email = ref('');
@@ -81,8 +82,14 @@ const rtc = useRealtime();
 const rtcStatus = rtc.status; // Ref – easier binding in template
 const talking = rtc.talking;
 
+// Registry of component kinds → Vue component
+const componentMap = {
+  'card.basic': CardBasic,
+  'card.image': CardImage,
+};
+
 // Reactive list of cards (updated by realtime hook)
-const { cardList } = useUiStore();
+const { items } = useUiStore();
 
 function toggleConnection() {
   if (rtcStatus.value === 'live') {

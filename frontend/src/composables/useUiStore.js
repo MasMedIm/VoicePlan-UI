@@ -1,43 +1,44 @@
 import { reactive, computed } from 'vue';
 
-// ---------------------------------------------------------------------------
-// Very small global store that keeps the client-side UI state emitted by the
-// LLM (cards only for now).
-// ---------------------------------------------------------------------------
+// Generic UI store – can hold multiple component kinds.
 
 const state = reactive({
-  // Dictionary <cardId, cardData>
-  cards: {},
+  // flat array keeps ordering
+  items: [], // { id, kind, props }
 });
 
-/**
- * Apply a UI event to the local store.
- * @param {string} type - Event type (card.create | card.update).
- * @param {object} payload - Event payload (card fields).
- */
-export function handleUiEvent(type, payload) {
-  if (!payload || typeof payload !== 'object') return;
-
-  if (type === 'card.create') {
-    if (!payload.id) {
-      // Fallback ID if the model forgot one
-      payload.id = `card_${Date.now()}`;
-    }
-    state.cards[payload.id] = {
-      id: payload.id,
-      title: payload.title || '',
-      description: payload.description || '',
-      status: payload.status || '',
-    };
-  } else if (type === 'card.update') {
-    const existing = state.cards[payload.id];
-    if (!existing) return; // ignore unknown card
-    Object.assign(existing, payload);
+function upsert(kind, payload) {
+  if (!payload.id) payload.id = `${kind}_${Date.now()}`;
+  const idx = state.items.findIndex((i) => i.id === payload.id && i.kind === kind);
+  if (idx === -1) {
+    state.items.push({ id: payload.id, kind, props: { ...payload } });
+  } else {
+    state.items[idx].props = { ...state.items[idx].props, ...payload };
   }
 }
 
-export const cardList = computed(() => Object.values(state.cards));
+export function handleUiEvent(type, payload) {
+  if (!type) return;
+  const parts = type.split('.'); // e.g. card, basic, create
+  let baseKind;
+  let action;
+
+  if (parts.length === 2) {
+    // Legacy format: "card.create" → treat as basic card
+    baseKind = 'card.basic';
+    action = parts[1];
+  } else {
+    baseKind = parts.slice(0, 2).join('.'); // card.basic
+    action = parts[2];
+  }
+
+  if (action === 'create' || action === 'update') {
+    upsert(baseKind, payload || {});
+  }
+}
+
+export const items = computed(() => state.items);
 
 export function useUiStore() {
-  return { cardList, handleUiEvent };
+  return { items, handleUiEvent };
 }

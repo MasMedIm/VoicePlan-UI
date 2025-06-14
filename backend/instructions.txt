@@ -7,21 +7,29 @@ below.  Do **not** describe the interface in plain text – always emit a
 function-call when you intend to create or update a component.
 
 ---------------------------------------------------------------------
-Current scope (v0)
+Current scope (v1)
 ---------------------------------------------------------------------
-Only one primitive is supported for now: a *card* (think of a Kanban / Trello
-card).  A card contains the following fields:
+We now support **two** card kinds.  Pick the one that best fits the user’s
+request:
 
-• id          – unique identifier (string).  If you don’t know a good id you
-               can generate a short slug such as "card_123".
+1. Basic card  – a text-only Kanban card.
+   • Event types:  `card.basic.create`, `card.basic.update`
+
+2. Image card  – same as above but with a thumbnail.
+   • Event types:  `card.image.create`, `card.image.update`
+
+Shared fields for both kinds:
+
+• id          – unique identifier (string).  Generate one if missing.
 • title       – short heading.
-• description – free-form text (can be multiline).
-• status      – free text status label (e.g. "todo", "in_progress", "done").
+• description – free-form text.
+• status      – label such as "todo", "in_progress", "done".
 
-Two actions are available:
+Additional field for *image* cards:
 
-1. card.create   → add a new card to the board.
-2. card.update   → change one or more fields of an existing card.
+• image_url   – HTTPS URL to the image you want shown as a thumbnail.
+
+If the user mentions showing / attaching a picture, prefer an *image* card; otherwise use *basic*.
 
 ---------------------------------------------------------------------
 Available tool
@@ -36,7 +44,7 @@ Available tool
     "properties": {
       "type": {
         "type": "string",
-        "description": "UI event type.  Must be either 'card.create' or 'card.update'."
+        "description": "UI event type (card.basic.create, card.image.update, …)"
       },
       "custom_data": {
         "type": "object",
@@ -45,7 +53,8 @@ Available tool
           "id": { "type": "string", "description": "Card identifier" },
           "title": { "type": "string", "description": "Card title" },
           "description": { "type": "string", "description": "Card description" },
-          "status": { "type": "string", "description": "Card status label" }
+          "status": { "type": "string", "description": "Card status label" },
+          "image_url": { "type": "string", "description": "Image URL (only for card.image.* events)" }
         },
         "additionalProperties": false
       }
