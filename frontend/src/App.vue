@@ -1,18 +1,7 @@
 <template>
   <div class="app-container">
-    <div class="split-screen">
-      <!-- Left Side -->
-      <div class="left-side">
-        <div class="title-container">
-          <div class="icon">🎙️</div>
-          <h1>gullieGo</h1>
-          <p class="tagline">make life happen</p>
-        </div>
-      </div>
-
-      <!-- Right Side -->
-      <div class="right-side">
-        <div v-if="!isAuthenticated" class="login-container">
+    <!-- Optional auth stub (kept for future) -->
+    <div v-if="!isAuthenticated" class="login-container">
           <h2>Welcome Back</h2>
           <form @submit.prevent="onLogin" class="login-form">
             <div class="form-group">
@@ -39,29 +28,17 @@
             <p class="error" v-if="error">{{ error }}</p>
           </form>
         </div>
-    <div v-else>
-      <section>
-        <h2>Backend Status</h2>
-        <p v-if="loading">Checking...</p>
-        <p v-else>
-          <strong :class="statusClass">{{ statusText }}</strong>
-        </p>
-      </section>
-
-      <section>
-        <h2>Realtime Demo</h2>
-        <button
-          class="connect-btn"
-          @click="onConnect"
-          :disabled="rtc.status === 'connecting' || rtc.status === 'live'"
-        >
-          {{ rtc.status === 'live' ? 'Connected' : 'Connect' }}
-        </button>
-        <button v-if="rtc.status === 'live'" @click="rtc.disconnect">Disconnect</button>
-        <p>Status: {{ rtc.status }}</p>
-
-        <pre class="log" v-if="rtc.messages.length">{{ rtc.messages }}</pre>
-      </section>
+    <div v-else class="main-content">
+      <!-- Connect / Disconnect button -->
+      <button
+        class="connect-btn"
+        @click="toggleConnection"
+        :disabled="rtcStatus === 'connecting'"
+      >
+        <template v-if="rtcStatus === 'connecting'">Connecting…</template>
+        <template v-else-if="rtcStatus === 'live'">Disconnect</template>
+        <template v-else>Connect</template>
+      </button>
 
     <!-- --------------------------------------------- -->
     <!-- Board (cards rendered from UI events)          -->
@@ -78,61 +55,38 @@
       </div>
     </section>
     </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref } from "vue";
 import { useRealtime } from "./composables/useRealtime.js";
 import { useUiStore } from "./composables/useUiStore.js";
 import Card from "./components/Card.vue";
-import { fetchHealth, loginUser } from "./lib/api.js";
+import { loginUser } from "./lib/api.js";
 
-const loading = ref(true);
-const status = ref(null);
 const email = ref('');
 const password = ref('');
 const error = ref('');
 // Always treat user as authenticated to show main page without login
 const isAuthenticated = ref(true);
 
-onMounted(async () => {
-  if (isAuthenticated.value) {
-    try {
-      const data = await fetchHealth();
-      status.value = data;
-    } catch (err) {
-      status.value = { app: "error", db: "error" };
-    } finally {
-      loading.value = false;
-    }
-  } else {
-    loading.value = false;
-  }
-});
-
-const statusText = computed(() => {
-  if (!status.value) return "Unknown";
-  return status.value.app === "ok" && status.value.db === "ok" ? "Healthy" : "Unhealthy";
-});
-
-const statusClass = computed(() => {
-  return statusText.value === "Healthy" ? "healthy" : "unhealthy";
-});
-
 // ---------------------------------------------------------------------------
 // Realtime WebRTC hook
 // ---------------------------------------------------------------------------
 
 const rtc = useRealtime();
+const rtcStatus = rtc.status; // Ref – easier binding in template
 
 // Reactive list of cards (updated by realtime hook)
 const { cardList } = useUiStore();
 
-function onConnect() {
-  rtc.connect();
+function toggleConnection() {
+  if (rtcStatus.value === 'live') {
+    rtc.disconnect();
+  } else if (rtcStatus.value === 'idle') {
+    rtc.connect();
+  }
 }
 
 async function onLogin() {
@@ -142,13 +96,11 @@ async function onLogin() {
     localStorage.setItem('access_token', resp.access_token);
     localStorage.setItem('token_type', resp.token_type);
     isAuthenticated.value = true;
-    loading.value = true;
-    const data = await fetchHealth();
-    status.value = data;
+    // Logged in – nothing else to fetch for now.
   } catch (err) {
     error.value = err.message;
   } finally {
-    loading.value = false;
+    /* nothing */
   }
 }
 </script>
@@ -176,127 +128,22 @@ html, body, #app {
 }
 
 .app-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 100%;
-  width: 100%;
   display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
   overflow: hidden;
-  margin: 0;
-  padding: 0;
+  background: #f5f5f5;
 }
 
-.split-screen {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
-/* Left Side */
-.left-side {
-  flex: 1 1 50%;
-  background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #f0f0f0;
-  padding: 2rem;
-  margin: 0;
-  position: relative;
-  overflow: hidden;
-  height: 100%;
-  box-sizing: border-box;
-}
-
-.left-side::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.03) 0%, transparent 40%),
-    radial-gradient(circle at 80% 70%, rgba(200, 200, 200, 0.02) 0%, transparent 50%);
-  z-index: 1;
-}
-
-.title-container {
-  text-align: center;
-  position: relative;
-  z-index: 2;
+.main-content {
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.title-container .icon {
-  font-size: 3.5rem;
-  margin-bottom: 0.5rem;
-  line-height: 1;
-  opacity: 0.9;
-  transform: translateY(5px);
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0% { transform: translateY(5px); }
-  50% { transform: translateY(-5px); }
-  100% { transform: translateY(5px); }
-}
-
-.title-container h1 {
-  font-size: 4.5rem;
-  font-weight: 800;
-  letter-spacing: -2px;
-  margin: 0.5rem 0 0;
-  line-height: 1;
-  color: #ffffff;
-  text-transform: none;
-  font-family: 'Inter', -apple-system, sans-serif;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  position: relative;
-  display: inline-block;
-}
-
-.title-container h1::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-}
-
-.tagline {
-  font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.8);
-  margin-top: 1rem;
-  font-weight: 300;
-  letter-spacing: 2px;
-  text-transform: lowercase;
-  font-style: italic;
-}
-
-/* Right Side */
-.right-side {
-  flex: 1 1 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  margin: 0;
-  background-color: #f5f5f5;
-  height: 100%;
+  justify-content: flex-start;
+  padding: 2rem 1rem 5rem; /* bottom space for button */
   overflow-y: auto;
-  box-sizing: border-box;
 }
 
 /* connect button retains simple styling */
@@ -384,41 +231,11 @@ html, body, #app {
   text-align: center;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .split-screen {
-    flex-direction: column;
+/* Responsive: center cards on small screens */
+@media (max-width: 480px) {
+  .cards-stack {
+    align-items: stretch;
   }
-  
-  .left-side, .right-side {
-    flex: none;
-    height: 50%;
-  }
-  
-  .kali-container h1 {
-    font-size: 4rem;
-  }
-}
-
-/* Existing styles that might be used elsewhere */
-.healthy {
-  color: #2ecc71;
-}
-
-.unhealthy {
-  color: #e74c3c;
-}
-
-.log {
-  background: #f9f9f9;
-  padding: 1rem;
-  max-height: 300px;
-  overflow: auto;
-  text-align: left;
-  font-family: monospace;
-  font-size: 0.875rem;
-  border-radius: 4px;
-  margin-top: 1rem;
 }
 
 .cards-stack {
@@ -426,6 +243,7 @@ html, body, #app {
   flex-direction: column;
   gap: 12px;
   margin-top: 1rem;
+  align-items: center;
 }
 
 section {
