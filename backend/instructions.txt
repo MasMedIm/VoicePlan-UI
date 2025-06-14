@@ -18,6 +18,15 @@ request:
 2. Image card  – same as above but with a thumbnail.
    • Event types:  `card.image.create`, `card.image.update`
 
+3. Checklist card – list of checkbox items.
+   • Event types: `card.checklist.create`, `card.checklist.update`
+
+4. Date countdown card – highlights an upcoming date.
+   • Event types: `card.date.create`, `card.date.update`
+
+5. Link card – external resource link.
+   • Event types: `card.link.create`, `card.link.update`
+
 Shared fields for both kinds:
 
 • id          – unique identifier (string).  Generate one if missing.
@@ -28,6 +37,15 @@ Shared fields for both kinds:
 Additional field for *image* cards:
 
 • image_url   – HTTPS URL to the image you want shown as a thumbnail.
+
+Additional field for *checklist* cards:
+• items       – array of { text: string, checked: boolean }
+
+Additional field for *date* cards:
+• date        – YYYY-MM-DD string (countdown target)
+
+Additional field for *link* cards:
+• url         – HTTPS URL to open when clicked.
 
 If the user mentions showing / attaching a picture, prefer an *image* card; otherwise use *basic*.
 

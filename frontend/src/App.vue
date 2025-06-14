@@ -66,6 +66,9 @@ import { useRealtime } from "./composables/useRealtime.js";
 import { useUiStore } from "./composables/useUiStore.js";
 import CardBasic from "./components/CardBasic.vue";
 import CardImage from "./components/CardImage.vue";
+import CardChecklist from "./components/CardChecklist.vue";
+import CardDate from "./components/CardDate.vue";
+import CardLink from "./components/CardLink.vue";
 import { loginUser } from "./lib/api.js";
 
 const email = ref('');
@@ -86,6 +89,9 @@ const talking = rtc.talking;
 const componentMap = {
   'card.basic': CardBasic,
   'card.image': CardImage,
+  'card.checklist': CardChecklist,
+  'card.date': CardDate,
+  'card.link': CardLink,
 };
 
 // Reactive list of cards (updated by realtime hook)
