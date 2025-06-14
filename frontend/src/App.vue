@@ -36,6 +36,8 @@
         :disabled="rtcStatus === 'connecting'"
       >
         <template v-if="rtcStatus === 'connecting'">Connecting…</template>
+        <template v-else-if="talking === 'user'">You’re speaking…</template>
+        <template v-else-if="talking === 'assistant'">Assistant speaking…</template>
         <template v-else-if="rtcStatus === 'live'">Disconnect</template>
         <template v-else>Connect</template>
       </button>
@@ -77,6 +79,7 @@ const isAuthenticated = ref(true);
 
 const rtc = useRealtime();
 const rtcStatus = rtc.status; // Ref – easier binding in template
+const talking = rtc.talking;
 
 // Reactive list of cards (updated by realtime hook)
 const { cardList } = useUiStore();

@@ -11,6 +11,7 @@ export function useRealtime() {
   const messages = ref([]); // raw events from data-channel
   const pcRef = ref(null);
   const dcRef = ref(null);
+  const talking = ref(null); // null | 'user' | 'assistant'
 
   async function connect({ voice } = {}) {
     try {
@@ -56,6 +57,23 @@ export function useRealtime() {
           messages.value.push(e.data);
           return;
         }
+        // -----------------------------------------------------------------
+        // High-level speech state detection
+        // -----------------------------------------------------------------
+
+        if (parsed.type === 'input_audio_buffer.speech_started') {
+          talking.value = 'user';
+        } else if (parsed.type === 'input_audio_buffer.speech_stopped') {
+          if (talking.value === 'user') talking.value = null;
+        } else if (parsed.type === 'output_audio_buffer.started') {
+          talking.value = 'assistant';
+        } else if (
+          parsed.type === 'response.audio.done' ||
+          parsed.type === 'output_audio_buffer.finished'
+        ) {
+          if (talking.value === 'assistant') talking.value = null;
+        }
+
         // Detect completed function_call events from the Realtime API
         // Support both legacy 'function_call' and the newer 'response.function_call_arguments.done'
         const isFunctionDone = (parsed.type === 'function_call')
@@ -130,6 +148,11 @@ export function useRealtime() {
           }
           */
         }
+        // -----------------------------------------------------------------
+        // Generic console trace of every Realtime event so we can discover
+        // which messages mark "assistant is speaking" vs "user is speaking".
+        // -----------------------------------------------------------------
+        console.log('[RTC_EVENT]', parsed.type || '(unknown)', parsed);
       });
 
       // 3) SDP handshake.
@@ -165,7 +188,8 @@ export function useRealtime() {
       pcRef.value.close();
     }
     status.value = "idle";
+    talking.value = null;
   }
 
-  return { status, messages, connect, disconnect };
+  return { status, messages, connect, disconnect, talking };
 }
