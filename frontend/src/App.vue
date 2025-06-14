@@ -3,8 +3,10 @@
     <div class="split-screen">
       <!-- Left Side -->
       <div class="left-side">
-        <div class="kali-container">
-          <h1>Kali</h1>
+        <div class="title-container">
+          <div class="icon">🎙️</div>
+          <h1>VoicePlan</h1>
+          <h2>by gullie</h2>
         </div>
       </div>
 
@@ -60,6 +62,8 @@
 
         <pre class="log" v-if="rtc.messages.length">{{ rtc.messages }}</pre>
       </section>
+    </div>
+      </div>
     </div>
   </div>
 </template>
@@ -151,20 +155,75 @@ async function onLogin() {
 /* Left Side */
 .left-side {
   flex: 1;
-  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: #f0f0f0;
   padding: 2rem;
+  position: relative;
+  overflow: hidden;
 }
 
-.kali-container h1 {
-  font-size: 6rem;
+.left-side::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(200, 200, 200, 0.02) 0%, transparent 50%);
+  z-index: 1;
+}
+
+.title-container {
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title-container .icon {
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+  opacity: 0.9;
+  transform: translateY(5px);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(5px); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(5px); }
+}
+
+.title-container h1 {
+  font-size: 5rem;
   font-weight: 700;
-  letter-spacing: -2px;
+  letter-spacing: -1.5px;
   margin: 0;
   line-height: 1;
+  color: #ffffff;
+  text-transform: none;
+  font-family: 'Inter', -apple-system, sans-serif;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.title-container h2 {
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 6px;
+  margin: 1rem 0 0;
+  color: #b3b3b3;
+  text-transform: lowercase;
+  font-family: 'Inter', -apple-system, sans-serif;
+  opacity: 0.8;
+  font-style: italic;
 }
 
 /* Right Side */
@@ -174,7 +233,7 @@ async function onLogin() {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background-color: #f8f9fa;
+  background-color: #f5f5f5;
 }
 
 .login-container {
