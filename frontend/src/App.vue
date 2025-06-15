@@ -74,7 +74,7 @@
 <script setup>
 import { ref, watch, onMounted, computed } from "vue";
 import logoBlack from "../assets/gullie-black-logo.png";
-import logoWhite from "../assets/gullie-white-logo-BUEVdQi7.png";
+import logoWhite from "../assets/gullie-white-logo.png";
 import { useRealtime } from "./composables/useRealtime.js";
 import { useUiStore } from "./composables/useUiStore.js";
 import CardBasic from "./components/CardBasic.vue";
