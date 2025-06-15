@@ -1,6 +1,34 @@
 <template>
   <div class="bottom-nav-container">
-    <div class="pill-nav">
+    <!-- Collapsed state - only voice bubble -->
+    <div v-if="isCollapsed" class="collapsed-nav">
+      <button 
+        class="voice-bubble-only" 
+        :class="voiceState"
+        :disabled="isConnecting"
+        @click="handleVoiceBubbleClick"
+      >
+        <VoiceBubble 
+          :voice-state="voiceState"
+          :external-audio-level="audioLevel"
+          :size="64"
+        />
+        <span class="sr-only">{{ voiceStatusLabel }}</span>
+      </button>
+      
+      <!-- Expand button -->
+      <button class="expand-btn" @click="toggleCollapse" title="Click to expand full navigation">
+        <div class="expand-icon">⬆️</div>
+      </button>
+    </div>
+
+    <!-- Expanded state - full navigation -->
+    <div v-else class="pill-nav">
+      <!-- Collapse button -->
+      <button class="nav-button collapse-btn" @click="toggleCollapse" title="Collapse navigation">
+        <div class="icon-container">📱</div>
+        <span class="nav-label">Collapse</span>
+      </button>
 
       <!-- Theme Toggle -->
       <button class="nav-button" @click="toggleTheme">
@@ -45,8 +73,6 @@
         </Transition>
       </div>
 
-
-
       <!-- Voice Status Indicator with Integrated Bubble -->
       <button 
         class="nav-button voice-indicator-bubble" 
@@ -58,7 +84,7 @@
           <VoiceBubble 
             :voice-state="voiceState"
             :external-audio-level="audioLevel"
-            :size="48"
+            :size="58"
           />
         </div>
         <span class="nav-label">{{ voiceStatusLabel }}</span>
@@ -138,7 +164,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import VoiceBubble from './VoiceBubble.vue'
 import { X, Play } from 'lucide-vue-next'
 
@@ -165,6 +191,8 @@ const emit = defineEmits(['toggle-theme', 'color-change', 'toggle-voice', 'theme
 
 const showColorPicker = ref(false)
 const showSettings = ref(false)
+const isCollapsed = ref(false) // Start expanded so user can see collapse button
+const isSpacePressed = ref(false)
 
 const colors = [
   '#3b82f6', // blue
@@ -228,12 +256,26 @@ const voiceOptions = [
     name: 'Alloy', 
     description: 'Neutral & Balanced',
     gender: 'Neutral',
-    accent: 'American'
+    accent: 'Universal'
   },
   { 
     id: 'echo', 
     name: 'Echo', 
     description: 'Clear Male Voice',
+    gender: 'Male',
+    accent: 'American'
+  },
+  { 
+    id: 'fable', 
+    name: 'Fable', 
+    description: 'Expressive Male',
+    gender: 'Male',
+    accent: 'British'
+  },
+  { 
+    id: 'onyx', 
+    name: 'Onyx', 
+    description: 'Deep Male Voice',
     gender: 'Male',
     accent: 'American'
   },
@@ -245,15 +287,13 @@ const voiceOptions = [
     accent: 'American'
   },
   { 
-    id: 'fable', 
-    name: 'Fable', 
-    description: 'British Accent',
-    gender: 'Male',
-    accent: 'British'
+    id: 'shimmer', 
+    name: 'Shimmer', 
+    description: 'Warm Female Voice',
+    gender: 'Female',
+    accent: 'American'
   }
 ]
-
-
 
 const voiceStatusLabel = computed(() => {
   const state = props.voiceState
@@ -295,21 +335,87 @@ function closeSettings() {
 }
 
 function selectVoice(voice) {
+  console.log('🎤 Selecting voice:', voice.name, voice.id)
   emit('voice-change', voice)
+  // Close settings after selection
+  closeSettings()
 }
 
-function previewVoice(voice) {
-  // Play a sample text with the selected voice
-  const sampleText = `Hello! I'm ${voice.name}, your ${voice.description.toLowerCase()}. I'll be helping you with your travel planning today.`;
+async function previewVoice(voice) {
+  console.log(`🎤 Previewing voice ${voice.name}`)
   
-  console.log(`🎤 Preview voice ${voice.name}: ${sampleText}`);
+  // Sample text for preview
+  const sampleText = `Hello! I'm ${voice.name}. This is how I sound when speaking.`
   
-  // In a real implementation, this would call the TTS API
-  emit('voice-change', voice);
-  
-  // Show user feedback
-  alert(`Voice preview: ${voice.name} selected! ${voice.description}`);
+  try {
+    // Note: In a real implementation, this would call your TTS API
+    // For now, we'll use the browser's built-in speech synthesis as a fallback
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(sampleText)
+      utterance.rate = 0.9
+      utterance.pitch = voice.gender === 'Female' ? 1.2 : 0.8
+      utterance.volume = 0.7
+      
+      // Try to find a voice that matches the gender
+      const voices = speechSynthesis.getVoices()
+      const matchingVoice = voices.find(v => 
+        (voice.gender === 'Female' && v.name.toLowerCase().includes('female')) ||
+        (voice.gender === 'Male' && v.name.toLowerCase().includes('male')) ||
+        (voice.accent === 'British' && v.lang.includes('GB'))
+      ) || voices[0]
+      
+      if (matchingVoice) utterance.voice = matchingVoice
+      
+      speechSynthesis.speak(utterance)
+    } else {
+      console.log('🎤 Speech synthesis not supported, would call OpenAI TTS API here')
+    }
+  } catch (error) {
+    console.error('Error previewing voice:', error)
+  }
 }
+
+function toggleCollapse() {
+  isCollapsed.value = !isCollapsed.value
+}
+
+function handleVoiceBubbleClick() {
+  // In collapsed mode, clicking the voice bubble can:
+  // 1. Start a conversation if idle
+  // 2. Stop if already active
+  toggleVoice()
+}
+
+// Add spacebar support
+function handleKeyDown(event) {
+  if (event.code === 'Space' && !event.repeat) {
+    event.preventDefault()
+    if (!isSpacePressed.value) {
+      isSpacePressed.value = true
+      toggleVoice()
+    }
+  }
+}
+
+function handleKeyUp(event) {
+  if (event.code === 'Space') {
+    event.preventDefault()
+    if (isSpacePressed.value) {
+      isSpacePressed.value = false
+      // Could add hold-to-talk functionality here if needed
+    }
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('keydown', handleKeyDown)
+  document.addEventListener('keyup', handleKeyUp)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeyDown)
+  document.removeEventListener('keyup', handleKeyUp)
+})
 </script>
 
 <style scoped>
@@ -342,6 +448,107 @@ function previewVoice(voice) {
 .dark .pill-nav {
   background: rgba(30, 41, 59, 0.9);
   border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Collapsed Navigation Styles */
+.collapsed-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.voice-bubble-only {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .voice-bubble-only {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.voice-bubble-only:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.voice-bubble-only:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.voice-bubble-only.connecting {
+  animation: pulse 1.5s infinite;
+}
+
+.voice-bubble-only.listening {
+  box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+  animation: listening 2s infinite;
+}
+
+.voice-bubble-only.speaking {
+  box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7);
+  animation: speaking 1.5s infinite;
+}
+
+.expand-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(59, 130, 246, 0.9);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  animation: expand-pulse 2s infinite;
+}
+
+.dark .expand-btn {
+  background: rgba(59, 130, 246, 0.8);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.expand-btn:hover {
+  transform: scale(1.15) translateY(-3px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+  animation: none; /* Stop pulsing on hover */
+}
+
+.expand-icon {
+  font-size: 0.875rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes expand-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  }
+}
+
+.collapse-btn {
+  order: -1; /* Show collapse button first */
 }
 
 .nav-button {
@@ -552,8 +759,6 @@ function previewVoice(voice) {
   100% { transform: scale(1.4); opacity: 0; }
 }
 
-
-
 /* Responsive Design */
 @media (max-width: 768px) {
   .pill-nav {
@@ -575,15 +780,15 @@ function previewVoice(voice) {
   
   .voice-indicator-bubble {
     padding: 0.375rem 0.5rem !important;
-    min-width: 60px;
+    min-width: 65px;
   }
   
   .voice-indicator-bubble .voice-bubble-container {
-    transform: scale(0.7);
+    transform: scale(0.75);
   }
   
   .voice-indicator-bubble:hover .voice-bubble-container {
-    transform: scale(0.75);
+    transform: scale(0.8);
   }
 }
 
@@ -632,35 +837,34 @@ function previewVoice(voice) {
 /* Settings Modal */
 .settings-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(10px);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(12px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 9999;
-  padding: 2rem 1rem 6rem 1rem;
+  padding: 2rem 1rem;
+  padding-top: 10vh;
   box-sizing: border-box;
   overflow-y: auto;
 }
 
 .settings-modal {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(30, 41, 59, 0.95);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 20px;
-  padding: 1.5rem;
-  max-width: 480px;
+  padding: 2rem;
   width: 100%;
-  max-height: calc(100vh - 9rem);
+  max-width: 600px;
+  max-height: 80vh;
   overflow-y: auto;
-  margin-bottom: 2rem;
+  position: relative;
+  margin: 0 auto;
   box-shadow: 
-    0 20px 48px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 25px 50px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .settings-header {
@@ -737,8 +941,10 @@ function previewVoice(voice) {
 
 .voice-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.875rem;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .voice-option {
@@ -906,18 +1112,18 @@ function previewVoice(voice) {
   background: rgba(0, 0, 0, 0.3);
 }
 
-/* Responsive Design */
+/* Modal Responsive Design */
 @media (max-width: 768px) {
   .settings-overlay {
-    padding: 1rem 0.5rem 5rem 0.5rem;
+    padding: 1rem 0.5rem;
+    padding-top: 5vh;
   }
   
   .settings-modal {
-    padding: 1.25rem;
-    max-height: calc(100vh - 6rem);
+    padding: 1.5rem;
+    max-height: 90vh;
     max-width: 95%;
     border-radius: 16px;
-    margin-bottom: 1rem;
   }
   
   .settings-header {
@@ -940,6 +1146,7 @@ function previewVoice(voice) {
   .voice-grid {
     grid-template-columns: 1fr;
     gap: 0.75rem;
+    max-height: 50vh;
   }
   
   .voice-option {
@@ -947,17 +1154,17 @@ function previewVoice(voice) {
   }
 }
 
-/* Extra small devices */
 @media (max-width: 480px) {
   .settings-overlay {
-    padding: 0.5rem 0.25rem 4.5rem 0.25rem;
+    padding: 0.5rem 0.25rem;
+    padding-top: 2vh;
   }
   
   .settings-modal {
-    padding: 1rem;
-    max-height: calc(100vh - 5rem);
+    padding: 1.25rem;
+    max-height: 95vh;
     max-width: 98%;
-    margin-bottom: 0.5rem;
+    border-radius: 12px;
   }
   
   .settings-title {
@@ -988,6 +1195,10 @@ function previewVoice(voice) {
   .section-description {
     font-size: 0.85rem;
     margin-bottom: 1rem;
+  }
+  
+  .voice-grid {
+    max-height: 40vh;
   }
 }
 </style> 

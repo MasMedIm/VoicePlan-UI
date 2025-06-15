@@ -786,6 +786,15 @@ onMounted(() => {
   const savedDarkMode = localStorage.getItem('theme') === 'dark';
   isDark.value = savedDarkMode;
   
+  // Apply dark mode immediately to document elements
+  if (savedDarkMode) {
+    document.documentElement.classList.add('dark');
+    document.body.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+    document.body.classList.remove('dark');
+  }
+  
   // Initialize colors and voice
   chatBubbleColor.value = localStorage.getItem('chatBubbleColor') || '#3b82f6';
   selectedVoice.value = localStorage.getItem('selectedVoice') || 'alloy';
@@ -833,6 +842,16 @@ onUnmounted(() => {
 
 watch(isDark, (val) => {
   localStorage.setItem('theme', val ? 'dark' : 'light');
+  
+  // Apply dark mode to document elements
+  if (val) {
+    document.documentElement.classList.add('dark');
+    document.body.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+    document.body.classList.remove('dark');
+  }
+  
   applyBackgroundTheme(); // Apply theme when dark mode changes
 });
 
@@ -2915,7 +2934,13 @@ html, body, #app {
   }
 }
 
-.sr-only { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.sr-only { 
+  position: absolute; 
+  left: -9999px; 
+  width: 1px; 
+  height: 1px; 
+  overflow: hidden; 
+}
 
 .copy-link-btn, .back-btn { background: none; border: none; color: var(--text-color); cursor: pointer; margin-right: 0.5rem; position: relative; }
 .copy-link-btn .icon, .back-btn .icon { width: 1.1rem; height: 1.1rem; }
@@ -2943,10 +2968,25 @@ html, body, #app {
   color: var(--text-color) !important;
 }
 
+/* Apply dark mode to entire document */
+html.dark, 
+body.dark {
+  background: var(--bg-color) !important;
+  color: var(--text-color) !important;
+}
+
 html, body {
   margin: 0;
   padding: 0;
   background: var(--bg-color);
+  color: var(--text-color);
   border: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Ensure all text inherits the theme colors */
+html.dark *,
+body.dark * {
+  color: inherit;
 }
 </style>
