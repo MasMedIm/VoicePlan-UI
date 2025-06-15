@@ -33,23 +33,90 @@ function open() { emit('open'); }
 
 <style scoped>
 .card {
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: #fff;
-  max-width: 320px;
-  width: 320px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-  padding: 20px 24px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--card-border-color);
+  border-radius: 8px;
+  background: var(--card-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem;
   text-align: left;
+  color: var(--text-color);
 }
 
-.title { font-size: 1.25rem; font-weight: 600; margin: 0 0 6px; }
+.title { 
+  font-size: 0.875rem; 
+  font-weight: 600; 
+  margin: 0 0 0.5rem; 
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-.header-left{display:flex;align-items:center;gap:6px;}
-.icon{width:18px;height:18px;color:#3b82f6;flex-shrink:0;}
+.header-left{
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: 0.5rem;
+}
 
-.countdown { font-size: 1.25rem; margin: 0; color: #2563eb; font-weight: 600; }
+.icon{
+  width: 1rem;
+  height: 1rem;
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.countdown { 
+  font-size: 1rem; 
+  margin: 0; 
+  color: #2563eb; 
+  font-weight: 600; 
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .countdown.past { color: #c2410c; }
 
-.description { font-size: 0.85rem; color: #555; margin-top: 6px; }
+.description { 
+  font-size: 0.75rem; 
+  color: var(--text-color); 
+  opacity: 0.8;
+  margin-top: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Responsive adjustments */
+.mosaic-item-tiny .title {
+  font-size: 0.75rem;
+}
+
+.mosaic-item-tiny .countdown {
+  font-size: 0.875rem;
+}
+
+.mosaic-item-tiny .description {
+  font-size: 0.625rem;
+  -webkit-line-clamp: 1;
+}
+
+.mosaic-item-large .title,
+.mosaic-item-xl .title {
+  font-size: 1rem;
+}
+
+.mosaic-item-large .countdown,
+.mosaic-item-xl .countdown {
+  font-size: 1.25rem;
+}
 </style>
