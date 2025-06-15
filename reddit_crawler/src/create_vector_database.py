@@ -19,7 +19,7 @@ def chunks(iterable, batch_size=200):
         chunk = tuple(itertools.islice(it, batch_size))
 
 
-def create_vector_database(current_run_path: str, batch_size: int = 95, index_name: str = "tech-ideas-py"):
+def create_vector_database(current_run_path: str, batch_size: int = 95, index_name: str = "tech-ideas-py", namespace: str = "example-namespace"):
 # Initialize a Pinecone client with your API key
     pc = Pinecone(api_key=keys['PINECONE_API_KEY'])
     
@@ -31,14 +31,14 @@ def create_vector_database(current_run_path: str, batch_size: int = 95, index_na
             records_to_upsert = json.load(f)
     except FileNotFoundError:
         print(f"Error: '{raw_scraps_filename}' not found. Please run the preprocessing script first.")
-        exit()
+        return
     except json.JSONDecodeError:
         print(f"Error: Could not decode JSON from '{raw_scraps_filename}'. Make sure it's valid.")
-        exit()
+        return
 
     if not records_to_upsert:
         print(f"No records found in '{raw_scraps_filename}'. Nothing to upsert.")
-        exit()
+        return
 
     # Create a dense index with integrated embedding (or connect if exists)
     if not pc.has_index(index_name):

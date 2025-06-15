@@ -1,13 +1,15 @@
 from fastapi import FastAPI, HTTPException
+# from fastapi.concurrency import run_in_threadpool
 from fastapi_mcp import FastApiMCP
 from pydantic import BaseModel
 import os
 import uvicorn
+from datetime import datetime
 # from .ingestion import scrape_reddit
 from .ingestion_topicwise import scrape_reddit_topicwise
 from .create_vector_database import create_vector_database
 from .search_vector_db import search_vector_db
-
+from .gemini_retrieval import return_gemini_response
 app = FastAPI()
 
 mcp = FastApiMCP(app)
@@ -16,24 +18,31 @@ mcp.mount()
 
 class FetchSearchRequest(BaseModel):
     query: str
-    city: str = "Atlanta"
-    topic: str = "Food" 
+    city: str = "Atlanta" 
 
 
 @app.post("/fetch_and_search")
 async def fetch_and_search(request: FetchSearchRequest):
     try:
-        current_run_path = scrape_reddit_topicwise(city=request.city, topic=request.topic, limit=10)
+        # Construct the expected path for today's run
+        date_str = datetime.now().strftime("%m_%d")
+        run_name = f"{request.city.lower().replace(' ', '')}_{date_str}"
+        current_run_path = os.path.join("runs", run_name)
+
+        # If a response from today already exists, return it
+        if os.path.exists(current_run_path):
+            search_vector_db(index_name=request.city.lower().replace(' ', ''), query=request.query, current_run_path=current_run_path, top_k=50)
+            gemini_response_text = return_gemini_response(query=request.query, current_run_path=current_run_path, model="gemini-2.5-flash-preview-05-20")
+            return {"response": gemini_response_text}
+
+        # Otherwise, run the full pipeline
+        current_run_path = scrape_reddit_topicwise(city=request.city, subreddit_limit=2, post_limit=100)
         
-        # Check if vector search results already exist.
-        output_filename = os.path.join(current_run_path, "vector_search_results.txt")
-        if os.path.exists(output_filename):
-            print("Vector search results already exist. Skipping vector database creation and search.")
-            return {"message": "Search results already exist.", "output_filename": output_filename}
-        else:
-            create_vector_database(current_run_path, batch_size=95, index_name="mcp-test")
-            output_filename = search_vector_db(index_name="mcp-test", query=request.query, current_run_path=current_run_path, top_k=50)
-            return {"message": "Fetch and search completed successfully", "output_filename": output_filename}
+        create_vector_database(current_run_path, batch_size=95, index_name=request.city.lower().replace(' ', ''))
+        search_vector_db(index_name=request.city.lower().replace(' ', ''), query=request.query, current_run_path=current_run_path, top_k=50)
+        gemini_response_text = return_gemini_response(query=request.query, current_run_path=current_run_path, model="gemini-2.5-flash-preview-05-20")
+        
+        return {"response": gemini_response_text}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
