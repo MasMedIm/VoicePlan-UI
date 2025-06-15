@@ -31,14 +31,17 @@ function open() { emit('open'); }
 
 <style scoped>
 .card {
-  text-align:left;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: #fff;
-  max-width: 320px;
-  width: 320px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-  padding: 20px 24px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  border: 1px solid var(--card-border-color);
+  border-radius: 8px;
+  background: var(--card-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem;
+  color: var(--text-color);
 }
 
 

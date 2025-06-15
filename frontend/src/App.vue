@@ -30,39 +30,7 @@
           </form>
         </div>
     <div v-else class="main-content">
-      
-      <!-- Voice Control Container -->
-      <div class="voice-control-container">
-        <div class="voice-status-panel" :class="btnState">
-          <div class="status-indicator">
-            <div class="status-icon" :class="btnState">
-              <span v-if="btnState !== 'state-user'" class="mic-icon">🎙️</span>
-            </div>
-            <div v-if="btnState === 'state-user'" class="listening-orb" />
-          </div>
-          <div class="status-text">
-            <h3 class="status-title">{{ stateTitle }}</h3>
-            <p class="status-subtitle">{{ stateLabel }}</p>
-          </div>
-          <button
-            :class="['voice-toggle-btn', btnState]"
-            @click="toggleConnection"
-            :disabled="rtcStatus === 'connecting'"
-          >
-            {{ toggleButtonText }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Theme toggle -->
-      <button class="theme-toggle" @click="toggleTheme">
-        {{ isDark ? '🌞' : '🌙' }}
-      </button>
-
-    <!-- --------------------------------------------- -->
-    <!-- Mosaic Board (cards rendered from UI events) -->
-    <!-- --------------------------------------------- -->
-
+    <!-- Clean empty space - content will appear when voice creates cards -->
     <section v-if="items.length" class="board-section">
       <div class="board-header">
         <h2 class="board-title">Travel Planning Board</h2>
@@ -76,7 +44,7 @@
           :key="it.id"
           :is="componentMap[it.kind] || 'div'"
           :card="it.props"
-          :class="['mosaic-item', `mosaic-item-${getMosaicSize(index)}`]"
+          :class="['mosaic-item', `mosaic-item-${getMosaicSize(index, it)}`]"
           @open="openItem(it)"
         />
       </div>
@@ -87,6 +55,18 @@
       <component :is="componentMap[selected.kind]" :card="selected.props" class="modal-card" />
     </div>
     </div>
+
+    <!-- Bottom Pill Navigation -->
+    <BottomPillNav 
+      :isDark="isDark"
+      :voiceState="voiceNavState"
+      :isConnecting="rtcStatus === 'connecting'"
+      :chatBubbleColor="chatBubbleColor"
+      :audioLevel="audioLevel"
+      @toggle-theme="toggleTheme"
+      @color-change="onColorChange"
+      @toggle-voice="toggleConnection"
+    />
   </div>
 </template>
 
@@ -105,6 +85,8 @@ import CardMetric from "./components/CardMetric.vue";
 import CardProgress from "./components/CardProgress.vue";
 import CardWeather from "./components/CardWeather.vue";
 import CardMap from "./components/CardMap.vue";
+import BottomPillNav from "./components/BottomPillNav.vue";
+import { useVoiceDetection } from "./composables/useVoiceDetection.js";
 import { loginUser } from "./lib/api.js";
 
 const email = ref('');
@@ -122,16 +104,11 @@ const rtcStatus = rtc.status; // Ref – easier binding in template
 const talking = rtc.talking;
 
 // ---------------------------------------------------------------------------
-// Connect button visual state
+// Voice detection for audio levels
 // ---------------------------------------------------------------------------
-const btnState = computed(() => {
-  if (rtcStatus.value === 'connecting') return 'state-connecting';
-  if (rtcStatus.value === 'live') {
-    if (talking.value === 'user') return 'state-user';
-    if (talking.value === 'assistant') return 'state-assistant';
-    return 'state-live';
-  }
-  return 'state-idle';
+const { audioLevel } = useVoiceDetection({
+  sensitivity: 0.05,
+  smoothing: 0.9
 });
 
 // ---------------------------------------------------------------------------
@@ -167,12 +144,67 @@ const toggleButtonText = computed(() => {
 });
 
 // ---------------------------------------------------------------------------
-// Mosaic Layout Logic
+// Conservative Mosaic Layout - Content-first sizing for efficient packing
 // ---------------------------------------------------------------------------
-const getMosaicSize = (index) => {
-  // Create a varied mosaic pattern
-  const patterns = ['small', 'medium', 'large', 'wide', 'tall'];
-  return patterns[index % patterns.length];
+const getMosaicSize = (index, item) => {
+  if (!item) {
+    // Simple, predictable pattern that favors smaller sizes
+    const patterns = ['tiny', 'small', 'tiny', 'small', 'medium', 'tiny'];
+    return patterns[index % patterns.length];
+  }
+
+  const cardType = item.kind?.split('.')[1];
+  const hasImage = item.props?.image_url;
+  const contentLength = item.props?.description?.length || 0;
+  const itemCount = item.props?.items?.length || item.props?.steps?.length || 0;
+  const hasTitle = item.props?.title?.length > 0;
+  
+  // Calculate actual content density
+  const isContentHeavy = contentLength > 150 || itemCount > 8;
+  const isMediumContent = contentLength > 50 || itemCount > 4;
+  const isLightContent = contentLength < 30 && itemCount < 3;
+  
+  // Content-first sizing - be conservative!
+  switch(cardType) {
+    case 'weather':
+    case 'map':
+      // Weather/maps need horizontal space but don't go crazy
+      return hasImage ? 'wide' : 'medium';
+    
+    case 'checklist':
+    case 'progress':
+      // Size based on actual item count, not assumptions
+      if (itemCount <= 3) return 'tiny';
+      if (itemCount <= 6) return 'small';  // Like the train snacks example
+      if (itemCount <= 10) return 'medium';
+      return 'tall'; // Only for truly long lists
+    
+    case 'metric':
+      // Metrics should always be compact
+      return 'tiny';
+    
+    case 'image':
+      // Images get more space only if they actually have images
+      if (hasImage && isContentHeavy) return 'large';
+      if (hasImage) return 'medium';
+      return 'small';
+    
+    case 'date':
+      // Dates are always brief
+      return 'tiny';
+    
+    case 'link':
+      // Links are minimal
+      return 'tiny';
+    
+    case 'basic':
+    default:
+      // Basic cards based on actual content amount
+      if (isLightContent) return 'tiny';
+      if (isMediumContent) return 'small';
+      if (isContentHeavy) return 'medium';
+      return 'small'; // Default to small, not medium
+  }
 };
 
 // Registry of component kinds → Vue component
@@ -206,9 +238,11 @@ const { items } = useUiStore();
 // Theme toggle (dark / light)
 // ---------------------------------------------------------------------------
 const isDark = ref(false);
+const chatBubbleColor = ref('#3b82f6');
 
 onMounted(() => {
   isDark.value = localStorage.getItem('theme') === 'dark';
+  chatBubbleColor.value = localStorage.getItem('chatBubbleColor') || '#3b82f6';
 });
 
 watch(isDark, (val) => {
@@ -217,6 +251,13 @@ watch(isDark, (val) => {
 
 function toggleTheme() {
   isDark.value = !isDark.value;
+}
+
+function onColorChange(color) {
+  // Update reactive reference and store the selected color
+  chatBubbleColor.value = color;
+  localStorage.setItem('chatBubbleColor', color);
+  console.log('Chat bubble color changed to:', color);
 }
 
 function toggleConnection() {
@@ -291,169 +332,13 @@ html, body, #app {
   flex-direction: column;
   overflow-y: auto;
   padding: 1rem;
-  padding-bottom: 2rem;
+  padding-top: 5rem; /* Proper spacing below fixed logo */
+  padding-bottom: 8rem; /* Extra padding for bottom navigation */
 }
 
-/* ===== Voice Control Container ===== */
-.voice-control-container {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--bg-color);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--card-border-color);
-  margin: -1rem -1rem 2rem -1rem;
-  padding: 1.5rem;
-}
 
-.voice-status-panel {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  background: var(--card-bg);
-  border: 2px solid var(--card-border-color);
-  border-radius: 20px;
-  padding: 1rem 1.5rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
 
-.voice-status-panel.state-connecting {
-  border-color: #f59e0b;
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
-}
 
-.voice-status-panel.state-live {
-  border-color: #10b981;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
-}
-
-.voice-status-panel.state-user {
-  border-color: #3b82f6;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.08));
-  animation: listening-pulse 2s ease-in-out infinite;
-}
-
-.voice-status-panel.state-assistant {
-  border-color: #8b5cf6;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.08));
-}
-
-.status-indicator {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.status-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  transition: all 0.3s ease;
-}
-
-.status-icon.state-idle {
-  background: linear-gradient(135deg, #ff8800, #ff6b00);
-  color: white;
-}
-
-.status-icon.state-connecting {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: white;
-  animation: pulse 1.5s infinite;
-}
-
-.status-icon.state-live {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-}
-
-.status-icon.state-assistant {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-  color: white;
-  animation: assistant-glow 1.8s ease-in-out infinite;
-}
-
-.listening-orb {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, #3ef1ff, #0062ff, #fd3fe3);
-  position: relative;
-  animation: listening-orb 2s linear infinite;
-}
-
-.listening-orb::before,
-.listening-orb::after {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  background: linear-gradient(45deg, #3ef1ff, #0062ff, #fd3fe3, #3ef1ff);
-  animation: listening-ring 3s linear infinite;
-  z-index: -1;
-  filter: blur(8px);
-  opacity: 0.7;
-}
-
-.listening-orb::after {
-  animation-direction: reverse;
-  animation-duration: 2s;
-  filter: blur(4px);
-}
-
-.status-text {
-  flex: 1;
-  text-align: left;
-}
-
-.status-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin: 0 0 2px 0;
-  color: var(--text-color);
-}
-
-.status-subtitle {
-  font-size: 0.875rem;
-  color: var(--text-color);
-  opacity: 0.7;
-  margin: 0;
-}
-
-.voice-toggle-btn {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  padding: 0.75rem 1.5rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 120px;
-}
-
-.voice-toggle-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-}
-
-.voice-toggle-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.voice-toggle-btn.state-live,
-.voice-toggle-btn.state-user,
-.voice-toggle-btn.state-assistant {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-}
 
 /* ===== Board Section ===== */
 .board-section {
@@ -489,65 +374,249 @@ html, body, #app {
   border: 1px solid var(--card-border-color);
 }
 
-/* ===== Mosaic Grid Layout ===== */
+/* ===== Compact Mosaic Grid Layout ===== */
 .mosaic-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
-  grid-auto-rows: minmax(120px, auto);
+  grid-template-columns: repeat(12, 1fr); /* 12-column precision grid */
+  gap: 0.25rem; /* Very tight spacing for true mosaic feel */
+  grid-auto-rows: 80px; /* Smaller row height for better packing */
+  grid-auto-flow: row; /* Ensure proper left-to-right flow */
+  align-items: stretch;
+  width: 100%;
+  position: relative;
+  padding: 0.25rem;
 }
 
 .mosaic-item {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .mosaic-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
-/* Mosaic size variations */
-.mosaic-item-small {
-  grid-row: span 1;
+/* Child component styling */
+.mosaic-item > * {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  padding: 0; /* Let child components handle their own padding */
 }
 
-.mosaic-item-medium {
-  grid-row: span 2;
-}
-
-.mosaic-item-large {
-  grid-row: span 3;
-  grid-column: span 1;
-}
-
-.mosaic-item-wide {
+/* ===== Precision Mosaic Size System ===== */
+/* Tiny - Perfect for metrics, quick info */
+.mosaic-item-tiny {
   grid-column: span 2;
   grid-row: span 1;
 }
 
-.mosaic-item-tall {
-  grid-row: span 4;
+/* Small - Basic cards, links */
+.mosaic-item-small {
+  grid-column: span 3;
+  grid-row: span 1;
 }
 
+/* Medium - Standard content cards */
+.mosaic-item-medium {
+  grid-column: span 4;
+  grid-row: span 2;
+}
+
+/* Large - Featured content */
+.mosaic-item-large {
+  grid-column: span 6;
+  grid-row: span 2;
+}
+
+/* Wide - Horizontal content like weather, maps */
+.mosaic-item-wide {
+  grid-column: span 8;
+  grid-row: span 1;
+}
+
+/* Tall - Vertical content like checklists */
+.mosaic-item-tall {
+  grid-column: span 3;
+  grid-row: span 3;
+}
+
+/* Extra Large - Hero cards */
+.mosaic-item-xl {
+  grid-column: span 6;
+  grid-row: span 3;
+}
+
+/* Square - Balanced proportions */
+.mosaic-item-square {
+  grid-column: span 4;
+  grid-row: span 3;
+}
+
+/* ===== Responsive Mosaic Design ===== */
+
+/* Large screens - Full 12-column grid */
+@media (min-width: 1200px) {
+  .mosaic-grid {
+    gap: 0.375rem; /* Keep tight spacing even on large screens */
+  }
+}
+
+/* Medium screens - 8-column grid */
+@media (max-width: 1199px) and (min-width: 769px) {
+  .mosaic-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+  
+  .mosaic-item-wide { grid-column: span 6; }
+  .mosaic-item-xl { grid-column: span 4; grid-row: span 2; }
+  .mosaic-item-large { grid-column: span 4; }
+  .mosaic-item-square { grid-column: span 3; grid-row: span 2; }
+}
+
+/* Small screens - 6-column grid */
 @media (max-width: 768px) {
   .mosaic-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.2rem;
+    grid-auto-rows: 70px;
+    padding: 0.2rem;
   }
   
-  .mosaic-item-wide,
-  .mosaic-item-large {
-    grid-column: span 1;
+  .mosaic-item-tiny { grid-column: span 2; }
+  .mosaic-item-small { grid-column: span 2; }
+  .mosaic-item-medium { grid-column: span 3; grid-row: span 2; }
+  .mosaic-item-large { grid-column: span 4; grid-row: span 2; }
+  .mosaic-item-wide { grid-column: span 6; grid-row: span 1; }
+  .mosaic-item-tall { grid-column: span 2; grid-row: span 2; }
+  .mosaic-item-xl { grid-column: span 6; grid-row: span 2; }
+  .mosaic-item-square { grid-column: span 3; grid-row: span 2; }
+}
+
+/* Extra small screens - 4-column grid */
+@media (max-width: 480px) {
+  .mosaic-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.15rem;
+    grid-auto-rows: 60px;
+    padding: 0.15rem;
   }
   
-  .voice-status-panel {
-    flex-direction: column;
-    text-align: center;
-    gap: 0.75rem;
+  .mosaic-item-tiny { grid-column: span 2; }
+  .mosaic-item-small { grid-column: span 2; }
+  .mosaic-item-medium { grid-column: span 2; grid-row: span 2; }
+  .mosaic-item-large { grid-column: span 4; grid-row: span 2; }
+  .mosaic-item-wide { grid-column: span 4; grid-row: span 1; }
+  .mosaic-item-tall { grid-column: span 2; grid-row: span 2; }
+  .mosaic-item-xl { grid-column: span 4; grid-row: span 2; }
+  .mosaic-item-square { grid-column: span 2; grid-row: span 2; }
+}
+
+/* ===== Visual Polish for Mosaic Layout ===== */
+
+/* Subtle backdrop for visual cohesion */
+.mosaic-grid::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg, 
+    transparent 0%, 
+    rgba(59, 130, 246, 0.01) 25%,
+    rgba(139, 92, 246, 0.01) 50%,
+    rgba(236, 72, 153, 0.01) 75%,
+    transparent 100%
+  );
+  border-radius: 16px;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Enhanced card entrance animation */
+.mosaic-item {
+  animation: mosaicEnter 0.3s ease-out;
+  animation-fill-mode: both;
+}
+
+/* Staggered animation for multiple cards */
+.mosaic-item:nth-child(1) { animation-delay: 0ms; }
+.mosaic-item:nth-child(2) { animation-delay: 50ms; }
+.mosaic-item:nth-child(3) { animation-delay: 100ms; }
+.mosaic-item:nth-child(4) { animation-delay: 150ms; }
+.mosaic-item:nth-child(5) { animation-delay: 200ms; }
+.mosaic-item:nth-child(6) { animation-delay: 250ms; }
+.mosaic-item:nth-child(7) { animation-delay: 300ms; }
+.mosaic-item:nth-child(8) { animation-delay: 350ms; }
+.mosaic-item:nth-child(n+9) { animation-delay: 400ms; }
+
+@keyframes mosaicEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
   }
-  
-  .status-text {
-    text-align: center;
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
+}
+
+/* Add subtle grid lines effect on hover */
+.mosaic-grid:hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+  background-size: calc(100% / 12) 100px;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+  animation: gridReveal 0.5s ease-out forwards;
+}
+
+@keyframes gridReveal {
+  to { opacity: 1; }
+}
+
+/* Micro-interactions for cards */
+.mosaic-item:active {
+  transform: translateY(0) scale(0.98);
+  transition: transform 0.1s ease-out;
+}
+
+/* Special styling for different card types */
+.mosaic-item-tiny {
+  border-width: 1px;
+}
+
+.mosaic-item-xl {
+  border-width: 2px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.mosaic-item-xl:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
 }
 
 /* ===== Animations ===== */
@@ -659,30 +728,7 @@ html, body, #app {
   overflow: auto;
 }
 
-/* ===== Theme Toggle ===== */
-.theme-toggle {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
-  width: 48px;
-  height: 48px;
-  font-size: 1.5rem;
-  background: var(--card-bg);
-  border: 2px solid var(--card-border-color);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-  z-index: 1050;
-}
 
-.theme-toggle:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-}
 </style>
 
 <style>

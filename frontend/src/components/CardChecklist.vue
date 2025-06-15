@@ -49,40 +49,69 @@ function open() {
 
 <style scoped>
 .card {
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: #fff;
-  max-width: 320px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-  padding: 20px 24px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--card-border-color);
+  border-radius: 8px;
+  background: var(--card-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem;
+  color: var(--text-color);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 0.5rem;
+  flex-shrink: 0;
 }
 
-.title { font-size: 1.25rem; font-weight: 600; margin: 0; }
-.progress { font-size: 0.75rem; color: #555; }
+.title { 
+  font-size: 0.875rem; 
+  font-weight: 600; 
+  margin: 0; 
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.progress { 
+  font-size: 0.625rem; 
+  color: var(--text-color); 
+  opacity: 0.7;
+  background: var(--card-border-color);
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
 
 .items {
   list-style: none;
   padding: 0;
-  margin: 0 0 6px;
+  margin: 0;
+  flex-grow: 1;
+  overflow-y: auto;
 }
 
 .items li {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.9rem;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  line-height: 1.3;
 }
 
-.items li + li { margin-top: 4px; }
+.items li + li { margin-top: 0.25rem; }
 
-.items .done { text-decoration: line-through; color: #888; }
+.items .done { 
+  text-decoration: line-through; 
+  color: var(--text-color); 
+  opacity: 0.6; 
+}
 
 .description { font-size: 0.85rem; color: #555; margin: 6px 0 0; }
 .header-left { display: flex; align-items: center; gap: 10px; }

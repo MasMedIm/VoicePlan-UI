@@ -119,14 +119,18 @@ function open() { emit('open'); }
 }
 
 .card {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   text-align: left;
-  border: 1px solid #ddd;
+  border: 1px solid var(--card-border-color);
   border-radius: 12px;
-  padding: 20px 24px;
-  background: #fff;
-  max-width: 320px;
+  padding: 0.75rem;
+  background: var(--card-bg);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  color: var(--text-color);
 }
 
 .card-header {
@@ -182,16 +186,35 @@ function open() { emit('open'); }
 }
 
 .temp-value {
-  font-size: 3rem;
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1;
   color: white;
 }
 
 .temp-unit {
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: rgba(255, 255, 255, 0.8);
   font-weight: 500;
+}
+
+/* Responsive adjustments */
+.mosaic-item-tiny .temp-value {
+  font-size: 1.5rem;
+}
+
+.mosaic-item-tiny .temp-unit {
+  font-size: 0.75rem;
+}
+
+.mosaic-item-large .temp-value,
+.mosaic-item-xl .temp-value {
+  font-size: 2.5rem;
+}
+
+.mosaic-item-large .temp-unit,
+.mosaic-item-xl .temp-unit {
+  font-size: 1.25rem;
 }
 
 .weather-info {
