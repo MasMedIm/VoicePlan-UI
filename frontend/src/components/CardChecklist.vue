@@ -85,6 +85,6 @@ function open() {
 .items .done { text-decoration: line-through; color: #888; }
 
 .description { font-size: 0.85rem; color: #555; margin: 6px 0 0; }
-.header-left { display: flex; align-items: center; gap: 6px; }
-.icon { width: 18px; height: 18px; color: #3b82f6; flex-shrink: 0; }
+.header-left { display: flex; align-items: center; gap: 10px; }
+.icon { width: 18px; height: 18px; color: #ff8800; flex-shrink: 0; }
 </style>

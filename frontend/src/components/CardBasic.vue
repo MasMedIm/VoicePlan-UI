@@ -53,8 +53,8 @@ function open() { emit('open'); }
   margin-bottom: 6px;
 }
 
-.header-left { display:flex; align-items:center; gap:6px; }
-.icon { width:18px; height:18px; color:#3b82f6; flex-shrink:0; }
+.header-left { display:flex; align-items:center; gap:10px; }
+.icon { width:18px; height:18px; color:#ff8800; flex-shrink:0; }
 
 .title {
   font-size: 1.25rem;

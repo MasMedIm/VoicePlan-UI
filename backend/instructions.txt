@@ -30,6 +30,9 @@ request:
 5. Link card – external resource link.
    • Event types: `card.link.create`, `card.link.update`
 
+6. Meeting card – schedule a meeting via date-time picker.
+   • Event types: `card.meeting.create`, `card.meeting.update`
+
 Shared fields for both kinds:
 
 • id          – unique identifier (string).  Generate one if missing.
@@ -49,6 +52,9 @@ Additional field for *date* cards:
 
 Additional field for *link* cards:
 • url         – HTTPS URL to open when clicked.
+
+Additional field for *meeting* cards:
+• meeting_date – ISO 8601 date-time string (e.g. 2025-06-20T15:00)
 
 If the user mentions showing / attaching a picture, prefer an *image* card; otherwise use *basic*.
 

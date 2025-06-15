@@ -42,11 +42,12 @@ function open() { emit('open'); }
 }
 
 
-.link { display:flex;align-items:center;gap:8px;text-decoration:none; }
-.icon{width:18px;height:18px;color:#3b82f6;flex-shrink:0;}
+.link { display:flex;align-items:center;gap:10px;text-decoration:none; }
+.icon{width:18px;height:18px;color:#ff8800;flex-shrink:0;}
 
 .favicon { width: 20px; height: 20px; }
-.title { font-size: 1.25rem; font-weight: 600; color: #2563eb; }
 
+
+.title { font-size: 1.25rem; font-weight: 600; color: #ff8800; margin-top: 6px; }
 .description { font-size: 0.85rem; color: #555; margin-top: 6px; }
 </style>

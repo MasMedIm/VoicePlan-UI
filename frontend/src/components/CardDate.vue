@@ -45,10 +45,10 @@ function open() { emit('open'); }
 
 .title { font-size: 1.25rem; font-weight: 600; margin: 0 0 6px; }
 
-.header-left{display:flex;align-items:center;gap:6px;}
-.icon{width:18px;height:18px;color:#3b82f6;flex-shrink:0;}
+.header-left{display:flex;align-items:center;gap:10px;}
+.icon{width:18px;height:18px;color:#ff8800;flex-shrink:0;}
 
-.countdown { font-size: 1.25rem; margin: 0; color: #2563eb; font-weight: 600; }
+.countdown { font-size: 1.25rem; margin: 0; color: #ff8800; font-weight: 600; }
 .countdown.past { color: #c2410c; }
 
 .description { font-size: 0.85rem; color: #555; margin-top: 6px; }
