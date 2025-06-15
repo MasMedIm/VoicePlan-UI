@@ -57,9 +57,15 @@
           :key="it.id"
           :is="componentMap[it.kind] || 'div'"
           :card="it.props"
+          @open="openItem(it)"
         />
       </div>
     </section>
+
+    <!-- Modal overlay -->
+    <div v-if="selected" class="modal" @click.self="closeModal">
+      <component :is="componentMap[selected.kind]" :card="selected.props" class="modal-card" />
+    </div>
     </div>
   </div>
 </template>
@@ -110,6 +116,17 @@ const componentMap = {
   'card.date': CardDate,
   'card.link': CardLink,
 };
+
+// Modal for enlarging a card (currently checklist only)
+const selected = ref(null); // holds ui item
+
+function openItem(item) {
+  selected.value = item;
+}
+
+function closeModal() {
+  selected.value = null;
+}
 
 // Reactive list of cards (updated by realtime hook)
 const { items } = useUiStore();
@@ -411,6 +428,21 @@ html, body, #app {
   gap: 12px;
   margin-top: 1rem;
   align-items: center;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.modal-card {
+  transform: scale(1.2);
+  cursor: default;
 }
 
 section {

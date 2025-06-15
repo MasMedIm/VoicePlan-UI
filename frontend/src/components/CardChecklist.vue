@@ -1,5 +1,5 @@
 <template>
-  <div class="card checklist-card">
+  <div class="card checklist-card" @click="open">
     <header class="card-header">
       <div class="header-left">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -42,6 +42,12 @@ const progressText = computed(() => {
   if (!counts.value.total) return '';
   return `${counts.value.done}/${counts.value.total}`;
 });
+
+const emit = defineEmits(['open']);
+
+function open() {
+  emit('open');
+}
 </script>
 
 <style scoped>
