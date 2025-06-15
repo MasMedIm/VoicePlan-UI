@@ -430,6 +430,10 @@ html, body, #app {
   align-items: center;
 }
 
+.cards-stack .card { cursor: pointer; }
+
+.modal-card .card { cursor: default; }
+
 .modal {
   position: fixed;
   inset: 0;

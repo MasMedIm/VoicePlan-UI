@@ -1,5 +1,5 @@
 <template>
-  <div class="card link-card">
+  <div class="card link-card" @click="open">
     <a :href="card.url" target="_blank" rel="noopener" class="link">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 0 1 7 7l-1 1"/><path d="M14 11a5 5 0 0 1 0 7l-1 1a5 5 0 0 1-7-7l1-1"/></svg>
       <img v-if="favicon" :src="favicon" class="favicon" />
@@ -24,6 +24,9 @@ const favicon = computed(() => {
     return null;
   }
 });
+
+const emit = defineEmits(['open']);
+function open() { emit('open'); }
 </script>
 
 <style scoped>
