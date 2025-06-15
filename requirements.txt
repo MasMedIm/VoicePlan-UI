@@ -1,1 +1,9 @@
 praw
+pinecone
+google-generativeai
+python-dotenv
+PyYAML
+uvicorn
+fastapi
+pydantic
+

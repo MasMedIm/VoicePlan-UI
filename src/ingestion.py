@@ -1,25 +1,37 @@
 # ingestion.py
-
 import json
-from .utils import load_subreddits
+from utils import load_subreddits
 import praw
 from datetime import datetime
 import os
+import yaml
+
+with open("keys.yaml", 'r') as stream:
+    keys = yaml.safe_load(stream)
 
 # Load your full list
-SUBREDDITS = load_subreddits("C:/Users/Sanket/Reddit-Crawler/subreddits.txt")
+SUBREDDITS = load_subreddits("subreddits.txt")
 
 reddit = praw.Reddit(
-    client_id="SOaUPFvPmBJx8kOHdLvuBg",
-    client_secret="EZhoDA7a4Q007WgtxZz2S7dM_BTS2Q",  
-    user_agent="Tech Ideas Scraper",
-    username="pvdsan",
-    password='Xyzzyspon123!'
+    client_id=keys['REDDIT_CLIENT_ID'],
+    client_secret=keys['REDDIT_CLIENT_SECRET'],
+    user_agent=keys['REDDIT_USER_AGENT'],
+    username=keys['REDDIT_USERNAME'],
+    password=keys['REDDIT_PASSWORD']
 )
+
+subs = reddit.subreddits.search(query="AI", limit=20)
+results = []
+for sub in subs:
+    results.append(sub.display_name)
+# Sort by subscriber count descending
+SUBREDDITS = results.sort(reverse=True)
+
+
 
 def scrape_reddit(scrapes_per_subreddit: int) -> str:
     
-    output_dir_base = "/data/users4/sdeshpande8/Reddit-Crawler/runs"
+    output_dir_base = "runs"
     
     #create a directory for the current run
     current_time = datetime.now().strftime("%Y-%m-%d_%H_%M")
@@ -36,6 +48,7 @@ def scrape_reddit(scrapes_per_subreddit: int) -> str:
     # Save the Pinecone-formatted results
     raw_scraps_filename = os.path.join(output_dir_base, current_time, f"raw_scrap_results.json")
     
+    SUBREDDITS = get_subreddits("AI", 20)
 
     pinecone_formatted_results = []
     for subreddit in SUBREDDITS:

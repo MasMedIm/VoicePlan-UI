@@ -4,8 +4,12 @@ import json
 import random
 import itertools
 import os
+import yaml
 
-pc = Pinecone(api_key="pcsk_oE8i9_BuQ2tgsxyNxRwUKPcFvW34VuQ98SmJE88qtybKBA1R4uWVvExwiDryEgu3Bygzb")
+with open("keys.yaml", 'r') as stream:
+    keys = yaml.safe_load(stream)
+
+pc = Pinecone(api_key=keys['PINECONE_API_KEY'])
 
 def search_vector_db(index_name: str, query: str, current_run_path: str, top_k: int = 100):
 

@@ -4,7 +4,11 @@ import json
 import random
 import itertools
 import os
+import yaml
 # from langchain_google_genai import GoogleGenerativeAIEmbeddings # This was unused, can be removed if not needed
+
+with open("keys.yaml", 'r') as stream:
+    keys = yaml.safe_load(stream)
 
 def chunks(iterable, batch_size=200):
     """A helper function to break an iterable into chunks of size batch_size."""
@@ -17,7 +21,7 @@ def chunks(iterable, batch_size=200):
 
 def create_vector_database(current_run_path: str, batch_size: int = 95, index_name: str = "tech-ideas-py"):
 # Initialize a Pinecone client with your API key
-    pc = Pinecone(api_key="pcsk_oE8i9_BuQ2tgsxyNxRwUKPcFvW34VuQ98SmJE88qtybKBA1R4uWVvExwiDryEgu3Bygzb")
+    pc = Pinecone(api_key=keys['PINECONE_API_KEY'])
     
     raw_scraps_filename = os.path.join(current_run_path, "raw_scrap_results.json")
 

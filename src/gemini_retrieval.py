@@ -1,9 +1,13 @@
 from google import genai
 import os
+import yaml
+
+with open("keys.yaml", 'r') as stream:
+    keys = yaml.safe_load(stream)
 
 def return_gemini_response(query: str, current_run_path: str, model: str = "gemini-2.5-flash-preview-05-20"):
     
-    client = genai.Client(api_key="AIzaSyC0i9vw1GMG9EYvmSjbamqCsSK-d-sdyA4")
+    client = genai.Client(api_key=keys['GEMINI_API_KEY'])
 
 
         
