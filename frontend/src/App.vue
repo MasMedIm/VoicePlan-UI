@@ -391,7 +391,7 @@ html, body, #app {
 
 .state-assistant {
   background: radial-gradient(circle at center, #3b82f6 0%, #2563eb 60%, #1e3a8a 100%);
-  animation: wave 1.4s infinite ease-in-out;
+  animation: wave-centered 1.4s infinite ease-in-out;
 }
 
 @keyframes pulse {
@@ -404,6 +404,13 @@ html, body, #app {
   0% { transform: scale(1); }
   50% { transform: scale(1.08); }
   100% { transform: scale(1); }
+}
+
+/* Same bounce effect but preserves the horizontal centering of the mic-container */
+@keyframes wave-centered {
+  0%   { transform: translateX(-50%) scale(1); }
+  50%  { transform: translateX(-50%) scale(1.08); }
+  100% { transform: translateX(-50%) scale(1); }
 }
   
 
