@@ -1,0 +1,941 @@
+Result 1:
+  ID: 1lbgwkq
+  Score: 0.298
+  Text: Will this Idea work ? Today, I ran into a real problem — and it got me thinking about building something to fix it. I’d love to get your thoughts.
+
+Some friends dragged me out to a Chinese restaurant for dinner. Honestly, I wasn’t in the mood to eat outside food, and to make things worse, I had no idea what to order. The menu was filled with dishes I didn’t recognize, and I wasn’t sure what to order.
+
+That’s when an idea struck me — what if there was a tool or app that could help decode the menu? Something that explains what each dish is, how it’s prepared, what ingredients go into it, and maybe even helps me choose something based on my current mood or taste preference, additionally getting the restaurant name from me and say what is the top rated food in that resturant by checking online reviews.
+
+I know I can upload the menu to ChatGPT and get some explanation, but I’m thinking of something smarter — something that understands my taste over time and helps me make better choices in the future too.
+
+Do you think building something like this would actually work? Would people use it? Will this app or tool survive?
+--------------------------------------------------
+
+Result 2:
+  ID: 1lbh423
+  Score: 0.2525
+  Text: Will this product survive?? Today, I ran into a real problem — and it got me thinking about building something to fix it. I’d love to get your thoughts.
+
+Some friends dragged me out to a Chinese restaurant for dinner. Honestly, I wasn’t in the mood to eat outside food, and to make things worse, I had no idea what to order. The menu was filled with dishes I didn’t recognize, and I wasn’t sure what to order.
+
+That’s when an idea struck me — what if there was a tool or app that could help decode the menu? Something that explains what each dish is, how it’s prepared, what ingredients go into it, and maybe even helps me choose something based on my current mood or taste preference, additionally getting the restaurant name from me and say what is the top rated food in that resturant by checking online reviews.
+
+I know I can upload the menu to ChatGPT and get some explanation, but I’m thinking of something smarter — something that understands my taste over time and helps me make better choices in the future too.
+
+Do you think building something like this would actually work? Would people use it? Will this app or tool survive?
+--------------------------------------------------
+
+Result 3:
+  ID: 1lag8zw
+  Score: 0.2375
+  Text: Your SaaS probably shouldn't exist. I will not promote Gonna piss some people off but someone needs to say it. I talk to 3-5 SaaS founders every week 80% are building solutions to problems that don't really exist
+
+We're like Slack but for restaurants, think Notion but specifically for real estate agents, it's basically Calendly but with AI. Man you need to stop, not everybody should have his own startup, do smth else.
+
+You know what successful founders tell me? Customers were literally begging us to build this
+
+Not I think restaurants would like better communication. Asking for the solution ss in, they tried everything else and nothing worked.
+
+I worked with a founder last year who built construction project management software. Not because he thought construction needed better software (it obviously does), but because he ran a construction company for 10 years,tried every existing tool,none solved his actual workflow problems, his crew was literally using WhatsApp and Excel, other contractors kept asking what system he was building.
+
+That's product-market fit before you even build.
+
+Compare that to founders who saw a market opportunity on some blog post, thought they could do X but better, built for a problem they read about but never experienced, are shocked when users don't care
+
+Your market research isn't listening to podcasts about TAM. It's having customers throw money at you to solve their pain
+
+If you can't name 10 people who would pay for your solution TODAY, you probably shouldn't build it
+
+Do something else and usually these people assume that they will make it happen but after spending some time and money see it as a waste of time.
+--------------------------------------------------
+
+Result 4:
+  ID: 1lbcxca
+  Score: 0.2297
+  Text: Top AI researchers say language is limiting. Here's the new kind of model they are building instead.
+--------------------------------------------------
+
+Result 5:
+  ID: 1l59ytf
+  Score: 0.2192
+  Text: Which state and city do you recommend? We are a young family of 5; our kids are 9, 7, and 4 years old, and my husband and I are in our early 30s. Originally from Hawaii, we've been living in Las Vegas for almost 5 years. Vegas served as a stepping stone for us to move out of Hawaii due to its high cost of living. We're now looking for recommendations on any state and city you think would be suitable for us. We'd appreciate the pros and cons of your suggestions.
+
+I’m sure there won’t have everything on my list but hopeful there’ll be most of it.
+
+What we’re looking for:
+—My husband is in the culinary field. Prefer to live near a lot of restaurants or have an easy commute to the city
+—Not in the big city but also not isolated.
+—Racially diverse community
+—Great for young families
+—Great healthcare
+—Safe neighborhood
+—Excellent school system
+—Affordable housing & groceries. Rent below $1.6k for 2 bedroom but not in a run down area
+—Summer weather that doesn’t go above 100 degrees 
+—Where weed is legal
+--------------------------------------------------
+
+Result 6:
+  ID: 1lbbdiz
+  Score: 0.2028
+  Text: Bootstrapping a Health & Wellness SaaS AI powered insights, mood/nutrition/activity tracking & food delivery (in the US) Hey folks  I’ve been working with a small team on a health-focused SaaS platform that aims to bring together all key aspects of wellness into one place: nutrition, fitness, mood tracking, and personalized AI insights.
+
+One feature that users in the U.S. love is the **automated meal ordering**  the system analyzes your health goals and recommends meals you can get delivered.
+
+It syncs with Apple Health, Fitbit, and others, and has a chat-based food logging feature + mood/emotion tracking.
+
+We just launched across iOS & Android, and I’d love feedback on how we can improve the onboarding or pricing structure as we scale.
+
+Here’s our website: [https://healix-ai.com/](https://healix-ai.com/)  
+Play Store: [https://play.google.com/store/apps/details?id=com.healixai.healix](https://play.google.com/store/apps/details?id=com.healixai.healix)  
+App Store: [https://apps.apple.com/us/app/healix-ai/id6743965106](https://apps.apple.com/us/app/healix-ai/id6743965106)
+
+Would love to hear your thoughts from a product or growth perspective!
+--------------------------------------------------
+
+Result 7:
+  ID: 1l7bo8h
+  Score: 0.1999
+  Text: [D] What underrated ML techniques are better than the defaults I come from a biology/medicine background and slowly made my way into machine learning for research. One of the most helpful moments for me was when a CS professor casually mentioned I should ditch basic grid/random search and try Optuna for hyperparameter tuning. It completely changed my workflow, way faster, more flexible, and just better results overall.
+
+It made me wonder what other "obvious to some, unknown to most" ML techniques or tips are out there that quietly outperform the defaults?
+
+Curious to hear what others have picked up, especially those tips that aren’t widely taught but made a real difference in your work
+--------------------------------------------------
+
+Result 8:
+  ID: 1layfwt
+  Score: 0.1972
+  Text: What do you guys think? (I will not promote) Recently I came across the news that Omegle was shut down. And as someone who used it previously (not that I was a big fan of it) I started thinking why people would have used it. I recently moved abroad for higher education and as an introvert it has been difficult making friends that are local. As someone who prefers to text and someone working on keeping a conversation going, I realized I needed help with it. I would much rather talk to another real person than an AI chatbot. So I got thinking, maybe a one to one messaging app that connects you with a random person in the same city/ local area every week with the goal of getting to know each other and making friends. The app's primary audience is introverts that struggle to make or keep a conversation going just like me. And to help them the app would feature an AI assistant that would read the last few messages with the other person and suggests follow-ups for the user to type to keep the chat going. The app could also feature a "third-place finder" that helps the user find places to meet in-person. The recommendation is based on the messages. Example: if the user says "would like to have a coffee together and talk more" and if the other person agrees, a box on the chat window appears showing nearby coffee shops.
+
+Hopefully the idea comes across well. What do you guys think? Is this a tarpit idea or a problem you have faced or know someone who faces it? This is not a promotion and I will not promote.
+--------------------------------------------------
+
+Result 9:
+  ID: 1la2kcp
+  Score: 0.195
+  Text: Building a non-exploitative AI tool for restaurant kitchens — looking for feedback from this community I’m a former line cook who transitioned into tech, and I’m currently building a project called MEP (short for mise en place) with a scheduling frontend named Flo. The goal is to support restaurant teams—especially back-of-house crews—with shift coverage, prep coordination, and onboarding in a way that genuinely respects workers instead of surveilling them.
+
+This isn’t automation for automation’s sake. It’s not about cutting labor costs or optimizing people into exhaustion. It’s about designing a simple, AI-assisted system that helps small, chaotic teams stay organized—without adding more stress or complexity to already difficult jobs. Having worked in kitchens that used systems like HotSchedules and 7shifts, I’ve seen firsthand how these platforms prioritize management needs while making day-to-day work harder for the people actually on the line.
+
+MEP is meant to do the opposite. It helps assign roles based on real-world context like skill level, fatigue, and task flow—not just raw availability. It can offer onboarding prompts or prep walkthroughs for new cooks during service. Most importantly, it avoids invasive data collection, keeps all AI suggestions overrideable by humans, and pushes for explainability rather than black-box logic.
+
+I’m sharing this here because I want real feedback—not hype. I’m curious how folks in this community think about building AI for environments that are inherently messy, human, and full of unquantifiable nuance. What risks am I not seeing here? What are the ethical or technical red flags I should be more aware of? And do you think AI belongs in this kind of space at all?
+
+This isn’t a startup pitch. I’m not selling anything. I just want to build something my former coworkers would actually want to use—and I want to build it responsibly. Any insights are welcome, especially if you’ve worked on systems in similarly high-stakes, high-pressure fields.
+
+Thanks for your time.
+
+—JohnE
+--------------------------------------------------
+
+Result 10:
+  ID: 1l2unad
+  Score: 0.1913
+  Text: "Best" Food Shop Web Designs I am planning on making a website to host for the community, though hopefully expand to the whole country. While I have a couple of ideas of what I want it to be like its not totally fleshed out and I keep bouncing between the idea's.
+
+So I am wondering what have been your most enjoyable store fronts to interact with? Or store fronts that you have made and really liked?
+--------------------------------------------------
+
+Result 11:
+  ID: 1l33bdb
+  Score: 0.1913
+  Text: Do you actually use the dashboard personalization features in apps - like reordering widgets or choosing what shows up? I've been looking at apps like Starling Bank, Revolut, and Boat Wave that let users personalise their dashboards - like moving sections, hiding sections, or customising what you see first in the home screen of the app.
+
+Just curious:
+
+* Do you actually use these features?
+* What do you like or find annoying about them?
+* Are there any apps that do it really well(or poorly)?
+
+I'm doing user research as a designer and trying to understand how people interact with dashboard customisation in real-world apps.
+--------------------------------------------------
+
+Result 12:
+  ID: 1lb5esk
+  Score: 0.1913
+  Text: [Feedback Wanted] [Showcase] BitePath – Auto Grocery Lists + AI-Generated Meals with Pictures I’ve been working on a tool called BitePath – a minimal meal planner that automatically builds your grocery list and uses AI to generate personalized meals (with pictures!) .
+
+🥣 Why I Built It  
+Most meal planners are cluttered or feel like work. I wanted something clean and smart – where I could get visually appealing meals suggested to me, then get the grocery list handled without any extra steps.
+
+🧠 What BitePath Does
+
+* 🤖 Uses AI to generate meal ideas with pictures
+* 🍱 Tailors meals based on your taste and dietary preferences
+* 🛒 Automatically builds your weekly grocery list
+* 📲 Works great as a PWA (Add to Home Screen supported) or an APK for Android (This is for the beta)
+* ✅ No signup needed to try it out
+
+🔗 Try it here: [https://www.thebitepath.](https://bitepath.app/)com
+
+💻 Stack: React + TypeScript + Supabase + Tailwind + a bit of AI magic for meal generation.
+
+Would love feedback on:
+
+* Meal picture quality & suggestions
+* Grocery list flow – does it feel seamless?
+* Anything confusing or missing?
+
+Thanks for checking it out! I’m happy to give feedback on your projects too.
+--------------------------------------------------
+
+Result 13:
+  ID: 1lbnjjg
+  Score: 0.1897
+  Text: What do you mean by reading the documentation? I see a lot of suggestions for reading through the documentation to become familiar with a framework or language. However, it seems that a lot of people suggest this as the first thing you should do.
+
+However, I often find that I only use the documentation when I am using a specific feature that I haven't used before and need to know how it works.
+
+How do you guys approach reading the documentation as a first-step approach rather than a look-up step. What specific information do you highlight from this first-step?
+--------------------------------------------------
+
+Result 14:
+  ID: 1l4immd
+  Score: 0.1884
+  Text: I need recommendations for north and south carolina. My family and I are looking for places to move out of state. We are in buffalo ny area and have traveled through all of the east coast and we found we are quite fond of the Carolinas specifically but we are open to near by states. We have a child that needs to be near a children's hospital and another who has special needs. So being by a good school with extra help is important. What are some family friendly locations around the carolinas that aren't so city like with a less than 30 min drive to a children's hospital and good schooling? Mb if this is a dumb question I just don't know if I can trust Google. I'd rather hear from actual locals.
+--------------------------------------------------
+
+Result 15:
+  ID: 1jkjx33
+  Score: 0.1882
+  Text: a rant about the lack of respect for user focus Pretty annoyed with the fact that environments allow their applications or their spawn (looking at you, modals) to suddenly appear on top of what I'm currently doing. It can be apps starting as part of "just logged in" routine - "the march of the big" - or some antivirus or VPN info box, excitedly announcing that "the thing it just interrupted you about start was about to start, has now started".
+
+I would suggest that, if I have recently and actively interacted with a window, then that focus/"frontmostness" should be protected, and nothing should be allowed to pop up in front.
+
+What's recently? Idk like a second. 
+Actively? Maybe through keyboard, touch or mouse events, other than hover, because those are hard to avoid
+
+Some actions do come with expectations of focus change, preferably ASAP too. Maybe popping over could be authorized by means of tracing back to the user input that triggered it.
+
+wdyt? 
+(sorry if misflaired)
+--------------------------------------------------
+
+Result 16:
+  ID: 1l4h2wp
+  Score: 0.1881
+  Text: Best portfolios that actually lands you clients? Hi all,
+
+I’m rebuilding my portfolio once again. (Not that I’m focusing too much on that vs. getting clients, I think your work should speak for itself rather than your website layout, but still important imo.)
+
+This time I’m looking for insights on what works. I am fed up w flashy, cool looking websites who doesn’t land clients.
+
+I would like to hear your input on what actually does.
+
+It can be cool looking as well, but please don’t link some flashy stuff that doesnt is over the top.
+
+What are things that actually work, not just in terms of landing web design clients but any type of clients ( primarily digital stuff ) from how the website should be designed to best accommodate that (that’s why I ask here).
+--------------------------------------------------
+
+Result 17:
+  ID: 1l9pjl6
+  Score: 0.187
+  Text: Cursor, I love you but please calm down I noticed this one thing recently where Cursor Agent just keeps running tool calls especially with \`curl\` to "test" what it fixed, and doing a whole bunch to "make sure it all works". I think it may be because somebody thought let's make the users get the best out of their 500 requests a month. For most people sure, pack a whole bunch of maxed out tool calls for each request to get the best bang for a buck. It works I guess. But for me it's just annoying, I don't care if it's one tool call eating up one request. I want to do things efficiently and not worry about how much I'm really spending. So Cursor, while you're improving the system for everybody please also keep us in mind, the ones who are a little less insensitive on the tool call/request ratio. Thanks.
+--------------------------------------------------
+
+Result 18:
+  ID: 1lbdf48
+  Score: 0.1854
+  Text: Unlocking Healthy Eating Would you be interested in using an app that guides you through practicing healthy eating by:
+1. Suggesting optimal nutritious meals from any cuisine of your choice?
+2. Analyzing food items (via scanned images and recipe search) and providing detailed nutritional breakdowns?
+3. Offering personalized meal suggestions for weight management?
+
+📲https://play.google.com/store/apps/details?id=com.radiantglow
+
+Thank you for reading! Your feedback is highly appreciated.
+--------------------------------------------------
+
+Result 19:
+  ID: 1lbcc1q
+  Score: 0.185
+  Text: Cursor vs Windsurf vs Firebase Studio — What’s Your Go-To for Building MVPs Fast? I’m currently building a productivity SaaS (online integrated EdTech platform), and tools that help me *code fast with flow* have become a major priority.
+
+I used to be a big fan of **Cursor,** loved the AI-assisted flow but ever since the recent UX changes and the weird lag on bigger files, I’ve slowly started leaning towards **Windsurf**. Honestly, it’s been super clean and surprisingly good for staying in the zone while building out features fast.
+
+Also hearing chatter about **Firebase Studio** — haven’t tested it yet, but wondering how it stacks up, especially for managing backend + auth without losing momentum.
+
+Curious — what tools are *you all* using for “vibe coding” lately?  
+Would love to hear real-world picks from folks shipping MVPs or building solo/small team products.
+--------------------------------------------------
+
+Result 20:
+  ID: 1jkm95o
+  Score: 0.1843
+  Text: Best mobile apps for UX/UI inspiration? Hi everyone!
+I’m a UX designer working in a digital bank, and part of my job is to keep up with best practices in product design and user experience.
+
+I’m looking for mobile apps that are truly top-tier when it comes to UX and UI — apps that really nail the fundamentals, follow solid design guidelines, and go the extra mile in terms of usability and visual consistency.
+
+Which apps do you consider to be must-follow examples? Bonus points if they’re also great case studies for accessibility, onboarding, or microinteractions.
+
+Thanks in advance!
+--------------------------------------------------
+
+Result 21:
+  ID: 1l7d6x2
+  Score: 0.1814
+  Text: quick rant on the state of customer discovery in 2025 - i will not promote Seems like the state of customer discovery is harder than ever in 2025. 
+
+Some context on me in 2021 I launched my first startup and was able to book time with customers much more easily. Now it seems next to impossible unless you are operating in a very niche field or have pre-existing connections. Most potential customers for most potential businesses are getting spammed non stop on most marketing channels. Anyone else feeling this? If so what are some tips to get around this? I guess just more in-person networking right?
+--------------------------------------------------
+
+Result 22:
+  ID: 1laawu1
+  Score: 0.1798
+  Text: 4 weeks ago we quietly launched Cofound. 180+ devs have joined. 21+ projects posted. Here are some of my favorites. Hey Guys
+
+A few weeks back, we launched [https://cofound.co.in](https://cofound.co.in/), a place for indie hackers, devs, and founders to **co-build side projects**, **find collaborators**, and **support each other without cringe networking.**
+
+We didn’t do a big launch. Just started posting in corners of the internet where cool people hang out. And now 180+ devs have signed up. 21+ projects have been shared, and a few of them seriously blew my mind:
+
+🧠 **A neural net that runs on a TI-84 calculator and autocorrects words**.
+
+🔤 **RadLan**g — a new programming language that blends Go’s simplicity with Python-style DSA, built from scratch with LLVM.
+
+🤖 [**HoverBot.ai**](http://hoverbot.ai/) — turns a small business website into an AI-powered customer support & lead gen system using your own docs.
+
+📈 **MVPBlock**s - a fully open-source, developer-first component library built using Next Js and TailwindCSS, designed to help you launch your MVPs in record time. No bloated packages, no unnecessary installs—just clean, copyable code to plug right into your next big thing.
+
+And more like:
+
+🧠 AI that teaches you IIT JEE with YouTube-style videos + LLM-powered recall exercises
+
+📚 ToonyTales — auto-generate storybooks for kids with their name and favorite things
+
+📈 A ChatGPT wrapper that answers real-time finance and stock questions
+
+🎮 A fan-made indie game inspired by SMG4, built by a remote team of hobbyists
+
+**The vibe is:** Cool & weird tech experiments, Indie games and open-source tools, AI side projects, researchy playgrounds, People building for fun, freedom, or future startups. People come in with raw ideas, offer feedback, ask for help, or just find someone to jam with.
+
+✨ If you’re building something, looking to *join* something, or just wanna hang out with people who ship weird/cool things:
+
+**→** [**https://cofound.co.in**](https://cofound.co.in/)
+
+**We’d love to have you. Feedback welcome, DMs open.**  
+I also do a little feature of the projects I like — ones that deserve more recognition — right on Cofound’s landing page.
+
+**DM me if you’d like to be featured.**
+--------------------------------------------------
+
+Result 23:
+  ID: 1lbcfq4
+  Score: 0.1786
+  Text: Cursor vs Windsurf vs Firebase Studio — What’s Your Go-To for Building MVPs Fast? I’m currently building a productivity SaaS (online integrated EdTech platform), and tools that help me code fast with flow have become a major priority.
+
+I used to be a big fan of Cursor, loved the AI-assisted flow but ever since the recent UX changes and the weird lag on bigger files, I’ve slowly started leaning towards Windsurf. Honestly, it’s been super clean and surprisingly good for staying in the zone while building out features fast.
+
+Also hearing chatter about Firebase Studio — haven’t tested it yet, but wondering how it stacks up, especially for managing backend + auth without losing momentum.
+
+Curious — what tools are you all using for “vibe coding” lately?
+
+Would love to hear real-world picks from folks shipping MVPs or building solo/small team products.
+--------------------------------------------------
+
+Result 24:
+  ID: 1lab3h7
+  Score: 0.177
+  Text: [D] Why does BPR collapse while Triplet Loss shines in my two-tower recommender? # Loss-Centric Summary (Two-Tower Recommender, ≈1 000 items)
+
+|Loss|Setup|Recall @ 10|
+|:-|:-|:-|
+|**TripletMarginLoss** (margin = 0.1)|**L2-normalised**dot-product over   embeddings \*|**≈ 0.37**|
+|**TripletMarginLoss** (margin = 1.0)|same|**≈ 0.10**|
+|**BPR** (log-sigmoid score diff)|same|**≈ 0.10**|
+
+\*I pass **normalised** embeddings into Triplet—conceptually wrong (distance loss wants raw vectors) but it happens to work.
+
+# Working hypotheses
+
+1. **Objective mismatch** \- BPR expects unbounded score gaps, while cosine squeezes them into \[-1, 1\], killing gradients.
+2. **Pair weighting** \- Triplet punishes the hardest negatives; BPR treats all pairs equally.
+3. **Margin as scale knob** \- 0.1 matches cosine range; 1.0 overshoots and wrecks ranking.
+4. **Regularisation overlap** \- L2-norm already constrains vector length; BPR might need temperature scaling or un-normalised embeddings.
+
+# Open questions
+
+* Has anyone rescued **BPR** with cosine scores (e.g., by temperature or score scaling)?
+* For small catalogues with strong hard negatives, is **Triplet/InfoNCE** the safer default now?
+* Any success with **hybrid losses** (Triplet + BPR or softmax-CE)?
+* Other ranking-first losses worth trying in this setting?
+
+Any insights, specially if you’ve made BPR behave under cosine similarity. Thanks!
+--------------------------------------------------
+
+Result 25:
+  ID: 1l74l77
+  Score: 0.1768
+  Text: Tinder X Tripadvisors? Wdyt? i will not promote I discussed startup ideas with my friends, and we came up with an idea combining the swiping feature of Tinder in the travel/vacation space.
+
+I noticed in my admittedly impulsive way of travelling, I get overwhelmed with choices in apps like Google Maps, TripAdvisor, or Instagram. Too much info, too many tabs, too little time.
+
+Then we come up with an idea: an itinerary builder app, but you build an itinerary in an easy way by simply swiping through places that the app recommends. It adapts to your swipes, preferences, and context (budget, time, mood), and user reviews.
+
+We will make it a freemium business model. I'm afraid of falling in love with the idea. What do you guys think?
+--------------------------------------------------
+
+Result 26:
+  ID: 1lbhic0
+  Score: 0.1764
+  Text: Hiring. What website do you use ? 
+
+Looking to hire a reliable and experienced overseas developer who can:
+	•	Monitor my website regularly
+	•	Fix issues immediately if the system goes down
+	•	Update pages or develop new features as needed
+
+Which websites do you recommend for finding trusted developers?
+--------------------------------------------------
+
+Result 27:
+  ID: 1lbccyt
+  Score: 0.1762
+  Text: Cursor vs Windsurf vs Firebase Studio — What’s Your Go-To for Building MVPs Fast? I’m currently building a productivity SaaS (online integrated EdTech platform), and tools that help me code fast with flow have become a major priority.
+
+I used to be a big fan of Cursor, loved the AI-assisted flow but ever since the recent UX changes and the weird lag on bigger files, I’ve slowly started leaning towards Windsurf. Honestly, it’s been super clean and surprisingly good for staying in the zone while building out features fast.
+
+Also hearing chatter about Firebase Studio — haven’t tested it yet, but wondering how it stacks up, especially for managing backend + auth without losing momentum.
+
+Curious — what tools are you all using for “vibe coding” lately?
+
+Would love to hear real-world picks from folks shipping MVPs or building solo/small team products.
+--------------------------------------------------
+
+Result 28:
+  ID: 1lap98m
+  Score: 0.1746
+  Text: Validating social discovery concept - need founder feedback Hey r/Entrepreneur,
+
+I'm finishing building a social discovery app and would love feedback from fellow entrepreneurs on the business opportunity.
+
+**The market problem:** Gen Z is abandoning traditional nightlife (UK loses one club every two days), while 61% say social apps lack authenticity. Venues struggle with digital engagement that translates to real footfall.
+
+**The solution:** Social discovery platform requiring physical venue verification via QR flyers or NFC tags to unlock features. Users build visible gaming profiles through badges and levels earned from matches, check-ins, and social activities. Connection requests are limited to verified users at the same venue. Privacy-first approach shows only profile photos and name initials until users match and exchange three messages, gradually revealing full information.
+
+**Revenue plan:**
+
+* Consumer subscriptions (Free to $50/month tiers)
+* Venue partnerships ($200-1000/month for analytics + engagement tools)
+* Transaction fees from in-app purchases and drink sending
+* Future AR gaming with real-world rewards
+
+**Why this could scale:** Venues get accurate customer data + increased engagement. Users get authentic connections + gamified social experience. Strong network effects once critical mass is reached.
+
+**Questions:**
+
+1. Is the venue partnership sales cycle manageable for a startup?
+2. Can gamification create enough stickiness to compete with big tech?
+3. What's the realistic timeline to prove unit economics?
+4. Any experience monetizing two-sided gaming platforms?
+
+**Biggest risks:**
+
+* Chicken-egg adoption problem
+* User behavior change required
+* Big tech copying the concept once it gains traction
+
+Looking for honest assessment - is this a scalable business or am I chasing a niche? Any insights on similar ventures?
+
+Thanks!
+--------------------------------------------------
+
+Result 29:
+  ID: 1l72400
+  Score: 0.1743
+  Text: What would you advise to someone who is planning a website structure for the first time? I am currently working on a web structure for the project where I'm involved. I am researching different websites that could be a reference and inspiration regarding design. I've already started by creating a map of each page we need in Figma, what should be included and how pages are related to the homepage. How do I make sure it is easy to navigate, planned properly, and homepage makes a great preview of all other pages?
+--------------------------------------------------
+
+Result 30:
+  ID: 1lajks9
+  Score: 0.1739
+  Text: Are the quotes I'm getting reasonable? Hi everyone. I'm looking for my site to be redesigned and reached out to a number of different companies. 
+
+I've received quotes in the $4,000-$8,000 range, and a couple in the $13,000 to $17,000 range. The $4k-$8k quotes say they're doing custom design, and the $13k-$17k quotes say those guys claim they're doing custom design, but are in reality just customizing templates, while their sites will be coded from the ground up, and involve weeks of brand analysis and planning beforehand. 
+
+Here is the quote request email I sent the companies as an outline. Our SEO account manager and marketing lead provided many of the points to include in this email. If anyone can offer feedback here to help orient me to the approximate cost and help me understand the spectrum of "template" to "customized template" to "fully custom" it would be appreciated:
+
+Hello,   
+  
+We're a modern (healthcare business) looking for a team to help us redesign our website. You can find us at our current website (link)  
+  
+Are you able to provide a quote based on the following?  
+  
+**Our Priorities**
+
+1. **Site architecture needs to be clear.** We're looking for someone SEO informed who can create a well organized structure that's friendly to both users and crawlers. Strong consideration for indexing in design, e.g. consider Java in FAQ sections, LazyLoad preventing info from appearing fast enough for crawlers to find and index it, etc  
+2. **Site performance must be high.** Design is intentional to achieve goals while not including anything unnecessary.   
+3. **UX must be strong**, with a design that presents information well and leads to conversion. Conversion is essential, pages must be designed to convert.  
+4. **Mobile optimized design**. 70% of our traffic is now from mobile, the entire site must work flawlessly, maintain great UX, and maintain strong conversion on mobile devices.   
+5. **We'd like to work with intuitive designers**. It's a bonus if we work with someone who has prior experience designing healthcare service business sites, but not mandatory. We want developers who suggest things we haven't considered. E.g. If you see several blogs on the topic of \[topic\], you proactively suggest creating the option to filter blogs by \[that topic\].  
+6. **Each of our team members is presented as an expert.** With the rising importance of authority, we want people on our site to see each of our providers as an expert. Personal profiles are well done, training and education emphasized, social proof is used, photos and videos featured, socials are featured and linked, any high domain authority links are considered.   
+7. **Design is user friendly and easy to update**. I must be able to duplicate page templates and fill in content to generate new pages, or add blog posts. "Easy to update" in this case means no coding is required. 
+
+**Scope of Work**  
+**We need the following pages:**
+
+1. Home
+2. About Us
+3. Team
+4. Blog
+5. Contact Us
+
+**We need the following page templates:**  
+  
+We would like the following templates, which our team of licensed medical professionals will populate with content and an expert voice. 
+
+1.  Blog Post (*Must be a sharp design to build trust. Unstyled article templates look basic and spammy, we want something on brand that's custom designed, and all we need to do to create new posts is tweak H1s, pictures, video, etc.*)  
+2. Services Page (*A service page template would mean a page describing our services that we can clone and enter new information and media into. E.g. "Service 1"  page can be cloned and edited with "Service 2" info or "Service 3" info*)  
+3. Concerns Page (*Similar to above, but for concerns. E.g. "Health Issue" can be cloned and edited to cover "Health Issue 2" or "Health Issue 3"*)  
+4. Treatment Types (*Similar to above, but for treatment types. E.g. "Treatment Method 1" or "Treatment Method 2"*)  
+5. Team Member Profiles (*One of the most frequented pages. Must cover basics of what populations they work with, a bit about them, what ages they see, what their expertise is, and so on. Presentation wise think less stuffy law firm bios and more well known doctor/author/speaker bios*)  
+
+**Example Sites**  
+  
+(5 example sites from our industry)
+
+Please let me know the next steps from here. 
+
+Thanks in advance,
+--------------------------------------------------
+
+Result 31:
+  ID: 1l8sq7k
+  Score: 0.1738
+  Text: What’s the most underrated UX research method you’ve used? I’ve been stuck in the same usability testing patterns for a while, mostly unmoderated video and post-task surveys.
+Curious what less-common methods others are using that actually yield useful insights. Bonus if it’s something scrappy or low-cost!
+--------------------------------------------------
+
+Result 32:
+  ID: 1lbims8
+  Score: 0.1728
+  Text: how an SF series b startup teaches Cursor to remember every code review comment talked to some engineers at parabola (data automation company) and they showed me this workflow that's honestly pretty clever. 
+
+instead of repeating the same code review comments over and over, they write "cursor rules" that teach the ai to automatically avoid those patterns. 
+
+basically works like this: every time someone leaves a code review comment like "hey we use our orm helper here, not raw sql" or "remember to preserve comments when refactoring", they turn it into a plain english rule that cursor follows automatically. 
+
+**couple examples they shared:**
+
+    Comment Rules: when doing a large change or refactoring, try to retain comments, possibly revising them, or matching the same level of commentary to describe the new systems you're building
+    
+    Package Usage: If you're adding a new package, think to yourself, "can I reuse an existing package instead" (Especially if it's for testing, or internal-only purposes)
+
+the rules go in a .cursorrules file in the repo root and apply to all ai-generated code. 
+
+after \~10 prs they said they have this collection of team wisdom that new ai code automatically follows. 
+
+**what's cool about it:** 
+
+**-** catches the "we don't do it that way here" stuff 
+
+\- knowledge doesn't disappear when people leave
+
+\- way easier than writing custom linter rules for subjective stuff 
+
+**downsides:** 
+
+\- only works if everyone uses cursor (or you maintain multiple rule formats for different ides) 
+
+\- rules can get messy without discipline
+
+\- still need regular code review, just less repetitive 
+
+tried it on my own project and honestly it's pretty satisfying watching the ai avoid mistakes that used to require manual comments. 
+
+not groundbreaking but definitely useful if your team already uses cursor. 
+
+anyone else doing something similar? curious what rules have been most effective for other teams.
+--------------------------------------------------
+
+Result 33:
+  ID: 1la8qmc
+  Score: 0.1726
+  Text: Which languages are you using the most in industry? What are the top programming languages you personally use or commonly see used in the industry today? If possible, could you rank your top 5 based on usage or demand?
+--------------------------------------------------
+
+Result 34:
+  ID: 1laimic
+  Score: 0.1725
+  Text: Why are some early developer and foundera building projects on CollabCY while others are still “networking”? Hey. 
+We kept seeing it happen — people with good ideas stuck because:
+~ they couldn’t find a cofounder or teammate
+~ they were tired of awkward networking groups + endless DMs
+~they wanted to build, not just talk
+
+So we made CollabCY — a space where:
+• students, grads & early founders post side projects, startup ideas, or gigs
+• others join based on skills, interests, or just curiosity
+•people actually team up to build, without the cringe networking part
+
+ members joining so far
+
+
+👀 Who should check it out?
+• You’ve got an idea but need collaborators / co founder 
+• You want to join a project to gain experience / build your portfolio
+• You’re done “networking” and want to actually build
+
+Would love to hear your thoughts, feedback — or see what you’re working on!
+
+Link in comment
+--------------------------------------------------
+
+Result 35:
+  ID: 1l69ib0
+  Score: 0.1724
+  Text: Multinational corporation loved the product, wanted me to come to their office to present in person, then ghosted when they found out I was one person I frequently post examples of what my business does on LinkedIn and I recently got a connection request from the director of an international restaurant chain, that you would all likely have heard of. I sent him some example analysis in my first message and he said that he saw my post and was looking for a solution like this.
+
+We then had a video call where I went through some example analysis of 25 of their locations, they have hundreds of locations in my country. There were a few other people from the team on the call with this person.
+
+I went through the product, we discussed ideas and potential feature requests and they said that they were looking to partner with someone to develop a product that suits their needs, which I said that I could do. They then asked about my personal background, trying to get to know me. I was fully honest and said that I was an engineer, then business development person, then taught myself programming in the last year, then came up with the idea and built the product.
+
+They were impressed by the product and said that they wanted me to come to their office in person at a specific date and time next week and they would send me the address (I found it online anyway). They also requested some additional features and asked if I could analyse more of their locations for the meeting. I did all of this, spending a couple days working on this (it benefited the product as well) and spending my own money to run the analysis, tokens are not cheap. But then they ghosted me, I sent them some sample analysis on email, messaged on LinkedIn and also phoned their office on the day of the supposed meeting to get clarification on if it was going ahead.
+
+Completely ghosted, which I thought was extremely disrespectful. The only guess that I have as to why is that they saw me as 1 person, unestablished business, which is true. But, my product is all automated, it works, also I can build quicker than any large established business and of course I have basically no overheads.
+
+I remember from my previous job in business development at a medium sized company that our managing director said that we can present ourselves to be as large as we want to be, not lying, but by how we present the company and conduct ourselves, e.g. when talking to large corporations. In future, I will not be so open and forthcoming with my exact personal details and maybe present it in a better way, I could even say that some of my friends and family members, who I do consult, are part of the company.
+
+Honestly, I don't think that the average person understands how much you can do by leveraging the tools available today. I don't need a team of developers, an HR person, an accounts team. Everything is automated and I can code a product and new features 10x faster than established companies. The product is pretty simple, it's a monthly subscription so if they don't like it then they can stop paying. I can even refund people if they really have a problem with it.
+--------------------------------------------------
+
+Result 36:
+  ID: 1lajizm
+  Score: 0.172
+  Text: Are the quotes I'm getting reasonable? Hi everyone. I'm looking for my site to be redesigned and reached out to a number of different companies.
+
+I've received quotes in the $4,000-$8,000 range, and a couple in the $13,000 to $17,000 range. The $4k-$8k quotes say they're doing custom design, and the $13k-$17k quotes say those guys claim they're doing custom design, but are in reality just customizing templates, while their sites will be coded from the ground up, and involve weeks of brand analysis and planning beforehand.
+
+Here is the quote request email I sent the companies as an outline. Our SEO account manager and marketing lead provided many of the points to include in this email. If anyone can offer feedback here to help orient me to the approximate cost and help me understand the spectrum of "template" to "customized template" to "fully custom" it would be appreciated:
+
+Hello,
+
+We're a modern (healthcare business) looking for a team to help us redesign our website. You can find us at our current website (link)
+
+Are you able to provide a quote based on the following?
+
+**Our Priorities**
+
+1. **Site architecture needs to be clear.** We're looking for someone SEO informed who can create a well organized structure that's friendly to both users and crawlers. Strong consideration for indexing in design, e.g. consider Java in FAQ sections, LazyLoad preventing info from appearing fast enough for crawlers to find and index it, etc
+2. **Site performance must be high.** Design is intentional to achieve goals while not including anything unnecessary. 
+3. **UX must be strong**, with a design that presents information well and leads to conversion. Conversion is essential, pages must be designed to convert.
+4. **Mobile optimized design**. 70% of our traffic is now from mobile, the entire site must work flawlessly, maintain great UX, and maintain strong conversion on mobile devices. 
+5. **We'd like to work with intuitive designers**. It's a bonus if we work with someone who has prior experience designing healthcare service business sites, but not mandatory. We want developers who suggest things we haven't considered. E.g. If you see several blogs on the topic of \[topic\], you proactively suggest creating the option to filter blogs by \[that topic\].
+6. **Each of our team members is presented as an expert.** With the rising importance of authority, we want people on our site to see each of our providers as an expert. Personal profiles are well done, training and education emphasized, social proof is used, photos and videos featured, socials are featured and linked, any high domain authority links are considered. 
+7. **Design is user friendly and easy to update**. I must be able to duplicate page templates and fill in content to generate new pages, or add blog posts. "Easy to update" in this case means no coding is required. 
+
+**Scope of Work**  
+**We need the following pages:**
+
+1. Home
+2. About Us
+3. Team
+4. Blog
+5. Contact Us
+
+**We need the following page templates:**
+
+We would like the following templates, which our team of licensed medical professionals will populate with content and an expert voice. 
+
+1.  Blog Post (*Must be a sharp design to build trust. Unstyled article templates look basic and spammy, we want something on brand that's custom designed, and all we need to do to create new posts is tweak H1s, pictures, video, etc.*)
+2. Services Page (*A service page template would mean a page describing our services that we can clone and enter new information and media into. E.g. "Service 1"  page can be cloned and edited with "Service 2" info or "Service 3" info*)
+3. Concerns Page (*Similar to above, but for concerns. E.g. "Health Issue" can be cloned and edited to cover "Health Issue 2" or "Health Issue 3"*)
+4. Treatment Types (*Similar to above, but for treatment types. E.g. "Treatment Method 1" or "Treatment Method 2"*)
+5. Team Member Profiles (*One of the most frequented pages. Must cover basics of what populations they work with, a bit about them, what ages they see, what their expertise is, and so on. Presentation wise think less stuffy law firm bios and more well known doctor/author/speaker bios*)
+
+**Example Sites**
+
+(5 example sites from our industry)
+
+Please let me know the next steps from here. 
+
+Thanks in advance,
+--------------------------------------------------
+
+Result 37:
+  ID: 1lain23
+  Score: 0.1694
+  Text: If you are using AI to make your landing page - READ THIS A little bit of context so that things don't go out of proportion.
+
+**Who am I?**
+
+I'm a brand director with +10 years of experience working with tech companies and I'm focused on strategic and data-driven growth. I work closely with startups, entrepreneurs, and businesses to bridge the gap between design and business growth. From my previous experiences working for big brands to 50+ early-stage startups. Pre-seed ideas to post-series A scaleups. I’ve helped founders refine their brand, product, and user experience for focused growth when it matters the most.
+
+**What's my purpose here?**
+
+Since I've been making landing page reviews are 90% of those are AI-generated with v0, lovable, replit or bolt I decided to make this to help you crafting better and different websites from your competition.
+
+**That's all for now!**
+--------------------------------------------------
+
+Result 38:
+  ID: 1l7ljtq
+  Score: 0.1674
+  Text: Any Fractional CTOs here, how do you prefer to get discovered by startups? I will not promote I’ve been talking to indie hackers and early-stage founders and fractional CTOs lately, and there’s a weird disconnect that keeps coming up. Startups often don’t know *where* to find part-time technical leadership. And on the flip side, freelance devs or fractional CTOs seem to rely mostly on inbound referrals or DMs.. So If you’ve done fractional CTO/advisory/tech lead work:
+
+1. How do startups usually approach you?
+2. Do you post your availability anywhere?
+3. Do you work with early-stage startups or mid-sized companies as well?
+4. What makes you say yes to a short term tech-gig?
+--------------------------------------------------
+
+Result 39:
+  ID: 1lbgg7p
+  Score: 0.1668
+  Text: [D] Could we improve accuracy by training a task specific embeddings model from scratch? We use embeddings as a solution for scaling up a lot of complex tasks. Categorizations, similarity (complex documents), clustering, etc. Accuracy isn't great but it let's us do a lot of work very cheaply.
+
+We've ran some experiments on fine-tuning an embeddings model to improve accuracy but the gains were minimal. We know we can get this higher accuracy with larger models, 7B is much better but that's much slower and more expensive then what we see with a 500M model.
+
+We've been debating if the disparity of tasks that most models are trained on is one of the limiting factors to accuracy. Does the model need learn multiple tasks or will it improve if we keep it focused on one narrowly defined (although complex) task. 
+
+We have millions of examples that we can use for training. Which leaves us wondering can we get past the 70% accuracy we're seeing today with the best OWM. We train our own models all the time but we haven't built an embeddings model from scratch. Would really love to hear from someone who has.
+
+Also if you have depth of knowledge with embeddings or other models like rerankers and have other recommendations would love to hear those as well.
+
+Thanks!
+--------------------------------------------------
+
+Result 40:
+  ID: 1l8yva7
+  Score: 0.1667
+  Text: cursor users: stop letting it learn from random code. use "gold standard files" instead so i was talking to this engineer from a series B startup in SF (Pallet) and he told me about this cursor technique that actually fixed their ai code quality issues. thought you guys might find it useful.
+
+basically instead of letting cursor learn from random internet code, you show it examples of your actual good code. they call it "gold standard files."
+
+**how it works:**
+
+1. pick your best controller file, service file, test file (whatever patterns you use)
+2. reference them directly in your \`.cursorrules\` file
+3. tell cursor to follow those patterns exactly
+
+here's what their cursor rules looks like:
+
+    You are an expert software engineer. 
+    Reference these gold standard files for patterns:
+    - Controllers: /src/controllers/orders.controller.ts
+    - Services: /src/services/orders.service.ts  
+    - Tests: /src/tests/orders.test.ts
+    
+    Follow these patterns exactly. Don't change existing implementations unless asked.
+    Use our existing utilities instead of writing new ones.
+
+**what changes:**
+
+the ai stops pulling random patterns from github and starts following *your* patterns, which means:
+
+* new ai code looks like their senior engineers wrote it
+* dev velocity increased without sacrificing quality
+* code consistency improved
+
+**practical tips:**
+
+* start with one pattern (like api endpoints), add more later
+* don't overprovide context - too many instructions confuse the ai
+* share your cursor rules file with the whole team via git
+* pick files that were manually written by your best engineers
+
+**the key insight:** "don't let ai guess what good code looks like. show it explicitly."
+
+anyone else tried something like this? curious about other cursor workflow improvements.
+
+EDIT: Wow this post is blowing up! I wrote a longer version on my blog: [https://nmn.gl/blog/cursor-ai-gold-files](https://nmn.gl/blog/cursor-ai-gold-files)
+--------------------------------------------------
+
+Result 41:
+  ID: 1k12bqi
+  Score: 0.1663
+  Text: How do you encourage users to complete high-effort, high-impact parts of a product? We’re working on a new platform for job seekers: one where your *story* matters more than just keywords on a resume. Users can record a short video or audio intro and answer prompts to show who they are.
+
+Some users jump right in, complete their profiles, and stand out. But most just leave the auto-generated content as-is and never engage with the main feature, even though it’s the whole point of the product.
+
+We’re trying to figure out how to bridge that gap:
+
+* How do we make users *understand the value* before they drop off?
+* Are progress bars, checklists, or preview mockups effective here?
+* Or is this a targeting problem (e.g., we’re not reaching the right people)?
+
+If you've worked on products that require more user effort upfront, how did you nudge or guide people through it?
+
+Would love to hear your thoughts 🙏
+--------------------------------------------------
+
+Result 42:
+  ID: 1l7cqy3
+  Score: 0.1662
+  Text: These are the tech decisions that will make or break your startup (I will not promote) Tech Lead of multiple startup’s and built systems for 80+ products . These early tech choices matter the most 
+
+- You can scale later but always think scaling product from Day 1
+
+-  Bugs should always be resolved in urgency 
+
+- Scale problems are almost all code problems
+
+- Monolith over micro services initially ( That’s what Uber did )
+
+- Use third party apps for payment , auth, email notifications 
+
+- Monitoring data should start from Day 1 ( Datadog/Sentry )
+
+- Over optimisation of code leads to no where 
+
+
+The $25k mistake : One client built entire backend 2 times , Would have been profitable 5 months earlier if choices were made right
+
+What tech decisions are you struggling with ? Happy to share specific advice
+--------------------------------------------------
+
+Result 43:
+  ID: 1l8afi2
+  Score: 0.1661
+  Text: I want to make another one of those posts like “you’re stuck on an 8 hour flight. Where are you sitting”? & ask for a recommendation for a better overlay image website than the one I used to use. Example: https://www.reddit.com/r/madmen/comments/1h70f4x/youre_stuck_on_an_8_hour_flight_where_are_
+--------------------------------------------------
+
+Result 44:
+  ID: 1l7r5h4
+  Score: 0.166
+  Text: Tech talent in remote-first setups, i will not promote Hi guys,
+
+After several hiring cycles in a remote-first setup, I've noticed a recurring issue: great candidates sometimes get filtered out too early in the screening phase, while other times, too much time is spent engaging candidates who turn out to be a poor fit.
+
+At first, I thought this was just a recruiting agency issue, but it feels more like a systemic flaw in how remote hiring works. Add in AI-generated resumes, portfolios, and even interview answers, and it's getting harder to tell what’s real - especially without the nuance of in-person interaction.
+
+Curious how other founders or early-stage teams are handling this. How do you evaluate candidates and their work in a distributed environment? Would appreciate any insights or frameworks you've found useful.
+
+
+
+1. How often do you encounter candidates who misrepresent their skills or experience?
+2. What's the cost (time or money) of interviewing or hiring someone who ends up being underqualified or dishonest?
+3. Do you trust resumes and portfolios as they are today? Why or why not?
+4. How appealing would it be if candidates were pre-vetted using a mix of AI tools and trusted experienced developers before they got to you?
+5. Would you trust candidates more if they could prove they had real access to a project's live site - like showing a simple, technical way to confirm they actually worked on it?
+6. Would you pay to access verified, reviewed, hire-ready candidates? If so, how much feels fair (per hire or per month)?
+7. How does this compare to services you already use (LinkedIn, job boards, ATS, etc.)?
+
+
+
+Thanks, i will not promote
+--------------------------------------------------
+
+Result 45:
+  ID: 1ix75oi
+  Score: 0.1653
+  Text: Introducing the “Certified Driver” Flair We’re excited to roll out our new flair: **Certified Driver**. In short, it's our way of slapping a stamp on specific users that tells the rest of the community "this person is a trusted resource".
+
+A Certified Driver is someone who is dedicated to actively sharing their ups and downs throughout their entrepreneurial journey. It’s all about posting genuine, useful write-ups that help both you and others navigate the journey.
+
+  
+
+
+**What will a Certified Driver do?**
+
+• **Monthly Write-Up:**
+
+Certified Drivers will post at least one detailed write-up each month about their entrepreneurial journey. These posts should highlight the challenges, wins, and lessons learned. Certified Drivers will also include links to their previous posts so we can see how their ride has progressed.
+
+• **Quality & Authenticity:**
+
+Certified Drivers will post content that’s thoughtful and real. No fluff intended for quick links.
+
+• **Community Engagement:**
+
+Certified Drivers will hopefully not just post, but comment as well - jumping into discussions, offering advice, and supporting their fellow entrepreneurs.
+
+  
+
+
+**How to Apply**
+
+If you’re ready to earn the Certified Driver flair, just send us a modmail with:
+
+• A brief explanation of who you are and what you do.
+
+• The full text of your first journey post.
+
+Our moderators will review your submission and hand out the Certified Driver tags accordingly.
+
+We’re looking forward to seeing your stories and celebrating your ride along!
+--------------------------------------------------
+
+Result 46:
+  ID: 1l8tqr8
+  Score: 0.1643
+  Text: LockedIn AI vs Cluely : Which is Better Software? I Asked ChatGPT and Here's the Response When comparing **LockedIn AI** and **Cluely**, it's essential to consider their intended purposes, features, and user experiences to determine which aligns better with your needs.
+
+# Purpose & Use Cases
+
+* **LockedIn AI**: Designed as a comprehensive interview and career preparation tool, it assists users in real-time during interviews, coding assessments, and professional meetings.
+* **Cluely**: Marketed as a "cheating tool for literally everything," Cluely aims to provide real-time assistance during virtual interactions by analyzing screen content and audio to suggest responses. 
+
+# Features & Performance
+
+# LockedIn AI
+
+* **Real-Time Feedback**: Offers instant, tailored responses during live interactions, including behavioral and technical interviews.
+* **Dual-Layer AI System**: Utilizes both an AI Copilot and an AI Coach for comprehensive support.
+* **Coding Assistance**: Provides real-time analysis and suggestions for coding problems, including line-by-line explanations and time complexity analysis.
+* **Resume Optimization**: Includes an AI-driven resume builder that enhances resumes to meet Applicant Tracking System (ATS) standards. 
+* **Multilingual Support**: Facilitates communication in 42 languages, accommodating a global user base. 
+* **Platform Compatibility**: Integrates with major video conferencing platforms like Zoom, Google Meet, and Microsoft Teams. 
+* **User Feedback**: Generally positive, with users praising its realistic mock interviews and personalized feedback. However, some mention occasional slow AI response times and technical glitches. 
+
+# Cluely
+
+* **Real-Time Assistance**: Analyzes screen content and audio to suggest responses during virtual interactions.
+* **Performance Issues**: Users have reported significant shortcomings, including slow response times, technical glitches, and awkward interactions that made its use conspicuous and distracting. 
+* **Privacy Concerns**: The app has sparked privacy and ethical concerns due to its capabilities and potential misuse.
+* **User Feedback**: While it has attracted a large user base, real-world testing revealed that Cluely's performance often fell short of expectations, leading to doubts about its effectiveness in professional settings. 
+
+# Pricing
+
+* **LockedIn AI**: Offers flexible subscription plans, including a free plan with 10 minutes of service daily. Premium plans start at $54.99 per month, providing enhanced features and extended usage. 
+* **Cluely**: Details on pricing are not explicitly mentioned in the provided sources.
+
+# Verdict
+
+[LockedIn AI](https://www.lockedinai.com/) stands out as a reliable and comprehensive tool for interview preparation and career advancement, offering real-time feedback, coding assistance, resume optimization, and multilingual support. Its integration with major video conferencing platforms and positive user feedback further solidify its position as a top choice for professionals seeking to enhance their interview performance.
+
+[Cluely](https://cluely.com/), on the other hand, while innovative in its approach, faces challenges related to performance issues, privacy concerns, and ethical considerations. Users have reported that its real-world effectiveness often does not meet expectations, making it a less reliable option for professional settings.
+
+In conclusion, for those seeking a robust and trustworthy tool for interview preparation and career development, **LockedIn AI** is the recommended choice.
+--------------------------------------------------
+
+Result 47:
+  ID: 1jb2lsq
+  Score: 0.1634
+  Text: What Makes a Car Configurator Actually Good? **Update:** Thanks for all the comments, I've curated all the recommendations on this blog post by updating it, you can check it out [here](https://vagon.io/blog/best-car-configurators-and-how-to-boost-your-sales-conversions?utm_source=reddit&utm_medium=cm&utm_campaign=vg1).
+
+Car configurators are everywhere now, but a lot of them feel clunky or just don’t seem to help with actual buying decisions. Some are super detailed with 3D views and customization, while others feel outdated and frustrating to use.
+
+What do you think makes a **good** car configurator? Is it the visuals, the ease of use, or something else? I’m planning to put all this knowledge together and create a blog post, so I’d love to hear your thoughts. What are the best and worst ones you’ve used?
+--------------------------------------------------
+
+Result 48:
+  ID: 1lbnhws
+  Score: 0.1629
+  Text: Hot take: Documentation SHOULDN'T be your main learning resource I understand that documentation pretty much has everything you could ever want to know about a certain technology, but I personally HATE learning through documentation.
+
+I never understood the advice of, "just read the documentation",  SPECIFICALLY towards beginners. Never worked for me. I feel like I've learned better and more effectively through having a MAIN course for something I want to learn and documentation as a SIDE-RESOURCE that I use to refresh my memory or learn new concepts quickly for a technology I'm already comfortable with. I want to learn the bigger picture, not just learn the modules in Node, and I feel like courses are great at explaining WHY something works and in what situations it is best in. I believe this is why I've enjoyed The Odin Project so much even though they heavily push on reading documentation. They don't just send you the link to JavaScript.info and tell you to read the whole thing, they give you little bits and pieces from the website and other websites for you to learn that specific concept and in their article they teach you the bigger picture of why you're even learning said concept and why the resources they're linking are good resources.
+
+Now, this is not to say that MDN, JavaScript.info, W3Schools and other websites are bad resources. I just feel like if my friend tells me tomorrow, "Hey I want to learn HTML". I wouldn't just tell them to download VSCode and read W3Schools. I'd give them different options like freeCodeCamp, programming with mosh's video, udemy courses, etc, and then they can read MDN to refresh their memory or revise new concepts. Or I'd ask them what their preferred method of learning is and we go from there.
+
+At the end of the day, not everyone is going to feel comfortable learning the same way. Which is why we should keep that in mind and not tell the beginner, "just dive in and read MDN when you get lost". I feel like a lot of documentation out there isn't very beginner friendly, or doesn't go slow enough for that person to grasp the why's and how's of that technology.
+--------------------------------------------------
+
+Result 49:
+  ID: 1l9l86m
+  Score: 0.1613
+  Text: [D] Are GNNs/GCNs dead ? Before the LLMs era, it seems it could be useful or justifiable to apply GNNs/GCNs to domains like molecular science, social network analyasis etc.  but now... everything is LLMs-based approaches. Are these approaches still promising at all?
+--------------------------------------------------
+
+Result 50:
+  ID: 1lbfjjt
+  Score: 0.1612
+  Text: Any books you guys have read that are a must? (I will not promote) I will not promote. 
+
+Have you guys read any books that you feel like are a must read or a definite recommend? Don’t care if you’re small business, corp, investor, founder etc. 
+
+Just looking for good recommendations that could inspire or help with the creative process. Would love to hear any stories on how that book was recommended to you and what it did for your own journey. Tech space related books would be even more appreciated.
+--------------------------------------------------
+
