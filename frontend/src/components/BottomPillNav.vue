@@ -655,10 +655,10 @@ function previewVoice(voice) {
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(8px);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   z-index: 2000;
-  padding: 2rem 1rem 6rem 1rem;
+  padding: 1rem 1rem 8rem 1rem;
   box-sizing: border-box;
   overflow-y: auto;
 }
@@ -671,9 +671,9 @@ function previewVoice(voice) {
   padding: 1.5rem;
   max-width: 480px;
   width: 100%;
-  max-height: calc(100vh - 8rem);
+  max-height: calc(100vh - 9rem);
   overflow-y: auto;
-  margin-top: 2rem;
+  margin-bottom: 2rem;
   box-shadow: 
     0 20px 48px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -925,15 +925,15 @@ function previewVoice(voice) {
 /* Responsive Design */
 @media (max-width: 768px) {
   .settings-overlay {
-    padding: 1rem 0.5rem 5rem 0.5rem;
+    padding: 0.5rem 0.5rem 6rem 0.5rem;
   }
   
   .settings-modal {
     padding: 1.25rem;
-    max-height: calc(100vh - 6rem);
+    max-height: calc(100vh - 7rem);
     max-width: 95%;
     border-radius: 16px;
-    margin-top: 1rem;
+    margin-bottom: 1.5rem;
   }
   
   .settings-header {
@@ -966,14 +966,14 @@ function previewVoice(voice) {
 /* Extra small devices */
 @media (max-width: 480px) {
   .settings-overlay {
-    padding: 0.75rem 0.25rem 4.5rem 0.25rem;
+    padding: 0.25rem 0.25rem 5.5rem 0.25rem;
   }
   
   .settings-modal {
     padding: 1rem;
-    max-height: calc(100vh - 5rem);
+    max-height: calc(100vh - 6rem);
     max-width: 98%;
-    margin-top: 0.5rem;
+    margin-bottom: 1rem;
   }
   
   .settings-title {
