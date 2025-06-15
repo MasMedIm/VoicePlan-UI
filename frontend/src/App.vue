@@ -1,5 +1,6 @@
 <template>
   <div class="app-container" :class="{ dark: isDark }">
+    <img class="app-logo" :src="logoSrc" alt="Gullie logo" />
     <!-- Optional auth stub (kept for future) -->
     <div v-if="!isAuthenticated" class="login-container">
           <h2>Welcome Back</h2>
@@ -37,9 +38,9 @@
           :disabled="rtcStatus === 'connecting'"
         >
           <span class="mic-icon">🎙️</span>
+          <div v-if="btnState === 'state-user'" class="orb-overlay"></div>
         </button>
-        <span class="state-pill">{{ stateLabel }}</span>
-        <div v-if="btnState === 'state-user'" class="orb-overlay" />
+        <span class="state-pill" :class="btnState">{{ stateLabel }}</span>
       </div>
       <!-- Theme toggle -->
       <button class="theme-toggle" @click="toggleTheme">
@@ -72,6 +73,8 @@
 
 <script setup>
 import { ref, watch, onMounted, computed } from "vue";
+import logoBlack from "../assets/gullie-black-logo.png";
+import logoWhite from "../assets/gullie-white-logo-BUEVdQi7.png";
 import { useRealtime } from "./composables/useRealtime.js";
 import { useUiStore } from "./composables/useUiStore.js";
 import CardBasic from "./components/CardBasic.vue";
@@ -106,6 +109,26 @@ const btnState = computed(() => {
     return 'state-live';
   }
   return 'state-idle';
+});
+
+// ---------------------------------------------------------------------------
+// Human-readable status text for pill
+// ---------------------------------------------------------------------------
+const logoSrc = computed(() => isDark.value ? logoWhite : logoBlack);
+
+const stateLabel = computed(() => {
+  switch (btnState.value) {
+    case 'state-connecting':
+      return 'Connecting';
+    case 'state-live':
+      return 'Connected';
+    case 'state-user':
+      return 'You';
+    case 'state-assistant':
+      return 'Assistant';
+    default:
+      return 'Disconnected';
+  }
 });
 
 // Registry of component kinds → Vue component
@@ -194,6 +217,16 @@ html, body, #app {
   bottom: 0;
 }
 
+.app-logo {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  width: 100px;
+  height: auto;
+  z-index: 1200;
+  pointer-events: none;
+}
+
 .app-container {
   display: flex;
   flex-direction: column;
@@ -222,22 +255,19 @@ html, body, #app {
   left: 50%;
   transform: translateX(-50%);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   z-index: 1100;
 }
 
 .connect-btn {
-  position: fixed;
-  position: fixed;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
   width: 60px;
   height: 60px;
   font-size: 1.5rem;
   padding: 0;
-  background-color: #ff8800;
+  background-color: transparent;
   color: #fff;
   border: none;
   border-radius: 50%;
@@ -254,18 +284,41 @@ html, body, #app {
 }
 
 /* -------------------- Connect button states -------------------- */
-.state-idle {
+
+/* Ensure container never shows colored background */
+.mic-container.state-idle,
+.mic-container.state-connecting,
+.mic-container.state-live,
+.mic-container.state-user,
+.mic-container.state-assistant {
+  background: transparent;
+}
+
+/* Color / animation on button instead */
+.state-idle .connect-btn {
   background-color: #ff8800;
 }
-
-.state-live {
-  background-color: #22c55e;
-}
-
-.state-connecting {
+.state-connecting .connect-btn {
   background-color: #eab308;
   animation: pulse 1.2s infinite;
 }
+.state-live .connect-btn {
+  background-color: #22c55e;
+}
+.state-user .connect-btn {
+  background: transparent;
+}
+.state-user .mic-icon { display:none; }
+.state-assistant .connect-btn {
+  background: #3b82f6;
+  animation: wave 1.4s infinite ease-in-out;
+}
+
+.state-idle { background: transparent; }
+
+.state-live { background: transparent; }
+
+.state-connecting { background: transparent; }
 
 .state-user {
   background: transparent;
@@ -275,17 +328,16 @@ html, body, #app {
 
 .orb-overlay {
   position: absolute;
-  top: -80px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120px;
-  height: 120px;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
   border-radius: 50%;
   background: radial-gradient(circle at 50% 50%, #3ef1ff, #0062ff, #fd3fe3);
   box-shadow: 0 0 20px rgba(255,255,255,0.3), 0 0 60px rgba(123,0,255,0.5);
   animation: spin 6s linear infinite;
   pointer-events:none;
-  z-index: -1;
+  z-index: 0;
 }
 .orb-overlay::before,
 .orb-overlay::after {
@@ -306,9 +358,14 @@ html, body, #app {
 }
 
 .state-pill {
+  margin-top: 2px;
+  padding: 4px 14px;
+  text-align: center;
+  border-radius: 9999px;
+  min-width: auto;
   background: var(--card-bg, #fff);
   color: var(--text-color, #111);
-  font-size: 0.75rem;
+  font-size: 0.45rem;
   padding: 4px 8px;
   border-radius: 9999px;
   box-shadow: 0 0 2px rgba(0,0,0,0.2);
