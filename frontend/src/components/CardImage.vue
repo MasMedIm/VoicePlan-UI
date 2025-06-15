@@ -44,17 +44,18 @@ function open() { emit('open'); }
 
 <style scoped>
 .image-card {
-  height: 100%;
+  height: fit-content;
   width: 100%;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--card-border-color);
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--card-bg);
   overflow: hidden;
   position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  min-height: fit-content;
 }
 
 .image-card:hover {
@@ -71,24 +72,28 @@ function open() { emit('open'); }
   background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
 }
 
-/* Dynamic height based on mosaic size */
+/* Dynamic height based on mosaic size - More aggressive sizing */
+.mosaic-item-micro .image-container {
+  height: 25px;
+}
+
 .mosaic-item-tiny .image-container {
-  height: 40px;
+  height: 30px;
 }
 
 .mosaic-item-small .image-container {
-  height: 50px;
+  height: 35px;
 }
 
 .mosaic-item-medium .image-container,
 .mosaic-item-square .image-container {
-  height: 80px;
+  height: 50px;
 }
 
 .mosaic-item-large .image-container,
 .mosaic-item-wide .image-container,
 .mosaic-item-xl .image-container {
-  height: 100px;
+  height: 60px;
 }
 
 .card-image {
@@ -139,30 +144,32 @@ function open() { emit('open'); }
 
 .card-content {
   flex: 1;
-  padding: 0.75rem;
+  padding: 0.5rem;
   display: flex;
   flex-direction: column;
   background: var(--card-bg);
   position: relative;
+  min-height: fit-content;
 }
+
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.375rem;
   flex-shrink: 0;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
   min-width: 0;
 }
 
 .icon-wrapper {
-  padding: 0.25rem;
-  border-radius: 6px;
+  padding: 0.2rem;
+  border-radius: 5px;
   background: linear-gradient(135deg, #06b6d4, #0891b2);
   display: flex;
   align-items: center;
@@ -176,17 +183,17 @@ function open() { emit('open'); }
 }
 
 .icon {
-  width: 0.875rem;
-  height: 0.875rem;
+  width: 0.8rem;
+  height: 0.8rem;
   color: white;
   stroke-width: 2.5;
 }
 
 .title {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: 600;
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.25;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -201,15 +208,15 @@ function open() { emit('open'); }
 }
 
 .status {
-  font-size: 0.625rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
+  font-size: 0.6rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 5px;
   color: #fff;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   flex-shrink: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
 }
 
@@ -232,22 +239,54 @@ function open() { emit('open'); }
 }
 
 .description {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--text-color);
   opacity: 0.85;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.3;
   flex-grow: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
-/* Enhanced responsive adjustments */
+/* ===== Micro Size Optimizations ===== */
+.mosaic-item-micro .card-content {
+  padding: 0.35rem;
+}
+
+.mosaic-item-micro .card-header {
+  margin-bottom: 0.25rem;
+}
+
+.mosaic-item-micro .title {
+  font-size: 0.7rem;
+}
+
+.mosaic-item-micro .description {
+  font-size: 0.55rem;
+  -webkit-line-clamp: 1;
+}
+
+.mosaic-item-micro .icon {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+.mosaic-item-micro .icon-wrapper {
+  padding: 0.15rem;
+}
+
+.mosaic-item-micro .status {
+  font-size: 0.55rem;
+  padding: 0.15rem 0.3rem;
+}
+
+/* ===== Tiny Size Optimizations ===== */
 .mosaic-item-tiny .card-content {
-  padding: 0.5rem;
+  padding: 0.4rem;
 }
 
 .mosaic-item-tiny .title {
@@ -255,8 +294,8 @@ function open() { emit('open'); }
 }
 
 .mosaic-item-tiny .description {
-  font-size: 0.625rem;
-  -webkit-line-clamp: 2;
+  font-size: 0.6rem;
+  -webkit-line-clamp: 1;
 }
 
 .mosaic-item-tiny .icon {
@@ -264,14 +303,15 @@ function open() { emit('open'); }
   height: 0.75rem;
 }
 
+/* ===== Enhanced Large Size Support ===== */
 .mosaic-item-large .card-content,
 .mosaic-item-xl .card-content {
-  padding: 1rem;
+  padding: 0.75rem;
 }
 
 .mosaic-item-large .title,
 .mosaic-item-xl .title {
-  font-size: 1rem;
+  font-size: 0.9rem;
   white-space: normal;
   -webkit-line-clamp: 2;
   display: -webkit-box;
@@ -280,8 +320,8 @@ function open() { emit('open'); }
 
 .mosaic-item-large .description,
 .mosaic-item-xl .description {
-  font-size: 0.875rem;
-  -webkit-line-clamp: 4;
+  font-size: 0.75rem;
+  -webkit-line-clamp: 3;
 }
 
 .mosaic-item-large .icon,
@@ -290,18 +330,18 @@ function open() { emit('open'); }
   height: 1rem;
 }
 
-/* Special handling for wide cards */
+/* Special handling for wide cards - Horizontal layout */
 .mosaic-item-wide {
   flex-direction: row;
 }
 
 .mosaic-item-wide .image-container {
-  width: 40%;
+  width: 35%;
   height: 100%;
 }
 
 .mosaic-item-wide .card-content {
-  width: 60%;
+  width: 65%;
 }
 
 /* Dark mode adjustments */

@@ -44,10 +44,12 @@ function open() { emit('open'); }
   overflow: hidden;
   background: linear-gradient(135deg, 
     var(--card-bg) 0%, 
-    color-mix(in srgb, var(--card-bg) 95%, #3b82f6 5%) 100%
+    color-mix(in srgb, var(--card-bg) 96%, #3b82f6 4%) 100%
   );
   border: 1px solid var(--card-border-color);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  height: fit-content;
+  min-height: fit-content;
 }
 
 .basic-card::before {
@@ -58,24 +60,31 @@ function open() { emit('open'); }
   right: 0;
   bottom: 0;
   background: linear-gradient(135deg, 
-    rgba(59, 130, 246, 0.02) 0%, 
-    rgba(139, 92, 246, 0.02) 50%,
-    rgba(236, 72, 153, 0.02) 100%
+    rgba(59, 130, 246, 0.015) 0%, 
+    rgba(139, 92, 246, 0.015) 50%,
+    rgba(236, 72, 153, 0.015) 100%
   );
   pointer-events: none;
   z-index: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .basic-card:hover {
-  transform: translateY(-1px) scale(1.005);
+  transform: translateY(-1px) scale(1.01);
   box-shadow: 
-    0 8px 25px rgba(59, 130, 246, 0.15),
-    0 2px 10px rgba(0, 0, 0, 0.1);
-  border-color: rgba(59, 130, 246, 0.3);
+    0 6px 20px rgba(59, 130, 246, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.08);
+  border-color: rgba(59, 130, 246, 0.4);
 }
 
 .basic-card:hover .card-glow {
   opacity: 1;
+}
+
+.basic-card:active {
+  transform: translateY(0) scale(0.99);
+  transition: transform 0.1s ease-out;
 }
 
 .card-backdrop {
@@ -119,15 +128,16 @@ function open() { emit('open'); }
   display: flex;
   flex-direction: column;
   text-align: left;
-  border-radius: 8px;
-  padding: 0.75rem;
+  border-radius: 6px;
+  padding: 0.5rem;
   color: var(--text-color);
   position: relative;
   z-index: 1;
+  min-height: 0;
 }
 
 .card-header {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -139,13 +149,14 @@ function open() { emit('open'); }
 .header-left { 
   display: flex; 
   align-items: center; 
-  gap: 0.5rem;
+  gap: 0.375rem;
   min-width: 0;
+  flex: 1;
 }
 
 .icon-wrapper {
-  padding: 0.25rem;
-  border-radius: 6px;
+  padding: 0.2rem;
+  border-radius: 5px;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
   display: flex;
   align-items: center;
@@ -159,17 +170,17 @@ function open() { emit('open'); }
 }
 
 .icon { 
-  width: 0.875rem; 
-  height: 0.875rem; 
+  width: 0.8rem; 
+  height: 0.8rem; 
   color: white;
   stroke-width: 2.5;
 }
 
 .title {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: 600;
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.25;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -185,21 +196,21 @@ function open() { emit('open'); }
 }
 
 .status {
-  font-size: 0.625rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
+  font-size: 0.6rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 5px;
   color: #fff;
   flex-shrink: 0;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
 }
 
 .status:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
 }
 
 .status-todo { 
@@ -216,24 +227,62 @@ function open() { emit('open'); }
 }
 
 .description {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-color);
   opacity: 0.85;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.3;
   flex-grow: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   position: relative;
   z-index: 2;
 }
 
-/* Enhanced responsive adjustments */
+/* ===== Micro Size Optimizations ===== */
+.mosaic-item-micro .card {
+  padding: 0.35rem;
+}
+
+.mosaic-item-micro .card-header {
+  margin-bottom: 0.25rem;
+}
+
+.mosaic-item-micro .header-left {
+  gap: 0.25rem;
+}
+
+.mosaic-item-micro .icon-wrapper {
+  padding: 0.15rem;
+}
+
+.mosaic-item-micro .icon {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+.mosaic-item-micro .title {
+  font-size: 0.7rem;
+  -webkit-line-clamp: 1;
+  line-height: 1.2;
+}
+
+.mosaic-item-micro .description {
+  font-size: 0.6rem;
+  -webkit-line-clamp: 1;
+}
+
+.mosaic-item-micro .status {
+  font-size: 0.55rem;
+  padding: 0.15rem 0.3rem;
+}
+
+/* ===== Tiny Size Optimizations ===== */
 .mosaic-item-tiny .card {
-  padding: 0.5rem;
+  padding: 0.4rem;
 }
 
 .mosaic-item-tiny .title {
@@ -242,8 +291,8 @@ function open() { emit('open'); }
 }
 
 .mosaic-item-tiny .description {
-  font-size: 0.625rem;
-  -webkit-line-clamp: 2;
+  font-size: 0.65rem;
+  -webkit-line-clamp: 1;
 }
 
 .mosaic-item-tiny .icon {
@@ -251,20 +300,22 @@ function open() { emit('open'); }
   height: 0.75rem;
 }
 
+/* ===== Large Size Enhancements ===== */
 .mosaic-item-large .card,
 .mosaic-item-xl .card {
-  padding: 1rem;
+  padding: 0.75rem;
 }
 
 .mosaic-item-large .title,
 .mosaic-item-xl .title {
-  font-size: 1rem;
+  font-size: 0.95rem;
+  -webkit-line-clamp: 3;
 }
 
 .mosaic-item-large .description,
 .mosaic-item-xl .description {
-  font-size: 0.875rem;
-  -webkit-line-clamp: 5;
+  font-size: 0.8rem;
+  -webkit-line-clamp: 4;
 }
 
 .mosaic-item-large .icon,

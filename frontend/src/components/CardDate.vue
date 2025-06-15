@@ -113,19 +113,20 @@ function open() { emit('open'); }
 
 <style scoped>
 .date-card {
-  height: 100%;
+  height: fit-content;
   width: 100%;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--card-border-color);
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--card-bg);
-  padding: 0.75rem;
+  padding: 0.5rem;
   text-align: left;
   color: var(--text-color);
   position: relative;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: fit-content;
 }
 
 .date-card::before {
@@ -190,7 +191,7 @@ function open() { emit('open'); }
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   position: relative;
   z-index: 2;
 }
@@ -198,12 +199,12 @@ function open() { emit('open'); }
 .header-left {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
 }
 
 .icon-wrapper {
-  padding: 0.3rem;
-  border-radius: 8px;
+  padding: 0.2rem;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -235,17 +236,17 @@ function open() { emit('open'); }
 }
 
 .icon {
-  width: 1rem;
-  height: 1rem;
+  width: 0.8rem;
+  height: 0.8rem;
   color: white;
   stroke-width: 2.5;
 }
 
 .title {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: 600;
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.25;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -262,7 +263,7 @@ function open() { emit('open'); }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   position: relative;
   z-index: 2;
 }
@@ -274,12 +275,12 @@ function open() { emit('open'); }
 .countdown-number {
   display: flex;
   align-items: baseline;
-  gap: 0.25rem;
-  margin-bottom: 0.25rem;
+  gap: 0.2rem;
+  margin-bottom: 0.2rem;
 }
 
 .number {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 800;
   line-height: 1;
   transition: all 0.3s ease;
@@ -306,25 +307,25 @@ function open() { emit('open'); }
 }
 
 .unit {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-color);
   opacity: 0.7;
 }
 
 .countdown-label {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: 500;
   color: var(--text-color);
   opacity: 0.8;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
 }
 
 .progress-ring {
   position: relative;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   flex-shrink: 0;
 }
 
@@ -342,21 +343,21 @@ function open() { emit('open'); }
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: 700;
   color: var(--text-color);
 }
 
 .description {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--text-color);
   opacity: 0.85;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.3;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   position: relative;
   z-index: 2;
@@ -399,17 +400,69 @@ function open() { emit('open'); }
   opacity: 0.3;
 }
 
-/* Enhanced responsive adjustments */
+/* ===== Micro Size Optimizations ===== */
+.mosaic-item-micro .date-card {
+  padding: 0.35rem;
+}
+
+.mosaic-item-micro .card-header {
+  margin-bottom: 0.25rem;
+}
+
+.mosaic-item-micro .countdown-container {
+  margin-bottom: 0.25rem;
+}
+
+.mosaic-item-micro .title {
+  font-size: 0.7rem;
+}
+
+.mosaic-item-micro .number {
+  font-size: 1rem;
+}
+
+.mosaic-item-micro .unit {
+  font-size: 0.6rem;
+}
+
+.mosaic-item-micro .countdown-label {
+  font-size: 0.55rem;
+}
+
+.mosaic-item-micro .description {
+  font-size: 0.55rem;
+  -webkit-line-clamp: 1;
+}
+
+.mosaic-item-micro .progress-ring {
+  width: 35px;
+  height: 35px;
+}
+
+.mosaic-item-micro .progress-text {
+  font-size: 0.5rem;
+}
+
+.mosaic-item-micro .icon-wrapper {
+  padding: 0.15rem;
+}
+
+.mosaic-item-micro .icon {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+/* ===== Tiny Size Optimizations ===== */
 .mosaic-item-tiny .title {
   font-size: 0.75rem;
 }
 
 .mosaic-item-tiny .number {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
 }
 
 .mosaic-item-tiny .description {
-  font-size: 0.625rem;
+  font-size: 0.6rem;
   -webkit-line-clamp: 1;
 }
 
@@ -419,22 +472,34 @@ function open() { emit('open'); }
 }
 
 .mosaic-item-tiny .progress-text {
-  font-size: 0.625rem;
+  font-size: 0.6rem;
 }
 
+/* ===== Enhanced Large Size Support ===== */
 .mosaic-item-large .title,
 .mosaic-item-xl .title {
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .mosaic-item-large .number,
 .mosaic-item-xl .number {
-  font-size: 2rem;
+  font-size: 1.6rem;
 }
 
 .mosaic-item-large .description,
 .mosaic-item-xl .description {
-  font-size: 0.875rem;
-  -webkit-line-clamp: 3;
+  font-size: 0.75rem;
+  -webkit-line-clamp: 2;
+}
+
+.mosaic-item-large .progress-ring,
+.mosaic-item-xl .progress-ring {
+  width: 60px;
+  height: 60px;
+}
+
+.mosaic-item-large .progress-text,
+.mosaic-item-xl .progress-text {
+  font-size: 0.7rem;
 }
 </style>

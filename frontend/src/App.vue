@@ -55,7 +55,7 @@
           :key="it.id"
           :is="componentMap[it.kind] || 'div'"
           :card="it.props"
-          :class="['mosaic-item', `mosaic-item-${getMosaicSize(index, it)}`]"
+          :class="['mosaic-item', `mosaic-item-${determineCardSize(it.props)}`]"
           @open="openItem(it)"
         />
       </div>
@@ -123,11 +123,7 @@ const { audioLevel } = useVoiceDetection({
 });
 
 // ---------------------------------------------------------------------------
-<<<<<<< HEAD
-// Voice Status Labels
-=======
 // Logo selection based on theme
->>>>>>> main
 // ---------------------------------------------------------------------------
 const stateTitle = computed(() => {
   const state = btnState.value;
@@ -140,26 +136,6 @@ const stateTitle = computed(() => {
   }[state] || 'Voice Assistant';
 });
 
-<<<<<<< HEAD
-const stateLabel = computed(() => {
-  const state = btnState.value;
-  return {
-    'state-idle': 'Ready to connect',
-    'state-connecting': 'Establishing connection',
-    'state-live': 'Ready to listen',
-    'state-user': 'Processing your voice',
-    'state-assistant': 'AI is responding'
-  }[state] || 'Ready';
-});
-
-const toggleButtonText = computed(() => {
-  const state = btnState.value;
-  if (state === 'state-connecting') return 'Connecting...';
-  if (state === 'state-live' || state === 'state-user' || state === 'state-assistant') return 'Disconnect';
-  return 'Connect';
-});
-
-=======
 // ---------------------------------------------------------------------------
 // Voice state for navigation component
 // ---------------------------------------------------------------------------
@@ -173,73 +149,69 @@ const voiceNavState = computed(() => {
   return 'idle';
 });
 
->>>>>>> main
-// ---------------------------------------------------------------------------
-// Aggressive Mosaic Layout - Tight packing with dynamic sizing
-// ---------------------------------------------------------------------------
-const getMosaicSize = (index, item) => {
-  if (!item) {
-    // Ultra-tight mosaic patterns with occasional variety
-    const patterns = [
-      'tiny', 'tiny', 'tiny', 'small', 'tiny', 'tiny', 'small', 'tiny',
-      'tiny', 'medium', 'tiny', 'small', 'tiny', 'tiny', 'wide', 'tiny'
-    ];
-    return patterns[index % patterns.length];
-  }
-
-  const cardType = item.kind?.split('.')[1];
-  const hasImage = item.props?.image_url;
-  const contentLength = item.props?.description?.length || 0;
-  const itemCount = item.props?.items?.length || item.props?.steps?.length || 0;
-  const hasTitle = item.props?.title?.length > 0;
+// ====== Dynamic Mosaic Sizing - Ultra-Aggressive for Tight Packing ======
+const determineCardSize = (card) => {
+  const cardType = card.kind ? card.kind.split('.')[1] : 'basic';
   
-  // Calculate actual content density - be more aggressive about smaller sizes
-  const isContentHeavy = contentLength > 200 || itemCount > 12;
-  const isMediumContent = contentLength > 80 || itemCount > 6;
-  const isLightContent = contentLength < 50 && itemCount < 4;
+  // Content analysis
+  const itemCount = card.items?.length || 0;
+  const hasImage = !!card.image_url;
+  const descLength = (card.description || '').length;
+  const titleLength = (card.title || '').length;
   
-  // More aggressive sizing - prioritize smaller cards for tighter mosaic
+  // More aggressive content thresholds for ultra-tight packing
+  const isMinimalContent = descLength <= 30 && titleLength <= 25 && itemCount <= 1;
+  const isLightContent = descLength <= 60 && titleLength <= 40 && itemCount <= 3;
+  const isMediumContent = descLength <= 120 && titleLength <= 60 && itemCount <= 6;
+  
+  // Ultra-aggressive sizing - bias heavily toward micro/tiny for dense layout
   switch(cardType) {
-    case 'weather':
-      // Weather cards stay compact unless they have tons of data
-      return isContentHeavy ? 'medium' : 'small';
+    case 'metric':
+      // Metrics are always micro for maximum density
+      return 'micro';
     
-    case 'map':
-      // Maps need some width but keep them reasonable
-      return isContentHeavy ? 'wide' : 'medium';
+    case 'date':
+      // Dates are micro unless they have descriptions
+      return descLength > 0 ? 'tiny' : 'micro';
+    
+    case 'link':
+      // Links stay minimal for tight packing
+      return isMinimalContent ? 'micro' : 'tiny';
+    
+    case 'basic':
+      // Basic cards - be extremely conservative
+      if (isMinimalContent) return 'micro';
+      if (isLightContent) return 'tiny';
+      if (isMediumContent) return 'small';
+      return 'medium'; // Only for substantial content
+    
+    case 'image':
+      // Images can be slightly larger but still controlled
+      if (!hasImage) return 'micro';
+      if (isMinimalContent) return 'tiny';
+      if (isLightContent) return 'small';
+      return 'medium'; // Max size for images
     
     case 'checklist':
     case 'progress':
-      // Be more aggressive with checklist sizing
+      // Checklists sized by item count
+      if (itemCount <= 1) return 'micro';
       if (itemCount <= 2) return 'tiny';
-      if (itemCount <= 4) return 'small';  
-      if (itemCount <= 8) return 'medium';
-      return 'tall'; // Only for very long lists (>8 items)
+      if (itemCount <= 4) return 'small';
+      if (itemCount <= 7) return 'medium';
+      return 'tall'; // Only for very long lists
     
-    case 'metric':
-      // Metrics are always tiny for tight packing
-      return 'tiny';
+    case 'weather':
+      // Weather cards stay compact
+      return isMediumContent ? 'medium' : 'small';
     
-    case 'image':
-      // Images - be selective about when they get large
-      if (hasImage && isContentHeavy) return 'medium'; // Reduced from 'large'
-      if (hasImage) return 'small';
-      return 'tiny';
+    case 'map':
+      // Maps need some width but keep controlled
+      return isMediumContent ? 'wide' : 'medium';
     
-    case 'date':
-      // Dates are always tiny
-      return 'tiny';
-    
-    case 'link':
-      // Links stay minimal
-      return 'tiny';
-    
-    case 'basic':
     default:
-      // Basic cards - be much more conservative
-      if (isContentHeavy) return 'medium';
-      if (isMediumContent) return 'small';
-      return 'tiny'; // Default to tiny for tight packing
+      // Default to micro for unknown types
+      return 'micro';
   }
 };
 
@@ -372,10 +344,6 @@ html, body, #app {
   padding-bottom: 8rem; /* Extra padding for bottom navigation */
 }
 
-
-
-
-
 /* ===== Board Section ===== */
 .board-section {
   flex: 1;
@@ -413,164 +381,199 @@ html, body, #app {
 /* ===== Ultra-Tight Mosaic Grid Layout ===== */
 .mosaic-grid {
   display: grid;
-  grid-template-columns: repeat(16, 1fr); /* Increased to 16 columns for finer control */
-  gap: 0.125rem; /* Ultra-tight spacing for true mosaic feel */
-  grid-auto-rows: 60px; /* Smaller row height for denser packing */
-  grid-auto-flow: row dense; /* Dense packing to fill gaps automatically */
+  grid-template-columns: repeat(20, 1fr); /* Increased to 20 columns for ultra-fine control */
+  gap: 0.075rem; /* Even tighter spacing */
+  grid-auto-rows: minmax(45px, auto); /* Dynamic row sizing based on content */
+  grid-auto-flow: row dense; /* Dense packing fills gaps automatically */
   align-items: stretch;
   justify-items: stretch;
   width: 100%;
   position: relative;
-  padding: 0.125rem;
+  padding: 0.25rem;
   /* Ensure smooth layout transitions */
   transition: all 0.3s ease;
 }
 
 .mosaic-item {
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 8px; /* Slightly smaller radius for tighter look */
+  border-radius: 6px; /* Smaller radius for tighter look */
   overflow: hidden;
   position: relative;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  max-height: 100%;
   background: var(--card-bg);
   border: 1px solid var(--card-border-color);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  /* Content-based height */
+  height: fit-content;
+  align-self: start;
 }
 
 .mosaic-item:hover {
-  transform: translateY(-0.5px) scale(1.01); /* Subtle scale for tight layout */
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   z-index: 10;
-  border-color: rgba(59, 130, 246, 0.4);
+  border-color: rgba(59, 130, 246, 0.5);
 }
 
-/* Child component styling */
+/* Child component styling - remove default padding */
 .mosaic-item > * {
   flex: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
   width: 100%;
-  padding: 0; /* Let child components handle their own padding */
+  padding: 0;
 }
 
-/* ===== Ultra-Tight Mosaic Size System (16-column grid) ===== */
+/* ===== Refined Content-Aware Size System (20-column grid) ===== */
+/* Micro - For tiny metrics and indicators */
+.mosaic-item-micro {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+
 /* Tiny - Perfect for metrics, quick info */
 .mosaic-item-tiny {
-  grid-column: span 2;
+  grid-column: span 3;
   grid-row: span 1;
 }
 
 /* Small - Basic cards, links */
 .mosaic-item-small {
-  grid-column: span 3;
+  grid-column: span 4;
   grid-row: span 1;
 }
 
 /* Medium - Standard content cards */
 .mosaic-item-medium {
-  grid-column: span 4;
+  grid-column: span 6;
   grid-row: span 2;
 }
 
 /* Large - Featured content */
 .mosaic-item-large {
-  grid-column: span 6;
+  grid-column: span 8;
   grid-row: span 2;
 }
 
 /* Wide - Horizontal content like weather, maps */
 .mosaic-item-wide {
-  grid-column: span 8;
+  grid-column: span 10;
   grid-row: span 1;
 }
 
 /* Tall - Vertical content like checklists */
 .mosaic-item-tall {
-  grid-column: span 3;
+  grid-column: span 4;
   grid-row: span 3;
 }
 
 /* Extra Large - Hero cards */
 .mosaic-item-xl {
-  grid-column: span 8;
+  grid-column: span 10;
   grid-row: span 2;
 }
 
 /* Square - Balanced proportions */
 .mosaic-item-square {
-  grid-column: span 5;
+  grid-column: span 6;
   grid-row: span 2;
 }
 
-/* ===== Responsive Ultra-Tight Mosaic Design ===== */
+/* ===== Ultra-Responsive Design ===== */
 
-/* Large screens - Full 16-column grid */
-@media (min-width: 1200px) {
+/* Large screens - Full 20-column grid */
+@media (min-width: 1400px) {
   .mosaic-grid {
-    gap: 0.15rem; /* Even tighter on large screens */
-    grid-auto-rows: 70px; /* Slightly taller for better readability */
+    grid-template-columns: repeat(20, 1fr);
+    gap: 0.1rem;
+    grid-auto-rows: minmax(50px, auto);
   }
+}
+
+/* Standard screens - 16-column grid */
+@media (max-width: 1399px) and (min-width: 1024px) {
+  .mosaic-grid {
+    grid-template-columns: repeat(16, 1fr);
+    gap: 0.075rem;
+    grid-auto-rows: minmax(45px, auto);
+  }
+  
+  .mosaic-item-micro { grid-column: span 2; }
+  .mosaic-item-tiny { grid-column: span 2; }
+  .mosaic-item-small { grid-column: span 3; }
+  .mosaic-item-medium { grid-column: span 5; }
+  .mosaic-item-large { grid-column: span 6; }
+  .mosaic-item-wide { grid-column: span 8; }
+  .mosaic-item-tall { grid-column: span 3; grid-row: span 3; }
+  .mosaic-item-xl { grid-column: span 8; }
+  .mosaic-item-square { grid-column: span 5; }
 }
 
 /* Medium screens - 12-column grid */
-@media (max-width: 1199px) and (min-width: 769px) {
+@media (max-width: 1023px) and (min-width: 768px) {
   .mosaic-grid {
     grid-template-columns: repeat(12, 1fr);
     gap: 0.1rem;
-    grid-auto-rows: 65px;
+    grid-auto-rows: minmax(50px, auto);
   }
   
+  .mosaic-item-micro { grid-column: span 2; }
+  .mosaic-item-tiny { grid-column: span 2; }
+  .mosaic-item-small { grid-column: span 3; }
+  .mosaic-item-medium { grid-column: span 4; }
+  .mosaic-item-large { grid-column: span 6; }
   .mosaic-item-wide { grid-column: span 8; }
-  .mosaic-item-xl { grid-column: span 6; grid-row: span 2; }
-  .mosaic-item-large { grid-column: span 5; }
-  .mosaic-item-square { grid-column: span 4; grid-row: span 2; }
+  .mosaic-item-tall { grid-column: span 3; grid-row: span 3; }
+  .mosaic-item-xl { grid-column: span 8; }
+  .mosaic-item-square { grid-column: span 4; }
 }
 
 /* Small screens - 8-column grid */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .mosaic-grid {
     grid-template-columns: repeat(8, 1fr);
-    gap: 0.08rem;
-    grid-auto-rows: 60px;
-    padding: 0.1rem;
+    gap: 0.05rem;
+    grid-auto-rows: minmax(45px, auto);
+    padding: 0.125rem;
   }
   
+  .mosaic-item-micro { grid-column: span 2; }
   .mosaic-item-tiny { grid-column: span 2; }
   .mosaic-item-small { grid-column: span 2; }
-  .mosaic-item-medium { grid-column: span 3; grid-row: span 2; }
-  .mosaic-item-large { grid-column: span 4; grid-row: span 2; }
-  .mosaic-item-wide { grid-column: span 6; grid-row: span 1; }
+  .mosaic-item-medium { grid-column: span 4; }
+  .mosaic-item-large { grid-column: span 6; }
+  .mosaic-item-wide { grid-column: span 6; }
   .mosaic-item-tall { grid-column: span 2; grid-row: span 2; }
-  .mosaic-item-xl { grid-column: span 6; grid-row: span 2; }
-  .mosaic-item-square { grid-column: span 3; grid-row: span 2; }
+  .mosaic-item-xl { grid-column: span 8; }
+  .mosaic-item-square { grid-column: span 4; }
 }
 
 /* Extra small screens - 6-column grid */
 @media (max-width: 480px) {
   .mosaic-grid {
     grid-template-columns: repeat(6, 1fr);
-    gap: 0.05rem;
-    grid-auto-rows: 55px;
-    padding: 0.05rem;
+    gap: 0.025rem;
+    grid-auto-rows: minmax(40px, auto);
+    padding: 0.1rem;
   }
   
+  .mosaic-item-micro { grid-column: span 2; }
   .mosaic-item-tiny { grid-column: span 2; }
-  .mosaic-item-small { grid-column: span 2; }
-  .mosaic-item-medium { grid-column: span 3; grid-row: span 2; }
-  .mosaic-item-large { grid-column: span 4; grid-row: span 2; }
-  .mosaic-item-wide { grid-column: span 6; grid-row: span 1; }
-  .mosaic-item-tall { grid-column: span 2; grid-row: span 2; }
-  .mosaic-item-xl { grid-column: span 6; grid-row: span 2; }
-  .mosaic-item-square { grid-column: span 3; grid-row: span 2; }
+  .mosaic-item-small { grid-column: span 3; }
+  .mosaic-item-medium { grid-column: span 3; }
+  .mosaic-item-large { grid-column: span 6; }
+  .mosaic-item-wide { grid-column: span 6; }
+  .mosaic-item-tall { grid-column: span 3; grid-row: span 2; }
+  .mosaic-item-xl { grid-column: span 6; }
+  .mosaic-item-square { grid-column: span 3; }
 }
 
-/* ===== Enhanced Visual Polish for Ultra-Tight Mosaic ===== */
+/* ===== Enhanced Visual Polish ===== */
 
-/* Subtle backdrop for visual cohesion */
+/* Improved backdrop for visual cohesion */
 .mosaic-grid::before {
   content: '';
   position: absolute;
@@ -581,38 +584,38 @@ html, body, #app {
   background: linear-gradient(
     135deg, 
     transparent 0%, 
-    rgba(59, 130, 246, 0.02) 25%,
-    rgba(139, 92, 246, 0.02) 50%,
-    rgba(236, 72, 153, 0.02) 75%,
+    rgba(59, 130, 246, 0.015) 25%,
+    rgba(139, 92, 246, 0.015) 50%,
+    rgba(236, 72, 153, 0.015) 75%,
     transparent 100%
   );
-  border-radius: 20px;
+  border-radius: 16px;
   pointer-events: none;
   z-index: -1;
-  opacity: 0.6;
+  opacity: 0.8;
 }
 
-/* Enhanced card entrance animation for tight mosaic */
+/* Faster, smoother card entrance animation */
 .mosaic-item {
-  animation: mosaicEnter 0.25s ease-out;
+  animation: mosaicFadeIn 0.2s ease-out;
   animation-fill-mode: both;
 }
 
-/* Faster staggered animation for tight packing */
+/* Optimized staggered animation timing */
 .mosaic-item:nth-child(1) { animation-delay: 0ms; }
-.mosaic-item:nth-child(2) { animation-delay: 25ms; }
-.mosaic-item:nth-child(3) { animation-delay: 50ms; }
-.mosaic-item:nth-child(4) { animation-delay: 75ms; }
-.mosaic-item:nth-child(5) { animation-delay: 100ms; }
-.mosaic-item:nth-child(6) { animation-delay: 125ms; }
-.mosaic-item:nth-child(7) { animation-delay: 150ms; }
-.mosaic-item:nth-child(8) { animation-delay: 175ms; }
-.mosaic-item:nth-child(n+9) { animation-delay: 200ms; }
+.mosaic-item:nth-child(2) { animation-delay: 15ms; }
+.mosaic-item:nth-child(3) { animation-delay: 30ms; }
+.mosaic-item:nth-child(4) { animation-delay: 45ms; }
+.mosaic-item:nth-child(5) { animation-delay: 60ms; }
+.mosaic-item:nth-child(6) { animation-delay: 75ms; }
+.mosaic-item:nth-child(7) { animation-delay: 90ms; }
+.mosaic-item:nth-child(8) { animation-delay: 105ms; }
+.mosaic-item:nth-child(n+9) { animation-delay: 120ms; }
 
-@keyframes mosaicEnter {
+@keyframes mosaicFadeIn {
   from {
     opacity: 0;
-    transform: translateY(5px) scale(0.99);
+    transform: translateY(3px) scale(0.98);
   }
   to {
     opacity: 1;
@@ -620,7 +623,44 @@ html, body, #app {
   }
 }
 
-/* Add subtle grid lines effect on hover */
+/* Micro-interactions */
+.mosaic-item:active {
+  transform: translateY(0) scale(0.98);
+  transition: transform 0.08s ease-out;
+}
+
+/* Progressive enhancement for different sizes */
+.mosaic-item-micro {
+  border-width: 1px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.mosaic-item-tiny, .mosaic-item-small {
+  border-width: 1px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.mosaic-item-medium, .mosaic-item-square {
+  border-width: 1px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.mosaic-item-large, .mosaic-item-wide, .mosaic-item-tall {
+  border-width: 1px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.mosaic-item-xl {
+  border-width: 2px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+}
+
+/* Enhanced hover effects */
+.mosaic-item-xl:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Grid visualization on hover (optional) */
 .mosaic-grid:hover::after {
   content: '';
   position: absolute;
@@ -629,64 +669,17 @@ html, body, #app {
   right: 0;
   bottom: 0;
   background-image: 
-    linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
-  background-size: calc(100% / 16) 60px; /* Updated for 16-column grid */
+    linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+  background-size: calc(100% / 20) 45px;
   pointer-events: none;
   z-index: -1;
   opacity: 0;
-  animation: gridReveal 0.3s ease-out forwards;
+  animation: gridReveal 0.2s ease-out forwards;
 }
 
 @keyframes gridReveal {
   to { opacity: 1; }
-}
-
-/* Micro-interactions for cards */
-.mosaic-item:active {
-  transform: translateY(0) scale(0.98);
-  transition: transform 0.1s ease-out;
-}
-
-/* Special styling for different card types */
-.mosaic-item-tiny {
-  border-width: 1px;
-}
-
-.mosaic-item-xl {
-  border-width: 2px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-}
-
-.mosaic-item-xl:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-}
-
-/* ===== Animations ===== */
-@keyframes listening-pulse {
-  0%, 100% { box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3); }
-  50% { box-shadow: 0 8px 30px rgba(59, 130, 246, 0.6); }
-}
-
-@keyframes listening-orb {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@keyframes listening-ring {
-  0% { transform: rotate(0deg) scale(1); }
-  100% { transform: rotate(360deg) scale(1.1); }
-}
-
-@keyframes assistant-glow {
-  0%, 100% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.5); }
-  50% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.8); }
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
 }
 
 /* ===== Login Container (unchanged) ===== */
@@ -770,7 +763,6 @@ html, body, #app {
   max-height: 90vh;
   overflow: auto;
 }
-
 
 </style>
 

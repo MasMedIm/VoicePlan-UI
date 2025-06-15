@@ -80,19 +80,20 @@ function open() { emit('open'); }
 
 <style scoped>
 .link-card {
-  height: 100%;
+  height: fit-content;
   width: 100%;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--card-border-color);
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--card-bg);
-  padding: 0.75rem;
+  padding: 0.5rem;
   color: var(--text-color);
   position: relative;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  min-height: fit-content;
 }
 
 .link-card::before {
@@ -165,20 +166,20 @@ function open() { emit('open'); }
 .link-header {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .icon-favicon-wrapper {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: 0.25rem;
   flex-shrink: 0;
 }
 
 .icon-wrapper {
-  padding: 0.25rem;
-  border-radius: 6px;
+  padding: 0.2rem;
+  border-radius: 5px;
   background: linear-gradient(135deg, #3b82f6, #1d4ed8);
   display: flex;
   align-items: center;
@@ -191,22 +192,22 @@ function open() { emit('open'); }
 }
 
 .icon {
-  width: 0.875rem;
-  height: 0.875rem;
+  width: 0.8rem;
+  height: 0.8rem;
   color: white;
   stroke-width: 2.5;
 }
 
 .favicon-container {
-  width: 1.25rem;
-  height: 1.25rem;
-  border-radius: 4px;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 3px;
   overflow: hidden;
   background: #f8fafc;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
 }
 
@@ -226,10 +227,10 @@ function open() { emit('open'); }
 }
 
 .link-title { 
-  font-size: 0.875rem; 
+  font-size: 0.8rem;
   font-weight: 600; 
-  margin: 0 0 0.25rem 0;
-  line-height: 1.3;
+  margin: 0 0 0.2rem 0;
+  line-height: 1.25;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -245,7 +246,7 @@ function open() { emit('open'); }
 }
 
 .link-url {
-  font-size: 0.625rem;
+  font-size: 0.6rem;
   color: #3b82f6;
   font-weight: 500;
   text-transform: lowercase;
@@ -258,8 +259,8 @@ function open() { emit('open'); }
 }
 
 .external-indicator {
-  width: 1rem;
-  height: 1rem;
+  width: 0.875rem;
+  height: 0.875rem;
   color: var(--text-color);
   opacity: 0.4;
   transition: all 0.2s ease;
@@ -272,15 +273,15 @@ function open() { emit('open'); }
 }
 
 .link-description { 
-  font-size: 0.75rem; 
+  font-size: 0.65rem;
   color: var(--text-color); 
   opacity: 0.85;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.3;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   flex-grow: 1;
 }
@@ -303,10 +304,58 @@ function open() { emit('open'); }
   transition: opacity 0.3s ease;
 }
 
-/* Enhanced responsive adjustments */
+/* ===== Micro Size Optimizations ===== */
+.mosaic-item-micro .link-card {
+  padding: 0.35rem;
+}
+
+.mosaic-item-micro .link-header {
+  gap: 0.3rem;
+  margin-bottom: 0.3rem;
+}
+
+.mosaic-item-micro .icon-favicon-wrapper {
+  gap: 0.2rem;
+}
+
+.mosaic-item-micro .link-title {
+  font-size: 0.7rem;
+  -webkit-line-clamp: 1;
+  margin-bottom: 0.1rem;
+}
+
+.mosaic-item-micro .link-description {
+  font-size: 0.55rem;
+  -webkit-line-clamp: 1;
+}
+
+.mosaic-item-micro .icon {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+.mosaic-item-micro .icon-wrapper {
+  padding: 0.15rem;
+}
+
+.mosaic-item-micro .favicon-container {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.mosaic-item-micro .external-indicator {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.mosaic-item-micro .link-url {
+  font-size: 0.55rem;
+}
+
+/* ===== Tiny Size Optimizations ===== */
 .mosaic-item-tiny .link-header {
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: 0.375rem;
+  margin-bottom: 0.375rem;
 }
 
 .mosaic-item-tiny .link-title {
@@ -315,8 +364,8 @@ function open() { emit('open'); }
 }
 
 .mosaic-item-tiny .link-description {
-  font-size: 0.625rem;
-  -webkit-line-clamp: 2;
+  font-size: 0.6rem;
+  -webkit-line-clamp: 1;
 }
 
 .mosaic-item-tiny .icon {
@@ -325,25 +374,26 @@ function open() { emit('open'); }
 }
 
 .mosaic-item-tiny .favicon-container {
-  width: 1rem;
-  height: 1rem;
+  width: 0.9rem;
+  height: 0.9rem;
 }
 
 .mosaic-item-tiny .external-indicator {
-  width: 0.875rem;
-  height: 0.875rem;
+  width: 0.8rem;
+  height: 0.8rem;
 }
 
+/* ===== Enhanced Large Size Support ===== */
 .mosaic-item-large .link-title,
 .mosaic-item-xl .link-title {
-  font-size: 1rem;
-  -webkit-line-clamp: 3;
+  font-size: 0.9rem;
+  -webkit-line-clamp: 2;
 }
 
 .mosaic-item-large .link-description,
 .mosaic-item-xl .link-description {
-  font-size: 0.875rem;
-  -webkit-line-clamp: 4;
+  font-size: 0.75rem;
+  -webkit-line-clamp: 3;
 }
 
 .mosaic-item-large .icon,
@@ -354,14 +404,14 @@ function open() { emit('open'); }
 
 .mosaic-item-large .favicon-container,
 .mosaic-item-xl .favicon-container {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .mosaic-item-large .external-indicator,
 .mosaic-item-xl .external-indicator {
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 1rem;
+  height: 1rem;
 }
 
 /* Dark mode adjustments */

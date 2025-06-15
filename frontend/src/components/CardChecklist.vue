@@ -144,19 +144,20 @@ function open() {
 
 <style scoped>
 .checklist-card {
-  height: 100%;
+  height: fit-content;
   width: 100%;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--card-border-color);
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--card-bg);
-  padding: 0.75rem;
+  padding: 0.5rem;
   color: var(--text-color);
   position: relative;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  min-height: fit-content;
 }
 
 .checklist-card::before {
@@ -207,7 +208,7 @@ function open() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   flex-shrink: 0;
   position: relative;
   z-index: 2;
@@ -216,13 +217,13 @@ function open() {
 .header-left { 
   display: flex; 
   align-items: center; 
-  gap: 0.5rem; 
+  gap: 0.375rem;
   min-width: 0;
 }
 
 .icon-wrapper {
-  padding: 0.25rem;
-  border-radius: 6px;
+  padding: 0.2rem;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -255,17 +256,17 @@ function open() {
 }
 
 .icon { 
-  width: 0.875rem; 
-  height: 0.875rem; 
+  width: 0.8rem;
+  height: 0.8rem; 
   color: white;
   stroke-width: 2.5;
 }
 
 .title { 
-  font-size: 0.875rem; 
+  font-size: 0.8rem;
   font-weight: 600; 
   margin: 0; 
-  line-height: 1.3;
+  line-height: 1.25;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -284,8 +285,8 @@ function open() {
 
 .progress-circle {
   position: relative;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -301,7 +302,7 @@ function open() {
 }
 
 .progress-text {
-  font-size: 0.625rem;
+  font-size: 0.6rem;
   font-weight: 700;
   color: var(--text-color);
   position: relative;
@@ -311,9 +312,10 @@ function open() {
 .items-container {
   flex-grow: 1;
   overflow-y: auto;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
   position: relative;
   z-index: 2;
+  max-height: 150px;
 }
 
 .items {
@@ -322,16 +324,16 @@ function open() {
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.3rem;
 }
 
 .item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.375rem;
-  border-radius: 6px;
-  transition: all 0.3s ease;
+  gap: 0.375rem;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
   background: rgba(59, 130, 246, 0.02);
   border: 1px solid transparent;
 }
@@ -364,10 +366,10 @@ function open() {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1rem;
+  height: 1rem;
   border: 2px solid #d1d5db;
-  border-radius: 4px;
+  border-radius: 3px;
   cursor: pointer;
   transition: all 0.2s ease;
   background: var(--card-bg);
@@ -380,8 +382,8 @@ function open() {
 }
 
 .checkbox-checkmark {
-  width: 0.75rem;
-  height: 0.75rem;
+  width: 0.625rem;
+  height: 0.625rem;
   opacity: 0;
   transform: scale(0.8);
   transition: all 0.2s ease;
@@ -399,8 +401,8 @@ function open() {
 }
 
 .item-text {
-  font-size: 0.75rem;
-  line-height: 1.4;
+  font-size: 0.65rem;
+  line-height: 1.3;
   color: var(--text-color);
   transition: all 0.3s ease;
   flex-grow: 1;
@@ -413,14 +415,14 @@ function open() {
 }
 
 .description { 
-  font-size: 0.75rem; 
+  font-size: 0.65rem;
   color: var(--text-color); 
   opacity: 0.8;
   margin: 0; 
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   position: relative;
   z-index: 2;
@@ -456,13 +458,62 @@ function open() {
   75% { transform: translateY(-2px) scale(1.015); }
 }
 
-/* Enhanced responsive adjustments */
+/* ===== Micro Size Optimizations ===== */
+.mosaic-item-micro .checklist-card {
+  padding: 0.35rem;
+}
+
+.mosaic-item-micro .card-header {
+  margin-bottom: 0.25rem;
+}
+
+.mosaic-item-micro .title {
+  font-size: 0.7rem;
+}
+
+.mosaic-item-micro .progress-circle {
+  width: 20px;
+  height: 20px;
+}
+
+.mosaic-item-micro .progress-text {
+  font-size: 0.5rem;
+}
+
+.mosaic-item-micro .checkbox-custom {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.mosaic-item-micro .checkbox-checkmark {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+.mosaic-item-micro .item-text {
+  font-size: 0.55rem;
+}
+
+.mosaic-item-micro .items {
+  gap: 0.2rem;
+}
+
+.mosaic-item-micro .item {
+  padding: 0.15rem;
+  gap: 0.25rem;
+}
+
+.mosaic-item-micro .items-container {
+  max-height: 80px;
+}
+
+/* ===== Tiny Size Optimizations ===== */
 .mosaic-item-tiny .title {
   font-size: 0.75rem;
 }
 
 .mosaic-item-tiny .item-text {
-  font-size: 0.625rem;
+  font-size: 0.6rem;
 }
 
 .mosaic-item-tiny .progress-circle {
@@ -471,37 +522,49 @@ function open() {
 }
 
 .mosaic-item-tiny .progress-text {
-  font-size: 0.5rem;
+  font-size: 0.55rem;
 }
 
-.mosaic-item-tiny .checkbox-custom {
-  width: 1rem;
-  height: 1rem;
+.mosaic-item-tiny .items-container {
+  max-height: 100px;
 }
 
-.mosaic-item-tiny .checkbox-checkmark {
-  width: 0.625rem;
-  height: 0.625rem;
+/* ===== Enhanced Responsive Content Management ===== */
+.mosaic-item-small .items-container {
+  max-height: 120px;
+}
+
+.mosaic-item-medium .items-container {
+  max-height: 160px;
 }
 
 .mosaic-item-large .title,
 .mosaic-item-xl .title {
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .mosaic-item-large .item-text,
 .mosaic-item-xl .item-text {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
 }
 
 .mosaic-item-large .progress-circle,
 .mosaic-item-xl .progress-circle {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
 }
 
 .mosaic-item-large .progress-text,
 .mosaic-item-xl .progress-text {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
+}
+
+.mosaic-item-large .items-container,
+.mosaic-item-xl .items-container {
+  max-height: 200px;
+}
+
+.mosaic-item-tall .items-container {
+  max-height: 250px;
 }
 </style>
