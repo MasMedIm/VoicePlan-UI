@@ -26,20 +26,6 @@
         <Transition name="color-picker">
           <div v-if="showColorPicker" class="color-picker-dropdown">
             <div class="color-section">
-              <div class="color-picker-title">Chat Bubble Color</div>
-              <div class="color-grid">
-                <button
-                  v-for="color in colors"
-                  :key="color"
-                  class="color-button"
-                  :class="{ selected: props.chatBubbleColor === color }"
-                  :style="{ backgroundColor: color }"
-                  @click="setChatBubbleColor(color)"
-                />
-              </div>
-            </div>
-            
-            <div class="color-section">
               <div class="color-picker-title">Background Themes</div>
               <div class="theme-grid">
                 <button
@@ -58,6 +44,8 @@
           </div>
         </Transition>
       </div>
+
+
 
       <!-- Voice Status Indicator -->
       <button 
@@ -84,7 +72,7 @@
         <VoiceBubble 
           :voice-state="voiceState"
           :external-audio-level="audioLevel"
-          :size="48"
+          :size="64"
         />
       </div>
     </div>
@@ -179,7 +167,7 @@ const props = defineProps({
   selectedVoice: String
 })
 
-const emit = defineEmits(['toggle-theme', 'color-change', 'toggle-voice', 'theme-change', 'settings-open', 'voice-change'])
+const emit = defineEmits(['toggle-theme', 'color-change', 'toggle-voice', 'theme-change', 'voice-change', 'settings-open'])
 
 const showColorPicker = ref(false)
 const showSettings = ref(false)
@@ -271,6 +259,8 @@ const voiceOptions = [
   }
 ]
 
+
+
 const voiceStatusLabel = computed(() => {
   const state = props.voiceState
   if (props.isConnecting) return 'Connecting...'
@@ -318,11 +308,13 @@ function previewVoice(voice) {
   // Play a sample text with the selected voice
   const sampleText = `Hello! I'm ${voice.name}, your ${voice.description.toLowerCase()}. I'll be helping you with your travel planning today.`;
   
-  // In a real implementation, this would call the TTS API
-  console.log(`Preview voice ${voice.name}: ${sampleText}`);
+  console.log(`🎤 Preview voice ${voice.name}: ${sampleText}`);
   
-  // For now, we'll emit the voice change to show selection
+  // In a real implementation, this would call the TTS API
   emit('voice-change', voice);
+  
+  // Show user feedback
+  alert(`Voice preview: ${voice.name} selected! ${voice.description}`);
 }
 </script>
 
@@ -338,15 +330,24 @@ function previewVoice(voice) {
 .pill-nav {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  background: var(--card-bg);
+  gap: 0.25rem;
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(20px);
-  border: 1px solid var(--card-border-color);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 50px;
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem 0.5rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   min-height: 72px;
+  width: fit-content;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Dark mode override */
+.dark .pill-nav {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .nav-button {
@@ -354,26 +355,35 @@ function previewVoice(voice) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem 0.375rem;
   border: none;
   background: transparent;
-  border-radius: 16px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: var(--text-color);
+  color: #334155;
   opacity: 0.7;
   position: relative;
 }
 
+/* Dark mode button colors */
+.dark .nav-button {
+  color: #f1f5f9;
+}
+
 .nav-button:hover {
   opacity: 1;
-  background: var(--card-border-color);
+  background: rgba(0, 0, 0, 0.05);
   transform: translateY(-1px);
+}
+
+.dark .nav-button:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-button.active {
   opacity: 1;
-  background: var(--card-border-color);
+  background: rgba(59, 130, 246, 0.1);
   color: #3b82f6;
 }
 
@@ -404,9 +414,16 @@ function previewVoice(voice) {
 }
 
 .nav-label {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: 500;
   white-space: nowrap;
+  min-width: 55px;
+  max-width: 55px;
+  width: 55px;
+  text-align: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Voice Indicator States */
@@ -455,13 +472,20 @@ function previewVoice(voice) {
   left: 50%;
   transform: translateX(-50%);
   margin-bottom: 0.5rem;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border-color);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 16px;
   padding: 1rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(20px);
-  min-width: 200px;
+  min-width: 250px;
+  z-index: 1001;
+}
+
+/* Dark mode for color picker */
+.dark .color-picker-dropdown {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .color-section {
@@ -471,10 +495,14 @@ function previewVoice(voice) {
 .color-picker-title {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-color);
+  color: #334155;
   opacity: 0.7;
   margin-bottom: 0.75rem;
   text-align: center;
+}
+
+.dark .color-picker-title {
+  color: #f1f5f9;
 }
 
 .color-grid {
@@ -498,8 +526,9 @@ function previewVoice(voice) {
 }
 
 .color-button.selected {
-  border-color: var(--text-color);
+  border-color: #3b82f6;
   transform: scale(1.1);
+  box-shadow: 0 0 0 2px #3b82f6;
 }
 
 /* Transitions */
@@ -535,31 +564,42 @@ function previewVoice(voice) {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 0.75rem;
-  padding-left: 0.75rem;
-  border-left: 1px solid var(--card-border-color);
-  min-width: 56px; /* Ensure proper space for larger bubble */
-  min-height: 56px;
+  margin-left: 0.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.25rem;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  min-width: 80px;
+  min-height: 64px;
+}
+
+.dark .voice-bubble-section {
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .pill-nav {
-    padding: 0.5rem 0.75rem;
-    gap: 0.25rem;
+    padding: 0.5rem 0.375rem;
+    gap: 0.125rem;
+    max-width: 400px;
   }
   
   .nav-button {
-    padding: 0.375rem 0.5rem;
+    padding: 0.375rem 0.25rem;
   }
   
   .nav-label {
-    font-size: 0.625rem;
+    font-size: 0.55rem;
+    min-width: 40px;
+    max-width: 40px;
+    width: 40px;
   }
   
   .voice-bubble-section {
-    margin-left: 0.25rem;
-    padding-left: 0.25rem;
+    margin-left: 0.125rem;
+    padding-left: 0.125rem;
+    min-width: 48px;
+    min-height: 48px;
   }
 }
 
@@ -588,9 +628,9 @@ function previewVoice(voice) {
 }
 
 .theme-button.selected {
-  border-color: var(--text-color);
+  border-color: #3b82f6;
   transform: scale(1.05);
-  box-shadow: 0 0 0 2px var(--text-color);
+  box-shadow: 0 0 0 2px #3b82f6;
 }
 
 .theme-name {
@@ -615,21 +655,25 @@ function previewVoice(voice) {
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(8px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 2000;
+  padding: 2rem 1rem 6rem 1rem;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .settings-modal {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 24px;
-  padding: 2rem;
-  max-width: 600px;
-  width: 90%;
-  max-height: 80vh;
+  border-radius: 20px;
+  padding: 1.5rem;
+  max-width: 480px;
+  width: 100%;
+  max-height: calc(100vh - 8rem);
   overflow-y: auto;
+  margin-top: 2rem;
   box-shadow: 
     0 20px 48px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -639,13 +683,13 @@ function previewVoice(voice) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .settings-title {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: white;
   margin: 0;
@@ -682,14 +726,14 @@ function previewVoice(voice) {
 .settings-content {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .settings-section {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 1.5rem;
+  border-radius: 14px;
+  padding: 1.25rem;
   backdrop-filter: blur(8px);
 }
 
@@ -880,10 +924,33 @@ function previewVoice(voice) {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .settings-overlay {
+    padding: 1rem 0.5rem 5rem 0.5rem;
+  }
+  
   .settings-modal {
-    padding: 1.5rem;
-    width: 95%;
-    margin: 1rem;
+    padding: 1.25rem;
+    max-height: calc(100vh - 6rem);
+    max-width: 95%;
+    border-radius: 16px;
+    margin-top: 1rem;
+  }
+  
+  .settings-header {
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .settings-title {
+    font-size: 1.3rem;
+  }
+  
+  .settings-content {
+    gap: 1.25rem;
+  }
+  
+  .settings-section {
+    padding: 1rem;
   }
   
   .voice-grid {
@@ -893,6 +960,50 @@ function previewVoice(voice) {
   
   .voice-option {
     padding: 1rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .settings-overlay {
+    padding: 0.75rem 0.25rem 4.5rem 0.25rem;
+  }
+  
+  .settings-modal {
+    padding: 1rem;
+    max-height: calc(100vh - 5rem);
+    max-width: 98%;
+    margin-top: 0.5rem;
+  }
+  
+  .settings-title {
+    font-size: 1.2rem;
+  }
+  
+  .close-button {
+    width: 2rem;
+    height: 2rem;
+  }
+  
+  .settings-content {
+    gap: 1rem;
+  }
+  
+  .settings-section {
+    padding: 0.875rem;
+  }
+  
+  .voice-option {
+    padding: 0.875rem;
+  }
+  
+  .section-title {
+    font-size: 1.1rem;
+  }
+  
+  .section-description {
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
   }
 }
 </style> 

@@ -9,12 +9,12 @@
     "serve": "vite preview --host"
   },
   "dependencies": {
-    "vue": "^3.4.15",
+    "flowbite": "^3.1.2",
     "lucide-vue-next": "0.515.0",
-    "flowbite": "^3.1.2"
+    "vue": "^3.4.15"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
-    "vite": "^5.2.13"
+    "vite": "^5.4.19"
   }
 }
