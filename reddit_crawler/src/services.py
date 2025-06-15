@@ -31,6 +31,8 @@ async def fetch_and_search(request: FetchSearchRequest):
 
         # If a response from today already exists, return it
         if os.path.exists(current_run_path):
+            if os.path.exists(os.path.join(current_run_path, "gemini_response.txt")):
+                return {"response": open(os.path.join(current_run_path, "gemini_response.txt")).read()}
             search_vector_db(index_name=request.city.lower().replace(' ', ''), query=request.query, current_run_path=current_run_path, top_k=50)
             gemini_response_text = return_gemini_response(query=request.query, current_run_path=current_run_path, model="gemini-2.5-flash-preview-05-20")
             return {"response": gemini_response_text}
