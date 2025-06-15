@@ -655,23 +655,25 @@ function previewVoice(voice) {
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(8px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   z-index: 2000;
-  padding: 1rem;
+  padding: 2rem 1rem 6rem 1rem;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .settings-modal {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 24px;
-  padding: 2rem;
-  max-width: 500px;
+  border-radius: 20px;
+  padding: 1.5rem;
+  max-width: 480px;
   width: 100%;
-  max-height: 90vh;
+  max-height: calc(100vh - 8rem);
   overflow-y: auto;
+  margin-top: 2rem;
   box-shadow: 
     0 20px 48px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -681,13 +683,13 @@ function previewVoice(voice) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .settings-title {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: white;
   margin: 0;
@@ -724,14 +726,14 @@ function previewVoice(voice) {
 .settings-content {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .settings-section {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 1.5rem;
+  border-radius: 14px;
+  padding: 1.25rem;
   backdrop-filter: blur(8px);
 }
 
@@ -923,14 +925,32 @@ function previewVoice(voice) {
 /* Responsive Design */
 @media (max-width: 768px) {
   .settings-overlay {
-    padding: 0.5rem;
+    padding: 1rem 0.5rem 5rem 0.5rem;
   }
   
   .settings-modal {
-    padding: 1.5rem;
-    max-height: 90vh;
+    padding: 1.25rem;
+    max-height: calc(100vh - 6rem);
     max-width: 95%;
     border-radius: 16px;
+    margin-top: 1rem;
+  }
+  
+  .settings-header {
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .settings-title {
+    font-size: 1.3rem;
+  }
+  
+  .settings-content {
+    gap: 1.25rem;
+  }
+  
+  .settings-section {
+    padding: 1rem;
   }
   
   .voice-grid {
@@ -940,6 +960,50 @@ function previewVoice(voice) {
   
   .voice-option {
     padding: 1rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .settings-overlay {
+    padding: 0.75rem 0.25rem 4.5rem 0.25rem;
+  }
+  
+  .settings-modal {
+    padding: 1rem;
+    max-height: calc(100vh - 5rem);
+    max-width: 98%;
+    margin-top: 0.5rem;
+  }
+  
+  .settings-title {
+    font-size: 1.2rem;
+  }
+  
+  .close-button {
+    width: 2rem;
+    height: 2rem;
+  }
+  
+  .settings-content {
+    gap: 1rem;
+  }
+  
+  .settings-section {
+    padding: 0.875rem;
+  }
+  
+  .voice-option {
+    padding: 0.875rem;
+  }
+  
+  .section-title {
+    font-size: 1.1rem;
+  }
+  
+  .section-description {
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
   }
 }
 </style> 
