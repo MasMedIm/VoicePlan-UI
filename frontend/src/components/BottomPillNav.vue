@@ -16,17 +16,19 @@
         <span class="sr-only">{{ voiceStatusLabel }}</span>
       </button>
       
-      <!-- Expand button -->
+      <!-- Expand button with chevron icon -->
       <button class="expand-btn" @click="toggleCollapse" title="Click to expand full navigation">
-        <div class="expand-icon">⬆️</div>
+        <ChevronUp class="expand-icon" />
       </button>
     </div>
 
     <!-- Expanded state - full navigation -->
     <div v-else class="pill-nav">
-      <!-- Collapse button -->
+      <!-- Collapse button with chevron icon -->
       <button class="nav-button collapse-btn" @click="toggleCollapse" title="Collapse navigation">
-        <div class="icon-container">📱</div>
+        <div class="icon-container">
+          <ChevronDown class="collapse-icon" />
+        </div>
         <span class="nav-label">Collapse</span>
       </button>
 
@@ -98,75 +100,77 @@
     </div>
 
     <!-- Settings Modal -->
-    <Transition name="settings-modal">
-      <div v-if="showSettings" class="settings-overlay" @click="closeSettings">
-        <div class="settings-modal" @click.stop>
-          <div class="settings-header">
-            <h3 class="settings-title">Settings</h3>
-            <button class="close-button" @click="closeSettings">
-              <X class="close-icon" />
-            </button>
-          </div>
-
-          <div class="settings-content">
-            <!-- Voice Selection Section -->
-            <div class="settings-section">
-              <h4 class="section-title">Voice Selection</h4>
-              <p class="section-description">Choose your preferred AI voice for conversations</p>
-              
-              <div class="voice-grid">
-                <div 
-                  v-for="voice in voiceOptions" 
-                  :key="voice.id"
-                  class="voice-option"
-                  :class="{ selected: props.selectedVoice === voice.id }"
-                  @click="selectVoice(voice)"
-                >
-                  <div class="voice-header">
-                    <div class="voice-name">{{ voice.name }}</div>
-                    <div class="voice-gender">{{ voice.gender }}</div>
-                  </div>
-                  <div class="voice-description">{{ voice.description }}</div>
-                  <div class="voice-accent">{{ voice.accent }} Accent</div>
-                  
-                  <!-- Play button for voice preview -->
-                  <button class="voice-preview-btn" @click.stop="previewVoice(voice)">
-                    <Play class="preview-icon" />
-                    <span>Preview</span>
-                  </button>
-                </div>
-              </div>
+    <Teleport to="body">
+      <Transition name="settings-modal">
+        <div v-if="showSettings" class="settings-overlay" @click="closeSettings">
+          <div class="settings-modal" @click.stop>
+            <div class="settings-header">
+              <h3 class="settings-title">Settings</h3>
+              <button class="close-button" @click="closeSettings">
+                <X class="close-icon" />
+              </button>
             </div>
 
-            <!-- App Information Section -->
-            <div class="settings-section">
-              <h4 class="section-title">About</h4>
-              <div class="app-info">
-                <div class="info-item">
-                  <span class="info-label">Version:</span>
-                  <span class="info-value">1.0.0</span>
+            <div class="settings-content">
+              <!-- Voice Selection Section -->
+              <div class="settings-section">
+                <h4 class="section-title">Voice Selection</h4>
+                <p class="section-description">Choose your preferred AI voice for conversations</p>
+                
+                <div class="voice-grid">
+                  <div 
+                    v-for="voice in voiceOptions" 
+                    :key="voice.id"
+                    class="voice-option"
+                    :class="{ selected: props.selectedVoice === voice.id }"
+                    @click="selectVoice(voice)"
+                  >
+                    <div class="voice-header">
+                      <div class="voice-name">{{ voice.name }}</div>
+                      <div class="voice-gender">{{ voice.gender }}</div>
+                    </div>
+                    <div class="voice-description">{{ voice.description }}</div>
+                    <div class="voice-accent">{{ voice.accent }} Accent</div>
+                    
+                    <!-- Play button for voice preview -->
+                    <button class="voice-preview-btn" @click.stop="previewVoice(voice)">
+                      <Play class="preview-icon" />
+                      <span>Preview</span>
+                    </button>
+                  </div>
                 </div>
-                <div class="info-item">
-                  <span class="info-label">Voice Engine:</span>
-                  <span class="info-value">OpenAI TTS</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-label">Cards Available:</span>
-                  <span class="info-value">12+ Types</span>
+              </div>
+
+              <!-- App Information Section -->
+              <div class="settings-section">
+                <h4 class="section-title">About</h4>
+                <div class="app-info">
+                  <div class="info-item">
+                    <span class="info-label">Version:</span>
+                    <span class="info-value">1.0.0</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Voice Engine:</span>
+                    <span class="info-value">OpenAI TTS</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Cards Available:</span>
+                    <span class="info-value">12+ Types</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </Transition>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import VoiceBubble from './VoiceBubble.vue'
-import { X, Play } from 'lucide-vue-next'
+import { X, Play, ChevronUp, ChevronDown } from 'lucide-vue-next'
 
 const props = defineProps({
   isDark: Boolean,
@@ -337,8 +341,11 @@ function closeSettings() {
 function selectVoice(voice) {
   console.log('🎤 Selecting voice:', voice.name, voice.id)
   emit('voice-change', voice)
-  // Close settings after selection
-  closeSettings()
+  
+  // Add brief visual feedback before closing
+  setTimeout(() => {
+    closeSettings()
+  }, 150)
 }
 
 async function previewVoice(voice) {
@@ -532,8 +539,16 @@ onUnmounted(() => {
 }
 
 .expand-icon {
-  font-size: 0.875rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: white;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.collapse-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  transition: transform 0.3s ease;
 }
 
 @keyframes expand-pulse {
@@ -837,34 +852,37 @@ onUnmounted(() => {
 /* Settings Modal */
 .settings-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.8);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(12px);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  z-index: 9999;
-  padding: 2rem 1rem;
-  padding-top: 10vh;
+  z-index: 50000;
+  padding: 2rem;
   box-sizing: border-box;
   overflow-y: auto;
 }
 
 .settings-modal {
-  background: rgba(30, 41, 59, 0.95);
+  background: rgba(30, 41, 59, 0.98);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 20px;
   padding: 2rem;
   width: 100%;
   max-width: 600px;
-  max-height: 80vh;
+  max-height: 85vh;
   overflow-y: auto;
   position: relative;
-  margin: 0 auto;
+  margin: auto;
   box-shadow: 
-    0 25px 50px rgba(0, 0, 0, 0.5),
+    0 25px 50px rgba(0, 0, 0, 0.6),
     0 0 0 1px rgba(255, 255, 255, 0.1);
+  transform: translateZ(0);
 }
 
 .settings-header {
@@ -957,6 +975,12 @@ onUnmounted(() => {
   backdrop-filter: blur(8px);
   position: relative;
   overflow: hidden;
+  user-select: none;
+}
+
+.voice-option:active {
+  transform: translateY(-2px) scale(0.98);
+  transition: all 0.1s ease;
 }
 
 .voice-option::before {
@@ -985,10 +1009,27 @@ onUnmounted(() => {
 }
 
 .voice-option.selected {
-  border-color: rgba(59, 130, 246, 0.5);
-  background: rgba(59, 130, 246, 0.1);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.7);
+  background: rgba(59, 130, 246, 0.15);
+  box-shadow: 
+    0 0 0 2px rgba(59, 130, 246, 0.4),
+    0 8px 24px rgba(59, 130, 246, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transform: translateY(-2px) scale(1.02);
+}
+
+.voice-option.selected::before {
+  opacity: 1;
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.2) 0%, 
+    rgba(139, 92, 246, 0.2) 100%
+  );
+}
+
+.voice-option.selected .voice-name::after {
+  content: ' ✓';
+  color: rgba(59, 130, 246, 0.8);
+  font-weight: bold;
 }
 
 .voice-header {
