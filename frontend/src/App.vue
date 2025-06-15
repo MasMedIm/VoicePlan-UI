@@ -1,5 +1,6 @@
 <template>
   <div class="app-container" :class="{ dark: isDark }">
+    <img class="app-logo" :src="logoSrc" alt="Gullie logo" />
     <!-- Optional auth stub (kept for future) -->
     <div v-if="!isAuthenticated" class="login-container">
           <h2>Welcome Back</h2>
@@ -91,6 +92,8 @@
 
 <script setup>
 import { ref, watch, onMounted, computed } from "vue";
+import logoBlack from "../assets/gullie-black-logo.png";
+import logoWhite from "../assets/gullie-white-logo.png";
 import { useRealtime } from "./composables/useRealtime.js";
 import { useUiStore } from "./composables/useUiStore.js";
 import CardBasic from "./components/CardBasic.vue";
@@ -130,6 +133,11 @@ const btnState = computed(() => {
   }
   return 'state-idle';
 });
+
+// ---------------------------------------------------------------------------
+// Logo selection based on theme
+// ---------------------------------------------------------------------------
+const logoSrc = computed(() => isDark.value ? logoWhite : logoBlack);
 
 // ---------------------------------------------------------------------------
 // Voice Status Labels
@@ -260,6 +268,16 @@ html, body, #app {
   left: 0;
   right: 0;
   bottom: 0;
+}
+
+.app-logo {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  width: 100px;
+  height: auto;
+  z-index: 1200;
+  pointer-events: none;
 }
 
 .app-container {
