@@ -21,4 +21,6 @@ def return_gemini_response(query: str, current_run_path: str, model: str = "gemi
     with open(os.path.join(current_run_path, f"gemini_response.txt"), "w") as file:
         file.write(response.text)
     
+    return response.text
+    
     

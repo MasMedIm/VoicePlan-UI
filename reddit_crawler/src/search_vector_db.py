@@ -11,7 +11,7 @@ with open("keys.yaml", 'r') as stream:
 
 pc = Pinecone(api_key=keys['PINECONE_API_KEY'])
 
-def search_vector_db(index_name: str, query: str, current_run_path: str, top_k: int = 100):
+def search_vector_db(index_name: str, query: str, current_run_path: str, top_k: int = 100, namespace: str = "example-namespace"):
 
     if not pc.has_index(index_name):
         print(f"Creating index '{index_name}' with integrated embeddings for 'llama-text-embed-v2'...")
@@ -62,6 +62,4 @@ def search_vector_db(index_name: str, query: str, current_run_path: str, top_k: 
             message = "No results found to save."
             print(message)
             f_out.write(message + "\n")
-    
-    return output_filename
     
