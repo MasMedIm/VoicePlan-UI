@@ -1,6 +1,14 @@
 <template>
   <div class="card date-card" :class="urgencyClass" @click="open">
-    <div class="date-backdrop"></div>
+    <!-- Glassmorphism overlay -->
+    <div class="glass-overlay" :class="urgencyClass"></div>
+    
+    <!-- Animated glow effect -->
+    <div class="glow-effect" :class="urgencyClass"></div>
+    
+    <!-- Decorative elements -->
+    <div class="decorative-circle circle-1" :class="urgencyClass"></div>
+    <div class="decorative-circle circle-2" :class="urgencyClass"></div>
     
     <header class="card-header">
       <div class="header-left">
@@ -56,12 +64,19 @@
     
     <p v-if="card.description" class="description">{{ card.description }}</p>
     
-    <div class="date-glow" :class="urgencyClass"></div>
+    <!-- Urgency pulse effect -->
+    <div class="urgency-pulse" :class="urgencyClass"></div>
+    
+    <!-- Action indicator -->
+    <div class="action-indicator">
+      <ChevronRight class="chevron" />
+    </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue';
+import { CalendarDays, ChevronRight } from 'lucide-vue-next';
 
 const props = defineProps({
   card: { type: Object, required: true },
@@ -113,20 +128,19 @@ function open() { emit('open'); }
 
 <style scoped>
 .date-card {
-  height: fit-content;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--card-border-color);
-  border-radius: 8px;
-  background: var(--card-bg);
-  padding: 0.5rem;
-  text-align: left;
-  color: var(--text-color);
   position: relative;
   overflow: hidden;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  height: fit-content;
   min-height: fit-content;
+  cursor: pointer;
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .date-card::before {
@@ -136,134 +150,365 @@ function open() { emit('open'); }
   left: 0;
   right: 0;
   bottom: 0;
-  opacity: 0.05;
-  z-index: 0;
-  transition: opacity 0.3s ease;
+  opacity: 0;
+  z-index: 1;
+  transition: opacity 0.4s ease;
 }
 
 .date-card.urgent::before {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, 0.03) 0%, 
+    rgba(220, 38, 38, 0.03) 100%
+  );
 }
 
 .date-card.soon::before {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+  background: linear-gradient(135deg, 
+    rgba(245, 158, 11, 0.03) 0%, 
+    rgba(217, 119, 6, 0.03) 100%
+  );
 }
 
 .date-card.today::before {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, 
+    rgba(16, 185, 129, 0.03) 0%, 
+    rgba(5, 150, 105, 0.03) 100%
+  );
 }
 
 .date-card.future::before {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.03) 0%, 
+    rgba(37, 99, 235, 0.03) 100%
+  );
 }
 
 .date-card.past::before {
-  background: linear-gradient(135deg, #6b7280, #4b5563);
+  background: linear-gradient(135deg, 
+    rgba(107, 114, 128, 0.03) 0%, 
+    rgba(75, 85, 99, 0.03) 100%
+  );
 }
 
-.date-card:hover::before {
-  opacity: 0.1;
-}
-
-.date-card:hover {
-  transform: translateY(-1px) scale(1.005);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.date-backdrop {
+.glass-overlay {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(20px);
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: all 0.4s ease;
+  z-index: 1;
+}
+
+.glass-overlay.urgent {
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, 0.08) 0%, 
+    rgba(220, 38, 38, 0.05) 100%
+  );
+}
+
+.glass-overlay.soon {
+  background: linear-gradient(135deg, 
+    rgba(245, 158, 11, 0.08) 0%, 
+    rgba(217, 119, 6, 0.05) 100%
+  );
+}
+
+.glass-overlay.today {
+  background: linear-gradient(135deg, 
+    rgba(16, 185, 129, 0.08) 0%, 
+    rgba(5, 150, 105, 0.05) 100%
+  );
+}
+
+.glass-overlay.future {
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.08) 0%, 
+    rgba(37, 99, 235, 0.05) 100%
+  );
+}
+
+.glass-overlay.past {
+  background: linear-gradient(135deg, 
+    rgba(107, 114, 128, 0.08) 0%, 
+    rgba(75, 85, 99, 0.05) 100%
+  );
+}
+
+.glow-effect {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 18px;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.4s ease;
+  filter: blur(12px);
+  animation: gentle-pulse 3s ease-in-out infinite;
+}
+
+.glow-effect.urgent {
+  background: linear-gradient(45deg, 
+    rgba(239, 68, 68, 0.4) 0%,
+    rgba(220, 38, 38, 0.3) 50%,
+    rgba(239, 68, 68, 0.4) 100%
+  );
+}
+
+.glow-effect.soon {
+  background: linear-gradient(45deg, 
+    rgba(245, 158, 11, 0.4) 0%,
+    rgba(217, 119, 6, 0.3) 50%,
+    rgba(245, 158, 11, 0.4) 100%
+  );
+}
+
+.glow-effect.today {
+  background: linear-gradient(45deg, 
+    rgba(16, 185, 129, 0.4) 0%,
+    rgba(5, 150, 105, 0.3) 50%,
+    rgba(16, 185, 129, 0.4) 100%
+  );
+}
+
+.glow-effect.future {
+  background: linear-gradient(45deg, 
+    rgba(59, 130, 246, 0.4) 0%,
+    rgba(37, 99, 235, 0.3) 50%,
+    rgba(59, 130, 246, 0.4) 100%
+  );
+}
+
+.glow-effect.past {
+  background: linear-gradient(45deg, 
+    rgba(107, 114, 128, 0.4) 0%,
+    rgba(75, 85, 99, 0.3) 50%,
+    rgba(107, 114, 128, 0.4) 100%
+  );
+}
+
+.decorative-circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 0;
 }
 
-.date-card:hover .date-backdrop {
+.circle-1 {
+  width: 5rem;
+  height: 5rem;
+  top: -2.5rem;
+  right: -2.5rem;
+}
+
+.circle-2 {
+  width: 7rem;
+  height: 7rem;
+  bottom: -3.5rem;
+  left: -3.5rem;
+}
+
+.circle-1.urgent, .circle-2.urgent {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.circle-1.soon, .circle-2.soon {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.circle-1.today, .circle-2.today {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.circle-1.future, .circle-2.future {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.circle-1.past, .circle-2.past {
+  background: rgba(107, 114, 128, 0.1);
+}
+
+.date-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.15),
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.date-card.urgent:hover {
+  border-color: rgba(239, 68, 68, 0.3);
+  box-shadow: 
+    0 12px 32px rgba(239, 68, 68, 0.15),
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.date-card.soon:hover {
+  border-color: rgba(245, 158, 11, 0.3);
+  box-shadow: 
+    0 12px 32px rgba(245, 158, 11, 0.15),
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.date-card.today:hover {
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow: 
+    0 12px 32px rgba(16, 185, 129, 0.15),
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.date-card.future:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 
+    0 12px 32px rgba(59, 130, 246, 0.15),
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.date-card.past:hover {
+  border-color: rgba(107, 114, 128, 0.3);
+  box-shadow: 
+    0 12px 32px rgba(107, 114, 128, 0.15),
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.date-card:hover::before {
   opacity: 1;
+}
+
+.date-card:hover .glass-overlay {
+  opacity: 1;
+}
+
+.date-card:hover .glow-effect {
+  opacity: 0.6;
+}
+
+.date-card:hover .action-indicator {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.date-card:hover .icon-wrapper {
+  transform: rotate(8deg) scale(1.15);
+}
+
+.date-card:hover .circle-1,
+.date-card:hover .circle-2 {
+  transform: scale(1.3);
+  opacity: 0.9;
+}
+
+.date-card:active {
+  transform: translateY(-4px) scale(1.01);
+  transition: transform 0.15s ease-out;
+}
+
+.card {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  border-radius: 16px;
+  padding: 0.75rem;
+  color: var(--text-color);
+  position: relative;
+  z-index: 2;
+  min-height: 0;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   position: relative;
-  z-index: 2;
+  z-index: 3;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: 0.5rem;
 }
 
 .icon-wrapper {
-  padding: 0.2rem;
-  border-radius: 6px;
+  padding: 0.35rem;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .icon-wrapper.urgent {
   background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
 }
 .icon-wrapper.soon {
   background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
 }
 
 .icon-wrapper.today {
   background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  animation: today-glow 2s ease-in-out infinite;
 }
 
 .icon-wrapper.future {
   background: linear-gradient(135deg, #3b82f6, #2563eb);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .icon-wrapper.past {
   background: linear-gradient(135deg, #6b7280, #4b5563);
-}
-
-.date-card:hover .icon-wrapper {
-  transform: rotate(10deg) scale(1.1);
+  box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
 }
 
 .icon {
-  width: 0.8rem;
-  height: 0.8rem;
+  width: 1rem;
+  height: 1rem;
   color: white;
   stroke-width: 2.5;
 }
 
 .title {
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: 700;
   margin: 0;
-  line-height: 1.25;
+  line-height: 1.3;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   background: linear-gradient(135deg, 
     var(--text-color) 0%, 
-    color-mix(in srgb, var(--text-color) 85%, #3b82f6 15%) 100%
+    color-mix(in srgb, var(--text-color) 80%, #3b82f6 20%) 100%
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  letter-spacing: -0.01em;
 }
 
 .countdown-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   position: relative;
   z-index: 2;
 }
@@ -275,57 +520,64 @@ function open() { emit('open'); }
 .countdown-number {
   display: flex;
   align-items: baseline;
-  gap: 0.2rem;
-  margin-bottom: 0.2rem;
+  gap: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 
 .number {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-weight: 800;
   line-height: 1;
   transition: all 0.3s ease;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .countdown-number.urgent .number {
   color: #ef4444;
+  text-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
 }
 
 .countdown-number.soon .number {
   color: #f59e0b;
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
 }
 
 .countdown-number.today .number {
   color: #10b981;
+  text-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+  animation: today-pulse 2s ease-in-out infinite;
 }
 
 .countdown-number.future .number {
   color: #3b82f6;
+  text-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
 }
 
 .countdown-number.past .number {
   color: #6b7280;
+  text-shadow: 0 0 12px rgba(107, 114, 128, 0.4);
 }
 
 .unit {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-color);
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 .countdown-label {
-  font-size: 0.65rem;
-  font-weight: 500;
+  font-size: 0.7rem;
+  font-weight: 600;
   color: var(--text-color);
   opacity: 0.8;
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.5px;
 }
 
 .progress-ring {
   position: relative;
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   flex-shrink: 0;
 }
 
@@ -336,6 +588,7 @@ function open() { emit('open'); }
 
 .progress-stroke {
   transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 0 4px currentColor);
 }
 
 .progress-text {
@@ -343,163 +596,182 @@ function open() { emit('open'); }
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--text-color);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .description {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   color: var(--text-color);
-  opacity: 0.85;
+  opacity: 0.8;
   margin: 0;
-  line-height: 1.3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
+  line-height: 1.4;
+  text-align: center;
   position: relative;
   z-index: 2;
 }
 
-.date-glow {
+.action-indicator {
   position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border-radius: 14px;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: all 0.3s ease;
+  z-index: 3;
+}
+
+.chevron {
+  width: 1rem;
+  height: 1rem;
+  color: rgba(59, 130, 246, 0.6);
+  animation: float 2s ease-in-out infinite;
+}
+
+.urgency-pulse {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 20px;
   opacity: 0;
   z-index: -1;
-  filter: blur(8px);
-  transition: opacity 0.3s ease;
+  filter: blur(12px);
+  transition: opacity 0.4s ease;
 }
 
-.date-glow.urgent {
+.urgency-pulse.urgent {
   background: linear-gradient(45deg, #ef4444, #f87171);
+  animation: urgent-pulse 1.5s ease-in-out infinite;
 }
 
-.date-glow.soon {
-  background: linear-gradient(45deg, #f59e0b, #fbbf24);
-}
-
-.date-glow.today {
+.urgency-pulse.today {
   background: linear-gradient(45deg, #10b981, #34d399);
+  animation: today-pulse 2s ease-in-out infinite;
 }
 
-.date-glow.future {
-  background: linear-gradient(45deg, #3b82f6, #60a5fa);
+.date-card:hover .urgency-pulse {
+  opacity: 0.4;
 }
 
-.date-glow.past {
-  background: linear-gradient(45deg, #6b7280, #9ca3af);
+/* Animations */
+@keyframes gentle-pulse {
+  0%, 100% { 
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  50% { 
+    opacity: 0.3;
+    transform: scale(1.02);
+  }
 }
 
-.date-card:hover .date-glow {
-  opacity: 0.3;
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-2px); }
 }
 
-/* ===== Micro Size Optimizations ===== */
-.mosaic-item-micro .date-card {
-  padding: 0.35rem;
+@keyframes today-glow {
+  0%, 100% { 
+    background: linear-gradient(135deg, #10b981, #059669);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+  50% { 
+    background: linear-gradient(135deg, #34d399, #10b981);
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5);
+  }
+}
+
+@keyframes today-pulse {
+  0%, 100% { 
+    transform: scale(1);
+    text-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+  }
+  50% { 
+    transform: scale(1.05);
+    text-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+  }
+}
+
+@keyframes urgent-pulse {
+  0%, 100% { 
+    opacity: 0;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.6;
+    transform: scale(1.02);
+  }
+}
+
+/* Size optimizations */
+.mosaic-item-micro .card {
+  padding: 0.5rem;
 }
 
 .mosaic-item-micro .card-header {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .mosaic-item-micro .countdown-container {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .mosaic-item-micro .title {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
+  -webkit-line-clamp: 1;
 }
 
 .mosaic-item-micro .number {
-  font-size: 1rem;
-}
-
-.mosaic-item-micro .unit {
-  font-size: 0.6rem;
-}
-
-.mosaic-item-micro .countdown-label {
-  font-size: 0.55rem;
-}
-
-.mosaic-item-micro .description {
-  font-size: 0.55rem;
-  -webkit-line-clamp: 1;
-}
-
-.mosaic-item-micro .progress-ring {
-  width: 35px;
-  height: 35px;
-}
-
-.mosaic-item-micro .progress-text {
-  font-size: 0.5rem;
-}
-
-.mosaic-item-micro .icon-wrapper {
-  padding: 0.15rem;
-}
-
-.mosaic-item-micro .icon {
-  width: 0.7rem;
-  height: 0.7rem;
-}
-
-/* ===== Tiny Size Optimizations ===== */
-.mosaic-item-tiny .title {
-  font-size: 0.75rem;
-}
-
-.mosaic-item-tiny .number {
   font-size: 1.1rem;
 }
 
-.mosaic-item-tiny .description {
-  font-size: 0.6rem;
-  -webkit-line-clamp: 1;
+.mosaic-item-micro .unit {
+  font-size: 0.65rem;
 }
 
-.mosaic-item-tiny .progress-ring {
+.mosaic-item-micro .countdown-label {
+  font-size: 0.6rem;
+}
+
+.mosaic-item-micro .description {
+  font-size: 0.65rem;
+}
+
+.mosaic-item-micro .progress-ring {
   width: 40px;
   height: 40px;
 }
 
-.mosaic-item-tiny .progress-text {
+.mosaic-item-micro .progress-text {
   font-size: 0.6rem;
 }
 
-/* ===== Enhanced Large Size Support ===== */
-.mosaic-item-large .title,
-.mosaic-item-xl .title {
-  font-size: 0.9rem;
+.mosaic-item-micro .icon-wrapper {
+  padding: 0.25rem;
 }
 
-.mosaic-item-large .number,
-.mosaic-item-xl .number {
-  font-size: 1.6rem;
+.mosaic-item-micro .icon {
+  width: 0.875rem;
+  height: 0.875rem;
 }
 
-.mosaic-item-large .description,
-.mosaic-item-xl .description {
-  font-size: 0.75rem;
-  -webkit-line-clamp: 2;
+/* Enhanced dark mode */
+.dark .date-card {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-.mosaic-item-large .progress-ring,
-.mosaic-item-xl .progress-ring {
-  width: 60px;
-  height: 60px;
-}
-
-.mosaic-item-large .progress-text,
-.mosaic-item-xl .progress-text {
-  font-size: 0.7rem;
+.dark .date-card:hover {
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.2),
+    0 4px 16px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 </style>
