@@ -56,32 +56,10 @@ function open() { emit('open'); }
   white-space: nowrap;
 }
 
-.header-left{
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  margin-bottom: 0.5rem;
-}
+.header-left{display:flex;align-items:center;gap:10px;}
+.icon{width:18px;height:18px;color:#ff8800;flex-shrink:0;}
 
-.icon{
-  width: 1rem;
-  height: 1rem;
-  color: #3b82f6;
-  flex-shrink: 0;
-}
-
-.countdown { 
-  font-size: 1rem; 
-  margin: 0; 
-  color: #2563eb; 
-  font-weight: 600; 
-  text-align: center;
-  flex-grow: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
+.countdown { font-size: 1.25rem; margin: 0; color: #ff8800; font-weight: 600; }
 .countdown.past { color: #c2410c; }
 
 .description { 

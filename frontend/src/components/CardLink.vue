@@ -44,68 +44,13 @@ function open() { emit('open'); }
   color: var(--text-color);
 }
 
-.link { 
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  text-decoration: none; 
-  margin-bottom: 0.5rem;
-}
 
-.icon{
-  width: 1rem;
-  height: 1rem;
-  color: #3b82f6;
-  flex-shrink: 0;
-}
+.link { display:flex;align-items:center;gap:10px;text-decoration:none; }
+.icon{width:18px;height:18px;color:#ff8800;flex-shrink:0;}
 
-.favicon { 
-  width: 1rem; 
-  height: 1rem; 
-  border-radius: 2px;
-}
+.favicon { width: 20px; height: 20px; }
 
-.title { 
-  font-size: 0.875rem; 
-  font-weight: 600; 
-  color: #2563eb; 
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex-grow: 1;
-}
 
-.description { 
-  font-size: 0.75rem; 
-  color: var(--text-color); 
-  opacity: 0.8;
-  margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  flex-grow: 1;
-}
-
-/* Responsive adjustments */
-.mosaic-item-tiny .title {
-  font-size: 0.75rem;
-}
-
-.mosaic-item-tiny .description {
-  font-size: 0.625rem;
-  -webkit-line-clamp: 2;
-}
-
-.mosaic-item-large .title,
-.mosaic-item-xl .title {
-  font-size: 1rem;
-}
-
-.mosaic-item-large .description,
-.mosaic-item-xl .description {
-  font-size: 0.875rem;
-  -webkit-line-clamp: 4;
-}
+.title { font-size: 1.25rem; font-weight: 600; color: #ff8800; margin-top: 6px; }
+.description { font-size: 0.85rem; color: #555; margin-top: 6px; }
 </style>

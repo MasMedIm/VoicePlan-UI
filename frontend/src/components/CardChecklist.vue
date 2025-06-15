@@ -113,52 +113,7 @@ function open() {
   opacity: 0.6; 
 }
 
-.description { 
-  font-size: 0.75rem; 
-  color: var(--text-color); 
-  opacity: 0.8;
-  margin: 0.5rem 0 0; 
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-.header-left { 
-  display: flex; 
-  align-items: center; 
-  gap: 0.375rem; 
-  min-width: 0;
-}
-
-.icon { 
-  width: 1rem; 
-  height: 1rem; 
-  color: #3b82f6; 
-  flex-shrink: 0; 
-}
-
-/* Responsive adjustments */
-.mosaic-item-tiny .title {
-  font-size: 0.75rem;
-}
-
-.mosaic-item-tiny .items li {
-  font-size: 0.625rem;
-}
-
-.mosaic-item-tiny .progress {
-  font-size: 0.5rem;
-}
-
-.mosaic-item-large .title,
-.mosaic-item-xl .title {
-  font-size: 1rem;
-}
-
-.mosaic-item-large .items li,
-.mosaic-item-xl .items li {
-  font-size: 0.875rem;
-}
+.description { font-size: 0.85rem; color: #555; margin: 6px 0 0; }
+.header-left { display: flex; align-items: center; gap: 10px; }
+.icon { width: 18px; height: 18px; color: #ff8800; flex-shrink: 0; }
 </style>
