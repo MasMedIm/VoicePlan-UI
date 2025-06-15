@@ -1,7 +1,7 @@
 <template>
   <div class="card image-card" @click="open">
     <img :src="card.image_url" :alt="card.title || 'image'" class="thumb" />
-    <header class="card-header"><div class="header-left"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    <header class="card-header"><div class="header-left"><ImageIcon class="icon" />
       <h3 class="title">{{ card.title }}</h3></div>
       <span v-if="card.status" class="status" :class="statusClass">{{ card.status }}</span>
     </header>
