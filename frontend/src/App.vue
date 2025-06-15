@@ -257,6 +257,7 @@ import CardImage from "./components/CardImage.vue";
 import CardChecklist from "./components/CardChecklist.vue";
 import CardDate from "./components/CardDate.vue";
 import CardLink from "./components/CardLink.vue";
+import CardMeeting from "./components/CardMeeting.vue";
 import CardMetric from "./components/CardMetric.vue";
 import CardProgress from "./components/CardProgress.vue";
 import CardWeather from "./components/CardWeather.vue";
@@ -380,6 +381,12 @@ const determineCardSize = (card) => {
       if (contentScore > 30) return 'tiny';
       return 'micro';
     
+    case 'meeting':
+      // Meetings need space for date picker and details
+      if (contentScore > 70) return 'medium';
+      if (contentScore > 40) return 'small';
+      return 'tiny';
+    
     case 'progress':
       // Progress cards sized conservatively
       if (itemCount > 12) return 'tall';
@@ -437,6 +444,7 @@ const componentMap = {
   'card.checklist': CardChecklist,
   'card.date': CardDate,
   'card.link': CardLink,
+  'card.meeting': CardMeeting,
   'card.metric': CardMetric,
   'card.progress': CardProgress,
   'card.weather': CardWeather,
