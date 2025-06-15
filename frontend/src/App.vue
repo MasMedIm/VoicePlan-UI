@@ -61,10 +61,164 @@
       </div>
     </section>
 
-    <!-- Modal overlay -->
-    <div v-if="selected" class="modal" @click.self="closeModal">
-      <component :is="componentMap[selected.kind]" :card="selected.props" class="modal-card" />
-    </div>
+    <!-- Enhanced Focus Modal -->
+    <Transition name="focus-modal-fade">
+      <div v-if="selected" class="focus-modal-overlay" @click.self="closeModal" aria-modal="true" role="dialog" aria-label="Focused Card Modal">
+        <div class="focus-modal" :class="{ 'chat-active': isFocusChatMode }">
+          <!-- Glassmorphism background -->
+          <div class="modal-glass-bg"></div>
+          
+          <!-- Decorative elements -->
+          <div class="modal-decorative-circle circle-1"></div>
+          <div class="modal-decorative-circle circle-2"></div>
+          
+          <!-- Modal Header -->
+          <header class="modal-header">
+            <div class="header-content">
+              <div class="focus-indicator">
+                <Target class="focus-icon" />
+                <span class="focus-label">Focused Mode</span>
+              </div>
+              <h2 class="modal-title">{{ selected?.props?.title || 'Card Details' }}</h2>
+            </div>
+            
+            <div class="header-actions">
+              <button @click="toggleFocusChatMode" class="chat-toggle-btn" :class="{ active: isFocusChatMode }" aria-label="Toggle chat panel">
+                <MessageSquare class="icon" />
+                <span>{{ isFocusChatMode ? 'Hide Chat' : 'Edit Card' }}</span>
+              </button>
+              <button @click="closeModal" class="close-btn" aria-label="Close focus modal">
+                <X class="icon" />
+              </button>
+            </div>
+          </header>
+          
+          <!-- Main Content Area -->
+          <div class="modal-content">
+            <!-- Left Side: Enhanced Card View -->
+            <div class="card-container" :class="{ condensed: isFocusChatMode }">
+              <div class="enhanced-card-wrapper">
+                <component 
+                  :is="componentMap[selected.kind]" 
+                  :card="focusedCard" 
+                  class="focused-card"
+                />
+                
+                <!-- Real-time update indicator -->
+                <div v-if="isFocusUpdating" class="update-indicator">
+                  <div class="update-pulse"></div>
+                  <span class="update-text">Updating...</span>
+                </div>
+              </div>
+              
+              <!-- Card Metadata -->
+              <div class="card-metadata">
+                <div class="metadata-item">
+                  <Calendar class="metadata-icon" />
+                  <span>{{ formatDate(selected?.props?.created_at) }}</span>
+                </div>
+                <div class="metadata-item">
+                  <Hash class="metadata-icon" />
+                  <span>{{ selected?.kind?.replace('card.', '') || 'basic' }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Right Side: Interactive Chat -->
+            <Transition name="chat-slide">
+              <div v-if="isFocusChatMode" class="chat-container">
+                <div class="chat-header">
+                  <div class="chat-title">
+                    <Bot class="chat-icon" />
+                    <span>Chat with this card</span>
+                  </div>
+                  <div class="chat-status" :class="focusChatStatus">
+                    <div class="status-dot"></div>
+                    <span>{{ focusChatStatusText }}</span>
+                  </div>
+                </div>
+                
+                <!-- Chat Messages -->
+                <div class="chat-messages" ref="focusChatMessages">
+                  <div v-for="message in focusChatHistory" :key="message.id" class="chat-message" :class="message.type">
+                    <div class="message-content">
+                      <div class="message-text">{{ message.text }}</div>
+                      <div class="message-time">{{ formatTime(message.timestamp) }}</div>
+                    </div>
+                  </div>
+                  
+                  <!-- Typing indicator -->
+                  <div v-if="isAssistantTyping" class="chat-message assistant typing">
+                    <div class="message-content">
+                      <div class="typing-dots">
+                        <span></span><span></span><span></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Voice Interaction Area -->
+                <div class="voice-interaction">
+                  <VoiceWaveform 
+                    :isListening="isFocusListening"
+                    :isSpeaking="isFocusSpeaking"
+                    :audioLevel="audioLevel"
+                    class="focus-waveform"
+                  />
+                  
+                  <div class="interaction-controls">
+                    <button 
+                      @click="toggleFocusVoice" 
+                      class="voice-btn"
+                      :class="{ active: isFocusListening, speaking: isFocusSpeaking }"
+                      :disabled="rtcStatus === 'connecting'"
+                    >
+                      <Mic class="icon" />
+                      <span>{{ focusVoiceButtonText }}</span>
+                    </button>
+                    
+                    <div class="quick-actions">
+                      <button @click="addFocusQuickAction('edit')" class="quick-action">
+                        <Edit3 class="icon" />
+                        <span>Edit</span>
+                      </button>
+                      <button @click="addFocusQuickAction('duplicate')" class="quick-action">
+                        <Copy class="icon" />
+                        <span>Duplicate</span>
+                      </button>
+                      <button @click="addFocusQuickAction('delete')" class="quick-action delete">
+                        <Trash2 class="icon" />
+                        <span>Delete</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Text Input -->
+                <div class="text-input-container">
+                  <input 
+                    ref="focusChatInput"
+                    v-model="focusTextInput"
+                    @keyup.enter="sendFocusTextMessage"
+                    placeholder="Type a message or voice command..."
+                    class="text-input"
+                    :disabled="isFocusProcessing"
+                    aria-label="Chat input for focused card"
+                  />
+                  <button 
+                    @click="sendFocusTextMessage"
+                    class="send-btn"
+                    :disabled="!focusTextInput.trim() || isFocusProcessing"
+                  >
+                    <Send class="icon" />
+                  </button>
+                </div>
+              </div>
+            </Transition>
+          </div>
+        </div>
+      </div>
+    </Transition>
 
     <!-- Voice Waveform Visualization -->
     <VoiceWaveform 
@@ -104,7 +258,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed } from "vue";
+import { ref, watch, onMounted, computed, nextTick, onUnmounted } from "vue";
 import logoBlack from "../assets/gullie-black-logo.png";
 import logoWhite from "../assets/gullie-white-logo.png";
 import { useRealtime } from "./composables/useRealtime.js";
@@ -125,7 +279,10 @@ import { useVoiceDetection } from "./composables/useVoiceDetection.js";
 import { loginUser } from "./lib/api.js";
 import VoiceWaveform from "./components/VoiceWaveform.vue";
 import VoiceHints from "./components/VoiceHints.vue";
-import { Mic } from 'lucide-vue-next';
+import { 
+  Mic, Target, MessageSquare, X, Calendar, Hash, Bot, 
+  Edit3, Copy, Trash2, Send 
+} from 'lucide-vue-next';
 
 const email = ref('');
 const password = ref('');
@@ -283,12 +440,301 @@ const componentMap = {
 // Modal for enlarging a card (currently checklist only)
 const selected = ref(null); // holds ui item
 
+// Focus Modal State
+const isFocusChatMode = ref(false);
+const isFocusUpdating = ref(false);
+const focusedCard = ref(null);
+
+// Focus Chat State
+const focusChatHistory = ref([]);
+const focusTextInput = ref('');
+const isAssistantTyping = ref(false);
+const isFocusProcessing = ref(false);
+const focusChatMessages = ref(null);
+const focusChatInput = ref(null); // NEW: ref for chat input
+
+// Focus Voice State
+const isFocusListening = ref(false);
+const isFocusSpeaking = ref(false);
+
+const focusChatStatus = computed(() => {
+  if (rtcStatus.value === 'connecting') return 'connecting';
+  if (isFocusSpeaking.value) return 'speaking';
+  if (isFocusListening.value) return 'listening';
+  return 'ready';
+});
+
+const focusChatStatusText = computed(() => {
+  const statusMap = {
+    connecting: 'Connecting...',
+    speaking: 'AI Speaking',
+    listening: 'Listening...',
+    ready: 'Ready to chat'
+  };
+  return statusMap[focusChatStatus.value];
+});
+
+const focusVoiceButtonText = computed(() => {
+  if (rtcStatus.value === 'connecting') return 'Connecting...';
+  if (isFocusSpeaking.value) return 'Speaking...';
+  if (isFocusListening.value) return 'Listening...';
+  return 'Start Voice';
+});
+
+// Sound effect helper
+function playSound(name) {
+  const audio = new Audio(`/sounds/${name}.mp3`);
+  audio.volume = 0.18;
+  audio.play();
+}
+
 function openItem(item) {
   selected.value = item;
+  focusedCard.value = { ...item.props };
+  
+  // Initialize focus chat
+  focusChatHistory.value = [
+    {
+      id: Date.now(),
+      type: 'assistant',
+      text: `Hi! I'm now focused on your "${item.props.title || 'card'}" ${item.kind?.replace('card.', '') || 'card'}. I can help you modify it through voice or text commands.`,
+      timestamp: Date.now()
+    }
+  ];
+  
+  // Reset focus state
+  isFocusChatMode.value = false;
+  isFocusUpdating.value = false;
+  focusTextInput.value = '';
+  isAssistantTyping.value = false;
+  isFocusProcessing.value = false;
+  isFocusListening.value = false;
+  isFocusSpeaking.value = false;
+  playSound('modal-open');
 }
 
 function closeModal() {
   selected.value = null;
+  focusedCard.value = null;
+  focusChatHistory.value = [];
+  isFocusChatMode.value = false;
+  playSound('modal-close');
+}
+
+// Focus Modal Functions
+function toggleFocusChatMode() {
+  isFocusChatMode.value = !isFocusChatMode.value;
+  
+  if (isFocusChatMode.value && focusChatHistory.value.length === 1) {
+    addFocusChatMessage('assistant', `Perfect! Now I'm focused on your "${focusedCard.value.title}" card. What would you like to change?`);
+  }
+  // Auto-focus chat input when chat opens
+  nextTick(() => {
+    if (isFocusChatMode.value && focusChatInput.value) {
+      focusChatInput.value.focus();
+    }
+  });
+}
+
+function toggleFocusVoice() {
+  if (isFocusListening.value) {
+    stopFocusListening();
+  } else {
+    startFocusListening();
+  }
+}
+
+function startFocusListening() {
+  isFocusListening.value = true;
+  addFocusChatMessage('user', 'Started voice input...');
+  
+  // In real implementation, this would integrate with the actual voice system
+  // and set context to focus on this specific card
+  if (rtc.status.value === 'live') {
+    // Redirect voice context to focused card
+    console.log('Voice focus set to card:', focusedCard.value.title);
+  }
+}
+
+function stopFocusListening() {
+  isFocusListening.value = false;
+  addFocusChatMessage('assistant', 'Voice input stopped. Processing your request...');
+  simulateFocusCardUpdate();
+}
+
+function sendFocusTextMessage() {
+  if (!focusTextInput.value.trim() || isFocusProcessing.value) return;
+  
+  const message = focusTextInput.value.trim();
+  addFocusChatMessage('user', message);
+  focusTextInput.value = '';
+  playSound('chat-send');
+  
+  processFocusUserMessage(message);
+}
+
+function addFocusChatMessage(type, text) {
+  focusChatHistory.value.push({
+    id: Date.now() + Math.random(),
+    type,
+    text,
+    timestamp: Date.now()
+  });
+  
+  // Auto-scroll chat
+  nextTick(() => {
+    if (focusChatMessages.value) {
+      focusChatMessages.value.scrollTop = focusChatMessages.value.scrollHeight;
+    }
+  });
+}
+
+function processFocusUserMessage(message) {
+  isFocusProcessing.value = true;
+  isAssistantTyping.value = true;
+  
+  setTimeout(() => {
+    isAssistantTyping.value = false;
+    
+    const updates = analyzeFocusMessage(message);
+    
+    if (updates) {
+      applyFocusCardUpdates(updates);
+      addFocusChatMessage('assistant', `Got it! I've updated your card based on your request.`);
+    } else {
+      addFocusChatMessage('assistant', `I understand you want to "${message}". Let me help you with that. What specific changes would you like me to make?`);
+    }
+    
+    isFocusProcessing.value = false;
+  }, 1000 + Math.random() * 1000);
+}
+
+function analyzeFocusMessage(message) {
+  const msg = message.toLowerCase();
+  
+  // Simple message analysis - in real app this would use AI
+  if (msg.includes('title') || msg.includes('name')) {
+    const match = message.match(/(?:title|name).*?['""]([^'""]+)['""]/) || 
+                  message.match(/(?:title|name).*?(?:to|is)\s+(.+?)(?:\.|$)/);
+    if (match) {
+      return { title: match[1].trim() };
+    }
+  }
+  
+  if (msg.includes('description')) {
+    const match = message.match(/description.*?['""]([^'""]+)['""]/) || 
+                  message.match(/description.*?(?:to|is)\s+(.+?)(?:\.|$)/);
+    if (match) {
+      return { description: match[1].trim() };
+    }
+  }
+  
+  if (msg.includes('add') && msg.includes('item')) {
+    const match = message.match(/add.*?['""]([^'""]+)['""]/) || 
+                  message.match(/add.*?item\s+(.+?)(?:\.|$)/);
+    if (match) {
+      return { addItem: match[1].trim() };
+    }
+  }
+  
+  return null;
+}
+
+function applyFocusCardUpdates(updates) {
+  isFocusUpdating.value = true;
+  
+  Object.keys(updates).forEach(key => {
+    if (key === 'addItem' && focusedCard.value.items) {
+      focusedCard.value.items.push({
+        text: updates[key],
+        checked: false
+      });
+    } else {
+      focusedCard.value[key] = updates[key];
+    }
+  });
+  
+  // Update the original item in the items array
+  const originalItem = items.value.find(item => item.id === selected.value.id);
+  if (originalItem) {
+    Object.assign(originalItem.props, focusedCard.value);
+  }
+  playSound('card-update');
+  setTimeout(() => {
+    isFocusUpdating.value = false;
+  }, 500);
+}
+
+function simulateFocusCardUpdate() {
+  isFocusProcessing.value = true;
+  
+  setTimeout(() => {
+    const randomUpdates = [
+      'Added new checklist item',
+      'Updated card description', 
+      'Modified card title',
+      'Changed card priority'
+    ];
+    
+    const update = randomUpdates[Math.floor(Math.random() * randomUpdates.length)];
+    addFocusChatMessage('assistant', `${update} based on your voice input.`);
+    
+    // Simulate actual card change
+    simulateRealFocusUpdate();
+    
+    isFocusProcessing.value = false;
+  }, 2000);
+}
+
+function simulateRealFocusUpdate() {
+  isFocusUpdating.value = true;
+  
+  // Make a small change to demonstrate reactivity
+  if (focusedCard.value.items && Math.random() > 0.5) {
+    focusedCard.value.items.push({
+      text: `New item ${Date.now()}`,
+      checked: false
+    });
+  } else {
+    focusedCard.value.description = `Updated: ${new Date().toLocaleTimeString()}`;
+  }
+  
+  // Update the original item
+  const originalItem = items.value.find(item => item.id === selected.value.id);
+  if (originalItem) {
+    Object.assign(originalItem.props, focusedCard.value);
+  }
+  
+  setTimeout(() => {
+    isFocusUpdating.value = false;
+  }, 500);
+}
+
+function addFocusQuickAction(action) {
+  const actionMessages = {
+    edit: "I'd like to edit this card",
+    duplicate: "Please duplicate this card",
+    delete: "Delete this card"
+  };
+  
+  if (action === 'delete') {
+    addFocusChatMessage('user', actionMessages[action]);
+    addFocusChatMessage('assistant', "Are you sure you want to delete this card? This action cannot be undone.");
+  } else {
+    processFocusUserMessage(actionMessages[action]);
+  }
+}
+
+function formatDate(dateString) {
+  if (!dateString) return 'Unknown';
+  return new Date(dateString).toLocaleDateString();
+}
+
+function formatTime(timestamp) {
+  return new Date(timestamp).toLocaleTimeString([], { 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  });
 }
 
 // Reactive list of cards (updated by realtime hook)
@@ -323,6 +769,19 @@ onMounted(() => {
     }
   }
   applyBackgroundTheme();
+  // Add global keydown listener for modal
+  window.addEventListener('keydown', handleFocusModalKeydown);
+  // In onMounted, add window resize listener for chat scroll
+  window.addEventListener('resize', scrollFocusChatToLatest);
+  // Add focus trap for modal accessibility
+  window.addEventListener('keydown', trapFocusInModal);
+});
+
+onUnmounted(() => {
+  document.body.style.overflow = '';
+  window.removeEventListener('keydown', handleFocusModalKeydown);
+  window.removeEventListener('resize', scrollFocusChatToLatest);
+  window.removeEventListener('keydown', trapFocusInModal);
 });
 
 watch(isDark, (val) => {
@@ -393,6 +852,53 @@ function onSettingsOpen() {
 
 function onSpeakHint(hint) {
   console.log('Speaking hint:', hint);
+}
+
+// Keyboard navigation for modal
+function handleFocusModalKeydown(e) {
+  if (!selected.value) return;
+  if (e.key === 'Escape') {
+    closeModal();
+  } else if (isFocusChatMode.value && e.key === 'Enter' && document.activeElement === focusChatInput.value) {
+    sendFocusTextMessage();
+  } else if (e.key === 'Tab') {
+    // Trap focus within modal controls (simple version)
+    const focusable = Array.from(document.querySelectorAll('.focus-modal button, .focus-modal input'));
+    const idx = focusable.indexOf(document.activeElement);
+    let nextIdx = e.shiftKey ? idx - 1 : idx + 1;
+    if (nextIdx < 0) nextIdx = focusable.length - 1;
+    if (nextIdx >= focusable.length) nextIdx = 0;
+    focusable[nextIdx]?.focus();
+    e.preventDefault();
+  }
+}
+
+function scrollFocusChatToLatest() {
+  nextTick(() => {
+    if (focusChatMessages.value) {
+      focusChatMessages.value.scrollTop = focusChatMessages.value.scrollHeight;
+    }
+  });
+}
+
+// Also call scrollFocusChatToLatest after sending/receiving messages
+watch(focusChatHistory, scrollFocusChatToLatest, { deep: true });
+
+// Focus trap for modal accessibility
+function trapFocusInModal(e) {
+  if (!selected.value) return;
+  const focusable = Array.from(document.querySelectorAll('.focus-modal button, .focus-modal input'));
+  if (focusable.length === 0) return;
+  if (e.key !== 'Tab') return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (e.shiftKey && document.activeElement === first) {
+    last.focus();
+    e.preventDefault();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    first.focus();
+    e.preventDefault();
+  }
 }
 </script>
 
@@ -1031,24 +1537,605 @@ html, body, #app {
   text-align: center;
 }
 
-/* ===== Modal ===== */
-.modal {
+/* ===== Enhanced Focus Modal System ===== */
+.focus-modal-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 2000;
-  backdrop-filter: blur(4px);
+  padding: 2rem;
 }
 
-.modal-card {
-  transform: scale(1.1);
-  cursor: default;
-  max-width: 90vw;
+.focus-modal {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
   max-height: 90vh;
-  overflow: auto;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 20px 48px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.focus-modal.chat-active {
+  max-width: 1400px;
+}
+
+.modal-glass-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.08) 0%, 
+    rgba(139, 92, 246, 0.05) 50%,
+    rgba(236, 72, 153, 0.08) 100%
+  );
+  z-index: 1;
+}
+
+.modal-decorative-circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: 0;
+}
+
+.modal-decorative-circle.circle-1 {
+  width: 8rem;
+  height: 8rem;
+  top: -4rem;
+  right: -4rem;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.modal-decorative-circle.circle-2 {
+  width: 12rem;
+  height: 12rem;
+  bottom: -6rem;
+  left: -6rem;
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  position: relative;
+  z-index: 3;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.focus-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.focus-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #3b82f6;
+}
+
+.focus-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #3b82f6;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.chat-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.chat-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.chat-toggle-btn.active {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: #a78bfa;
+}
+
+.close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+.modal-content {
+  display: flex;
+  height: calc(90vh - 5rem);
+  position: relative;
+  z-index: 2;
+}
+
+.card-container {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  transition: all 0.4s ease;
+}
+
+.card-container.condensed {
+  flex: 0.6;
+}
+
+.enhanced-card-wrapper {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.focused-card {
+  transform: scale(1.1);
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.update-indicator {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  color: #10b981;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.update-pulse {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: pulse-green 1s ease-in-out infinite;
+}
+
+.card-metadata {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+}
+
+.metadata-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+.metadata-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.chat-container {
+  flex: 0.4;
+  min-width: 400px;
+  background: rgba(0, 0, 0, 0.2);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(16px);
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chat-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.chat-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #8b5cf6;
+}
+
+.chat-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #6b7280;
+}
+
+.chat-status.listening .status-dot {
+  background: #3b82f6;
+  animation: pulse-blue 1s ease-in-out infinite;
+}
+
+.chat-status.speaking .status-dot {
+  background: #8b5cf6;
+  animation: pulse-purple 1s ease-in-out infinite;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.chat-message {
+  display: flex;
+  max-width: 80%;
+}
+
+.chat-message.user {
+  align-self: flex-end;
+}
+
+.chat-message.assistant {
+  align-self: flex-start;
+}
+
+.message-content {
+  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chat-message.user .message-content {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.chat-message.assistant .message-content {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.message-text {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--text-color);
+  margin-bottom: 0.25rem;
+}
+
+.message-time {
+  font-size: 0.7rem;
+  opacity: 0.6;
+  color: var(--text-color);
+}
+
+.typing-dots {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.typing-dots span {
+  width: 6px;
+  height: 6px;
+  background: var(--text-color);
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: typing 1.4s ease-in-out infinite;
+}
+
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+.voice-interaction {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.focus-waveform {
+  margin-bottom: 1rem;
+  transform: scale(0.8);
+}
+
+.interaction-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.voice-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  color: #3b82f6;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  font-weight: 600;
+}
+
+.voice-btn:hover {
+  background: rgba(59, 130, 246, 0.15);
+  transform: translateY(-1px);
+}
+
+.voice-btn.active {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+  animation: pulse-voice 2s ease-in-out infinite;
+}
+
+.voice-btn.speaking {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+  color: #8b5cf6;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  font-size: 0.8rem;
+}
+
+.quick-action:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.quick-action.delete {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.quick-action.delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.text-input-container {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.text-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-color);
+  font-size: 0.875rem;
+  outline: none;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.text-input:focus {
+  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.text-input::placeholder {
+  color: var(--text-color);
+  opacity: 0.5;
+}
+
+.send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 50%;
+  color: #3b82f6;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+}
+
+.send-btn:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.3);
+  transform: scale(1.05);
+}
+
+.send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Focus Modal Animations */
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes pulse-blue {
+  0%, 100% { 
+    background: #3b82f6;
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  50% { 
+    background: #60a5fa;
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+  }
+}
+
+@keyframes pulse-purple {
+  0%, 100% { 
+    background: #8b5cf6;
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+  }
+  50% { 
+    background: #a78bfa;
+    box-shadow: 0 0 0 8px rgba(139, 92, 246, 0);
+  }
+}
+
+@keyframes pulse-voice {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes typing {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-10px); }
+}
+
+.chat-slide-enter-active,
+.chat-slide-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chat-slide-enter-from,
+.chat-slide-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+/* Dark mode enhancements */
+.dark .focus-modal {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dark .chat-container {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Modal responsive design */
+@media (max-width: 768px) {
+  .focus-modal {
+    margin: 1rem;
+    max-height: 95vh;
+  }
+  
+  .modal-content {
+    flex-direction: column;
+  }
+  
+  .chat-container {
+    min-width: auto;
+    flex: 1;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .card-container.condensed {
+    flex: 1;
+  }
 }
 
 /* ===== Voice Components Styling ===== */
@@ -1103,10 +2190,611 @@ html, body, #app {
 }
 
 /* Hide voice components when modal is open */
-.modal ~ .voice-waveform-display,
-.modal ~ .voice-hints-display {
+.focus-modal-overlay ~ .voice-waveform-display,
+.focus-modal-overlay ~ .voice-hints-display {
   opacity: 0.3;
   pointer-events: none;
+}
+
+/* ===== Enhanced Focus Modal System ===== */
+.focus-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 2rem;
+}
+
+.focus-modal {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  max-height: 90vh;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 20px 48px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.focus-modal.chat-active {
+  max-width: 1400px;
+}
+
+.modal-glass-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.08) 0%, 
+    rgba(139, 92, 246, 0.05) 50%,
+    rgba(236, 72, 153, 0.08) 100%
+  );
+  z-index: 1;
+}
+
+.modal-decorative-circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: 0;
+}
+
+.modal-decorative-circle.circle-1 {
+  width: 8rem;
+  height: 8rem;
+  top: -4rem;
+  right: -4rem;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.modal-decorative-circle.circle-2 {
+  width: 12rem;
+  height: 12rem;
+  bottom: -6rem;
+  left: -6rem;
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  position: relative;
+  z-index: 3;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.focus-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.focus-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #3b82f6;
+}
+
+.focus-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #3b82f6;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.chat-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.chat-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+.chat-toggle-btn.active {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: #a78bfa;
+}
+
+.close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
+}
+
+.modal-content {
+  display: flex;
+  height: calc(90vh - 5rem);
+  position: relative;
+  z-index: 2;
+}
+
+.card-container {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  transition: all 0.4s ease;
+}
+
+.card-container.condensed {
+  flex: 0.6;
+}
+
+.enhanced-card-wrapper {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.focused-card {
+  transform: scale(1.1);
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.update-indicator {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  color: #10b981;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.update-pulse {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: pulse-green 1s ease-in-out infinite;
+}
+
+.card-metadata {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+}
+
+.metadata-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+.metadata-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.chat-container {
+  flex: 0.4;
+  min-width: 400px;
+  background: rgba(0, 0, 0, 0.2);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(16px);
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chat-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.chat-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #8b5cf6;
+}
+
+.chat-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #6b7280;
+}
+
+.chat-status.listening .status-dot {
+  background: #3b82f6;
+  animation: pulse-blue 1s ease-in-out infinite;
+}
+
+.chat-status.speaking .status-dot {
+  background: #8b5cf6;
+  animation: pulse-purple 1s ease-in-out infinite;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.chat-message {
+  display: flex;
+  max-width: 80%;
+}
+
+.chat-message.user {
+  align-self: flex-end;
+}
+
+.chat-message.assistant {
+  align-self: flex-start;
+}
+
+.message-content {
+  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chat-message.user .message-content {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.chat-message.assistant .message-content {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.message-text {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--text-color);
+  margin-bottom: 0.25rem;
+}
+
+.message-time {
+  font-size: 0.7rem;
+  opacity: 0.6;
+  color: var(--text-color);
+}
+
+.typing-dots {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.typing-dots span {
+  width: 6px;
+  height: 6px;
+  background: var(--text-color);
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: typing 1.4s ease-in-out infinite;
+}
+
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+.voice-interaction {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.focus-waveform {
+  margin-bottom: 1rem;
+  transform: scale(0.8);
+}
+
+.interaction-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.voice-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  color: #3b82f6;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  font-weight: 600;
+}
+
+.voice-btn:hover {
+  background: rgba(59, 130, 246, 0.15);
+  transform: translateY(-1px);
+}
+
+.voice-btn.active {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+  animation: pulse-voice 2s ease-in-out infinite;
+}
+
+.voice-btn.speaking {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+  color: #8b5cf6;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  font-size: 0.8rem;
+}
+
+.quick-action:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.quick-action.delete {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.quick-action.delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.text-input-container {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.text-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-color);
+  font-size: 0.875rem;
+  outline: none;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.text-input:focus {
+  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.text-input::placeholder {
+  color: var(--text-color);
+  opacity: 0.5;
+}
+
+.send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 50%;
+  color: #3b82f6;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+}
+
+.send-btn:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.3);
+  transform: scale(1.05);
+}
+
+.send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Focus Modal Animations */
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes pulse-blue {
+  0%, 100% { 
+    background: #3b82f6;
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  50% { 
+    background: #60a5fa;
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+  }
+}
+
+@keyframes pulse-purple {
+  0%, 100% { 
+    background: #8b5cf6;
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+  }
+  50% { 
+    background: #a78bfa;
+    box-shadow: 0 0 0 8px rgba(139, 92, 246, 0);
+  }
+}
+
+@keyframes pulse-voice {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes typing {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-10px); }
+}
+
+.chat-slide-enter-active,
+.chat-slide-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chat-slide-enter-from,
+.chat-slide-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+/* Dark mode enhancements for focus modal */
+.dark .focus-modal {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dark .chat-container {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Modal responsive design */
+@media (max-width: 768px) {
+  .focus-modal {
+    margin: 1rem;
+    max-height: 95vh;
+  }
+  
+  .modal-content {
+    flex-direction: column;
+  }
+  
+  .chat-container {
+    min-width: auto;
+    flex: 1;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .card-container.condensed {
+    flex: 1;
+  }
 }
 
 /* Animations for voice components */
