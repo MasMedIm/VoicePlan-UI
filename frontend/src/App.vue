@@ -65,6 +65,23 @@
     <div v-if="selected" class="modal" @click.self="closeModal">
       <component :is="componentMap[selected.kind]" :card="selected.props" class="modal-card" />
     </div>
+
+    <!-- Voice Waveform Visualization -->
+    <VoiceWaveform 
+      :voiceState="rtcStatus"
+      :audioLevel="audioLevel"
+      :primaryColor="chatBubbleColor"
+      class="voice-waveform-display"
+    />
+
+    <!-- Voice Command Hints -->
+    <VoiceHints 
+      :voiceState="rtcStatus"
+      :existingCards="items"
+      @speak-hint="onSpeakHint"
+      class="voice-hints-display"
+    />
+
     </div>
 
     <!-- Bottom Pill Navigation -->
@@ -73,9 +90,14 @@
       :voiceState="voiceNavState"
       :isConnecting="rtcStatus === 'connecting'"
       :chatBubbleColor="chatBubbleColor"
+      :currentTheme="currentTheme"
+      :selectedVoice="selectedVoice"
       :audioLevel="audioLevel"
       @toggle-theme="toggleTheme"
       @color-change="onColorChange"
+      @theme-change="onThemeChange"
+      @voice-change="onVoiceChange"
+      @settings-open="onSettingsOpen"
       @toggle-voice="toggleConnection"
     />
   </div>
@@ -96,9 +118,14 @@ import CardMetric from "./components/CardMetric.vue";
 import CardProgress from "./components/CardProgress.vue";
 import CardWeather from "./components/CardWeather.vue";
 import CardMap from "./components/CardMap.vue";
+import CardGoal from "./components/CardGoal.vue";
+import CardCountdown from "./components/CardCountdown.vue";
 import BottomPillNav from "./components/BottomPillNav.vue";
 import { useVoiceDetection } from "./composables/useVoiceDetection.js";
 import { loginUser } from "./lib/api.js";
+import VoiceWaveform from "./components/VoiceWaveform.vue";
+import VoiceHints from "./components/VoiceHints.vue";
+import { Mic } from 'lucide-vue-next';
 
 const email = ref('');
 const password = ref('');
@@ -125,6 +152,29 @@ const { audioLevel } = useVoiceDetection({
 // ---------------------------------------------------------------------------
 // Logo selection based on theme
 // ---------------------------------------------------------------------------
+const logoSrc = computed(() => isDark.value ? logoWhite : logoBlack);
+
+const btnState = computed(() => {
+  if (rtcStatus.value === 'connecting') return 'state-connecting';
+  if (rtcStatus.value === 'live') {
+    if (talking.value === 'user') return 'state-user';
+    if (talking.value === 'assistant') return 'state-assistant';
+    return 'state-live';
+  }
+  return 'state-idle';
+});
+
+const stateLabel = computed(() => {
+  const labelMap = {
+    'state-idle': 'Tap to Talk',
+    'state-connecting': 'Connecting...',
+    'state-live': 'Connected',
+    'state-user': 'Listening...',
+    'state-assistant': 'Speaking...'
+  };
+  return labelMap[btnState.value] || 'Voice Assistant';
+});
+
 const stateTitle = computed(() => {
   const state = btnState.value;
   return {
@@ -226,6 +276,8 @@ const componentMap = {
   'card.progress': CardProgress,
   'card.weather': CardWeather,
   'card.map': CardMap,
+  'card.goal': CardGoal,
+  'card.countdown': CardCountdown,
 };
 
 // Modal for enlarging a card (currently checklist only)
@@ -247,10 +299,30 @@ const { items } = useUiStore();
 // ---------------------------------------------------------------------------
 const isDark = ref(false);
 const chatBubbleColor = ref('#3b82f6');
+const currentTheme = ref('Ocean Blue');
+const selectedVoice = ref('alloy'); // Default OpenAI voice
+const backgroundTheme = ref({
+  name: 'Ocean Blue', 
+  primary: '#0f172a', 
+  secondary: '#1e293b',
+  accent: '#3b82f6',
+  gradient: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)'
+});
 
 onMounted(() => {
   isDark.value = localStorage.getItem('theme') === 'dark';
   chatBubbleColor.value = localStorage.getItem('chatBubbleColor') || '#3b82f6';
+  selectedVoice.value = localStorage.getItem('selectedVoice') || 'alloy';
+  const savedTheme = localStorage.getItem('backgroundTheme');
+  if (savedTheme) {
+    try {
+      backgroundTheme.value = JSON.parse(savedTheme);
+      currentTheme.value = backgroundTheme.value.name;
+    } catch (e) {
+      console.warn('Failed to parse saved theme');
+    }
+  }
+  applyBackgroundTheme();
 });
 
 watch(isDark, (val) => {
@@ -262,10 +334,25 @@ function toggleTheme() {
 }
 
 function onColorChange(color) {
-  // Update reactive reference and store the selected color
   chatBubbleColor.value = color;
   localStorage.setItem('chatBubbleColor', color);
   console.log('Chat bubble color changed to:', color);
+}
+
+function onThemeChange(theme) {
+  backgroundTheme.value = theme;
+  currentTheme.value = theme.name;
+  localStorage.setItem('backgroundTheme', JSON.stringify(theme));
+  applyBackgroundTheme();
+  console.log('Background theme changed to:', theme.name);
+}
+
+function applyBackgroundTheme() {
+  const root = document.documentElement;
+  root.style.setProperty('--bg-gradient', backgroundTheme.value.gradient);
+  root.style.setProperty('--theme-primary', backgroundTheme.value.primary);
+  root.style.setProperty('--theme-secondary', backgroundTheme.value.secondary);
+  root.style.setProperty('--theme-accent', backgroundTheme.value.accent);
 }
 
 function toggleConnection() {
@@ -289,6 +376,23 @@ async function onLogin() {
   } finally {
     /* nothing */
   }
+}
+
+function onVoiceChange(voice) {
+  selectedVoice.value = voice.id;
+  localStorage.setItem('selectedVoice', voice.id);
+  console.log('Voice changed to:', voice.name);
+  
+  // In a real implementation, this would update the backend voice settings
+  // For now, we'll just store it locally
+}
+
+function onSettingsOpen() {
+  console.log('Settings opened');
+}
+
+function onSpeakHint(hint) {
+  console.log('Speaking hint:', hint);
 }
 </script>
 
@@ -330,8 +434,25 @@ html, body, #app {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background: var(--bg-color);
+  background: var(--bg-gradient, var(--bg-color));
   color: var(--text-color);
+  position: relative;
+}
+
+.app-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--bg-gradient);
+  z-index: 0;
+}
+
+.app-container > * {
+  position: relative;
+  z-index: 1;
 }
 
 .main-content {
@@ -376,6 +497,172 @@ html, body, #app {
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
   border: 1px solid var(--card-border-color);
+}
+
+/* ===== Mic Container & Voice Controls ===== */
+.mic-container {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  z-index: 1200;
+}
+
+.connect-btn {
+  position: relative;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.connect-btn:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.connect-btn.state-idle {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.connect-btn.state-connecting {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: rgba(251, 191, 36, 0.4);
+  animation: pulse 2s infinite;
+}
+
+.connect-btn.state-live {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.connect-btn.state-user {
+  background: rgba(139, 92, 246, 0.3);
+  border-color: rgba(139, 92, 246, 0.5);
+  animation: listening 2s infinite;
+}
+
+.connect-btn.state-assistant {
+  background: rgba(236, 72, 153, 0.3);
+  border-color: rgba(236, 72, 153, 0.5);
+  animation: speaking 1.5s infinite;
+}
+
+.mic-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: white;
+  z-index: 2;
+}
+
+.orb-overlay {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
+  animation: orb-pulse 2s infinite;
+  z-index: 1;
+}
+
+.state-pill {
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+  min-width: 100px;
+  transition: all 0.3s ease;
+}
+
+.state-pill.state-idle {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #93c5fd;
+}
+
+.state-pill.state-connecting {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: rgba(251, 191, 36, 0.3);
+  color: #fcd34d;
+}
+
+.state-pill.state-live {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #6ee7b7;
+}
+
+.state-pill.state-user {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: #c4b5fd;
+}
+
+.state-pill.state-assistant {
+  background: rgba(236, 72, 153, 0.2);
+  border-color: rgba(236, 72, 153, 0.3);
+  color: #f9a8d4;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+@keyframes listening {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 20px rgba(139, 92, 246, 0);
+  }
+}
+
+@keyframes speaking {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 15px rgba(236, 72, 153, 0);
+  }
+}
+
+@keyframes orb-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
 }
 
 /* ===== Ultra-Tight Mosaic Grid Layout ===== */
@@ -764,6 +1051,112 @@ html, body, #app {
   overflow: auto;
 }
 
+/* ===== Voice Components Styling ===== */
+
+/* Voice Waveform Display */
+.voice-waveform-display {
+  position: fixed;
+  top: 6rem;
+  left: 1rem;
+  width: 300px;
+  z-index: 1100;
+  transition: all 0.4s ease;
+}
+
+.voice-waveform-display.minimized {
+  width: 200px;
+  opacity: 0.8;
+}
+
+/* Voice Hints Display */
+.voice-hints-display {
+  position: fixed;
+  top: 6rem;
+  right: 1rem;
+  z-index: 1100;
+}
+
+/* Responsive positioning for voice components */
+@media (max-width: 1200px) {
+  .voice-waveform-display {
+    width: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .voice-waveform-display {
+    position: fixed;
+    bottom: 8rem;
+    left: 1rem;
+    right: 1rem;
+    width: auto;
+    max-width: none;
+  }
+  
+  .voice-hints-display {
+    top: auto;
+    bottom: 6rem;
+    left: 1rem;
+    right: 1rem;
+    width: auto;
+  }
+}
+
+/* Hide voice components when modal is open */
+.modal ~ .voice-waveform-display,
+.modal ~ .voice-hints-display {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* Animations for voice components */
+.voice-waveform-display,
+.voice-hints-display {
+  animation: slideInRight 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Enhanced integration with main layout */
+.main-content {
+  position: relative;
+}
+
+.main-content.has-voice-components {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 1400px) {
+  .main-content.has-voice-components {
+    padding-left: 18rem; /* Make room for waveform */
+    padding-right: 22rem; /* Make room for hints */
+  }
+}
+
+@media (max-width: 1399px) and (min-width: 1024px) {
+  .main-content.has-voice-components {
+    padding-left: 16rem;
+    padding-right: 20rem;
+  }
+}
+
+@media (max-width: 1023px) {
+  .main-content.has-voice-components {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 12rem; /* Extra space for mobile voice components */
+  }
+}
 </style>
 
 <style>

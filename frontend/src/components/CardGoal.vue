@@ -1,0 +1,1 @@
+﻿<!-- CardGoal Vue Component -->
