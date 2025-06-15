@@ -37,8 +37,6 @@
         <div class="board-stats">
           <span class="stat">{{ items.length }} item{{ items.length !== 1 ? 's' : '' }}</span>
         </div>
-<<<<<<< HEAD
-=======
       <!-- Mic container with button, state pill, and orb overlay -->
       <div class="mic-container" :class="btnState">
         <button
@@ -50,7 +48,6 @@
           <div v-if="btnState === 'state-user'" class="orb-overlay"></div>
         </button>
         <span class="state-pill" :class="btnState">{{ stateLabel }}</span>
->>>>>>> main
       </div>
       <div class="mosaic-grid">
         <component
