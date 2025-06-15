@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" :class="{ dark: isDark }">
     <!-- Optional auth stub (kept for future) -->
     <div v-if="!isAuthenticated" class="login-container">
           <h2>Welcome Back</h2>
@@ -29,17 +29,21 @@
           </form>
         </div>
     <div v-else class="main-content">
-      <!-- Connect / Disconnect button -->
-      <button
-        class="connect-btn"
-        @click="toggleConnection"
-        :disabled="rtcStatus === 'connecting'"
-      >
-        <template v-if="rtcStatus === 'connecting'">Connecting…</template>
-        <template v-else-if="talking === 'user'">You’re speaking…</template>
-        <template v-else-if="talking === 'assistant'">Assistant speaking…</template>
-        <template v-else-if="rtcStatus === 'live'">Disconnect</template>
-        <template v-else>Connect</template>
+      <!-- Mic container with button, state pill, and orb overlay -->
+      <div class="mic-container" :class="btnState">
+        <button
+          :class="['connect-btn', btnState]"
+          @click="toggleConnection"
+          :disabled="rtcStatus === 'connecting'"
+        >
+          <span class="mic-icon">🎙️</span>
+        </button>
+        <span class="state-pill">{{ stateLabel }}</span>
+        <div v-if="btnState === 'state-user'" class="orb-overlay" />
+      </div>
+      <!-- Theme toggle -->
+      <button class="theme-toggle" @click="toggleTheme">
+        {{ isDark ? '🌞' : '🌙' }}
       </button>
 
     <!-- --------------------------------------------- -->
@@ -61,7 +65,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch, onMounted, computed } from "vue";
 import { useRealtime } from "./composables/useRealtime.js";
 import { useUiStore } from "./composables/useUiStore.js";
 import CardBasic from "./components/CardBasic.vue";
@@ -85,6 +89,19 @@ const rtc = useRealtime();
 const rtcStatus = rtc.status; // Ref – easier binding in template
 const talking = rtc.talking;
 
+// ---------------------------------------------------------------------------
+// Connect button visual state
+// ---------------------------------------------------------------------------
+const btnState = computed(() => {
+  if (rtcStatus.value === 'connecting') return 'state-connecting';
+  if (rtcStatus.value === 'live') {
+    if (talking.value === 'user') return 'state-user';
+    if (talking.value === 'assistant') return 'state-assistant';
+    return 'state-live';
+  }
+  return 'state-idle';
+});
+
 // Registry of component kinds → Vue component
 const componentMap = {
   'card.basic': CardBasic,
@@ -96,6 +113,23 @@ const componentMap = {
 
 // Reactive list of cards (updated by realtime hook)
 const { items } = useUiStore();
+
+// ---------------------------------------------------------------------------
+// Theme toggle (dark / light)
+// ---------------------------------------------------------------------------
+const isDark = ref(false);
+
+onMounted(() => {
+  isDark.value = localStorage.getItem('theme') === 'dark';
+});
+
+watch(isDark, (val) => {
+  localStorage.setItem('theme', val ? 'dark' : 'light');
+});
+
+function toggleTheme() {
+  isDark.value = !isDark.value;
+}
 
 function toggleConnection() {
   if (rtcStatus.value === 'live') {
@@ -149,7 +183,8 @@ html, body, #app {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background: #f5f5f5;
+  background: var(--bg-color);
+  color: var(--text-color);
 }
 
 .main-content {
@@ -164,22 +199,138 @@ html, body, #app {
 
 /* connect button retains simple styling */
 
-.connect-btn {
+.mic-container {
   position: fixed;
   bottom: 1rem;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 1rem;
-  padding: 0.75rem 1.5rem;
-  background-color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 1100;
+}
+
+.connect-btn {
+  position: fixed;
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  font-size: 1.5rem;
+  padding: 0;
+  background-color: #ff8800;
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   z-index: 1000;
-  min-width: 200px;
   transition: background-color 0.2s;
 }
+
+.connect-btn:hover {
+  filter: brightness(1.1);
+}
+
+/* -------------------- Connect button states -------------------- */
+.state-idle {
+  background-color: #ff8800;
+}
+
+.state-live {
+  background-color: #22c55e;
+}
+
+.state-connecting {
+  background-color: #eab308;
+  animation: pulse 1.2s infinite;
+}
+
+.state-user {
+  background: transparent;
+}
+.state-user .mic-icon { display:none; }
+
+
+.orb-overlay {
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #3ef1ff, #0062ff, #fd3fe3);
+  box-shadow: 0 0 20px rgba(255,255,255,0.3), 0 0 60px rgba(123,0,255,0.5);
+  animation: spin 6s linear infinite;
+  pointer-events:none;
+  z-index: -1;
+}
+.orb-overlay::before,
+.orb-overlay::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  mix-blend-mode:screen;
+  opacity:0.6;
+}
+.orb-overlay::before {
+  background: radial-gradient(circle at 30% 30%, #00eaff, transparent 70%);
+  animation: pulseA 4s ease-in-out infinite;
+}
+.orb-overlay::after {
+  background: radial-gradient(circle at 70% 70%, #ff00ff, transparent 70%);
+  animation: pulseB 5s ease-in-out infinite reverse;
+}
+
+.state-pill {
+  background: var(--card-bg, #fff);
+  color: var(--text-color, #111);
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  box-shadow: 0 0 2px rgba(0,0,0,0.2);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes pulseA {
+  0%,100% { transform: scale(1); opacity:0.6; }
+  50% { transform: scale(1.1); opacity:0.8; }
+}
+@keyframes pulseB {
+  0%,100% { transform: scale(1); opacity:0.6; }
+  50% { transform: scale(1.08); opacity:0.8; }
+}
+@keyframes pulse2 {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+.state-assistant {
+  background: radial-gradient(circle at center, #3b82f6 0%, #2563eb 60%, #1e3a8a 100%);
+  animation: wave 1.4s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(0,0,0,0.3); }
+  70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); }
+}
+
+@keyframes wave {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+  
 
 .connect-btn:disabled {
   background-color: #6b7280; /* gray-500 */
@@ -267,4 +418,55 @@ section {
 }
 
 /* duplicate connect-btn definitions removed */
+</style>
+
+<style>
+:root {
+  --bg-color: #f5f5f5;
+  --card-bg: #ffffff;
+  --text-color: #1a1a1a;
+  --card-border-color: #dddddd;
+}
+
+.dark {
+  --bg-color: #121212;
+  --card-bg: #1e1e1e;
+  --text-color: #f5f5f5;
+  --card-border-color: #333333;
+}
+
+.dark .card {
+  background: var(--card-bg) !important;
+  border-color: var(--card-border-color) !important;
+  color: var(--text-color) !important;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-color);
+  border: none;
+}
+
+.theme-toggle {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  width: 44px;
+  height: 44px;
+  font-size: 1.5rem;
+  background: rgba(0,0,0,0.15);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  z-index: 1050;
+}
+
+.dark .theme-toggle {
+  background: rgba(255,255,255,0.15);
+}
 </style>

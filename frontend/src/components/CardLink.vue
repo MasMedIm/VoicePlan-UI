@@ -1,6 +1,7 @@
 <template>
   <div class="card link-card">
     <a :href="card.url" target="_blank" rel="noopener" class="link">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 0 1 7 7l-1 1"/><path d="M14 11a5 5 0 0 1 0 7l-1 1a5 5 0 0 1-7-7l1-1"/></svg>
       <img v-if="favicon" :src="favicon" class="favicon" />
       <span class="title">{{ card.title || card.url }}</span>
     </a>
@@ -27,16 +28,22 @@ const favicon = computed(() => {
 
 <style scoped>
 .card {
+  text-align:left;
   border: 1px solid #ddd;
   border-radius: 6px;
   background: #fff;
   max-width: 320px;
+  width: 320px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-  padding: 12px 14px;
+  padding: 20px 24px;
 }
 
-.link { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+
+.link { display:flex;align-items:center;gap:8px;text-decoration:none; }
+.icon{width:18px;height:18px;color:#3b82f6;flex-shrink:0;}
+
 .favicon { width: 20px; height: 20px; }
-.title { font-size: 1rem; font-weight: 600; color: #2563eb; }
+.title { font-size: 1.25rem; font-weight: 600; color: #2563eb; }
+
 .description { font-size: 0.85rem; color: #555; margin-top: 6px; }
 </style>
