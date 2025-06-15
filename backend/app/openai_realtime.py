@@ -133,9 +133,8 @@ async def create_ephemeral_session(*, voice: str | None = None, model: str | Non
         "tool_choice": "auto",
         # Allow both audio and text responses
         "modalities": ["audio", "text"],
+        "voice":"ash" #ballad, ash
     }
-    if voice is not None:
-        payload["voice"] = voice
 
     # Attach instructions if available.
     if _CACHED_INSTRUCTIONS is not None:
