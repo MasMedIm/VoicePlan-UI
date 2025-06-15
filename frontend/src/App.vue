@@ -223,21 +223,7 @@
       </div>
     </Transition>
 
-    <!-- Voice Waveform Visualization -->
-    <VoiceWaveform 
-      :voiceState="rtcStatus"
-      :audioLevel="audioLevel"
-      :primaryColor="chatBubbleColor"
-      class="voice-waveform-display"
-    />
 
-    <!-- Voice Command Hints -->
-    <VoiceHints 
-      :voiceState="rtcStatus"
-      :existingCards="items"
-      @speak-hint="onSpeakHint"
-      class="voice-hints-display"
-    />
 
     </div>
 
@@ -253,9 +239,9 @@
       @toggle-theme="toggleTheme"
       @color-change="onColorChange"
       @theme-change="onThemeChange"
+      @toggle-voice="toggleConnection"
       @voice-change="onVoiceChange"
       @settings-open="onSettingsOpen"
-      @toggle-voice="toggleConnection"
     />
   </div>
 </template>
@@ -280,8 +266,7 @@ import CardCountdown from "./components/CardCountdown.vue";
 import BottomPillNav from "./components/BottomPillNav.vue";
 import { useVoiceDetection } from "./composables/useVoiceDetection.js";
 import { loginUser } from "./lib/api.js";
-import VoiceWaveform from "./components/VoiceWaveform.vue";
-import VoiceHints from "./components/VoiceHints.vue";
+
 import { 
   Mic, Target, MessageSquare, X, Calendar, Hash, Bot, 
   Edit3, Copy, Trash2, Send, Link, ArrowLeft 
@@ -785,8 +770,8 @@ const { items } = useUiStore();
 // ---------------------------------------------------------------------------
 const isDark = ref(false);
 const chatBubbleColor = ref('#3b82f6');
-const currentTheme = ref('Ocean Blue');
 const selectedVoice = ref('alloy'); // Default OpenAI voice
+const currentTheme = ref('Ocean Blue');
 const backgroundTheme = ref({
   name: 'Ocean Blue', 
   primary: '#0f172a', 
@@ -795,12 +780,13 @@ const backgroundTheme = ref({
   gradient: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)'
 });
 
+
 onMounted(() => {
   // Initialize theme from localStorage
   const savedDarkMode = localStorage.getItem('theme') === 'dark';
   isDark.value = savedDarkMode;
   
-  // Initialize colors
+  // Initialize colors and voice
   chatBubbleColor.value = localStorage.getItem('chatBubbleColor') || '#3b82f6';
   selectedVoice.value = localStorage.getItem('selectedVoice') || 'alloy';
   
@@ -812,7 +798,7 @@ onMounted(() => {
       currentTheme.value = backgroundTheme.value.name;
     } catch (e) {
       console.warn('Failed to parse saved theme, using default');
-      // Set default theme if parsing fails
+      // Reset to default Ocean Blue theme
       backgroundTheme.value = {
         name: 'Ocean Blue', 
         primary: '#0f172a', 
@@ -822,6 +808,9 @@ onMounted(() => {
       };
       currentTheme.value = 'Ocean Blue';
     }
+  } else {
+    // No saved theme, ensure default Ocean Blue is set
+    currentTheme.value = 'Ocean Blue';
   }
   
   // Apply theme immediately after setup
@@ -833,8 +822,6 @@ onMounted(() => {
   window.addEventListener('keydown', handleFocusModalKeydown);
   window.addEventListener('resize', scrollFocusChatToLatest);
   window.addEventListener('keydown', trapFocusInModal);
-  
-  console.log('App mounted - Dark mode:', isDark.value, 'Theme:', currentTheme.value);
 });
 
 onUnmounted(() => {
@@ -854,19 +841,15 @@ function toggleTheme() {
 }
 
 function onColorChange(color) {
-  console.log('Color change triggered:', color);
   chatBubbleColor.value = color;
   localStorage.setItem('chatBubbleColor', color);
-  console.log('Chat bubble color changed to:', color);
 }
 
 function onThemeChange(theme) {
-  console.log('Theme change triggered:', theme);
   backgroundTheme.value = theme;
   currentTheme.value = theme.name;
   localStorage.setItem('backgroundTheme', JSON.stringify(theme));
   applyBackgroundTheme();
-  console.log('Background theme changed to:', theme.name);
 }
 
 function applyBackgroundTheme() {
@@ -900,8 +883,23 @@ function applyBackgroundTheme() {
     root.style.setProperty('--card-bg', 'rgba(255, 255, 255, 0.9)');
     root.style.setProperty('--card-border-color', 'rgba(226, 232, 240, 0.8)');
   }
+}
+
+function onVoiceChange(voice) {
+  selectedVoice.value = voice.id;
+  localStorage.setItem('selectedVoice', voice.id);
   
-  console.log('Applied background theme:', backgroundTheme.value.name);
+  // If currently connected, reconnect with new voice
+  if (rtcStatus.value === 'live') {
+    rtc.disconnect();
+    setTimeout(() => {
+      rtc.connect({ voice: voice.id });
+    }, 500);
+  }
+}
+
+function onSettingsOpen() {
+  console.log('Settings opened - Current voice:', selectedVoice.value);
 }
 
 function toggleConnection() {
@@ -927,47 +925,7 @@ async function onLogin() {
   }
 }
 
-function onVoiceChange(voice) {
-  console.log('Voice change triggered:', voice);
-  selectedVoice.value = voice.id;
-  localStorage.setItem('selectedVoice', voice.id);
-  console.log('Voice changed to:', voice.name, `(${voice.id})`);
-  
-  // If currently connected, reconnect with new voice
-  if (rtcStatus.value === 'live') {
-    console.log('Reconnecting with new voice...');
-    rtc.disconnect();
-    setTimeout(() => {
-      rtc.connect({ voice: voice.id });
-    }, 500);
-  }
-  
-  // Update the realtime session configuration
-  updateVoiceConfiguration(voice.id);
-}
 
-async function updateVoiceConfiguration(voiceId) {
-  try {
-    // This would typically call the backend to update voice settings
-    console.log('Updating voice configuration to:', voiceId);
-    
-    // In a real implementation, you might want to:
-    // 1. Call the backend API to update user preferences
-    // 2. Update the realtime session with new voice
-    // For now, we store it for the next connection
-    
-  } catch (error) {
-    console.error('Failed to update voice configuration:', error);
-  }
-}
-
-function onSettingsOpen() {
-  console.log('Settings modal should open - Current voice:', selectedVoice.value);
-}
-
-function onSpeakHint(hint) {
-  console.log('Speaking hint:', hint);
-}
 
 // Keyboard navigation for modal
 function handleFocusModalKeydown(e) {

@@ -26,20 +26,6 @@
         <Transition name="color-picker">
           <div v-if="showColorPicker" class="color-picker-dropdown">
             <div class="color-section">
-              <div class="color-picker-title">Chat Bubble Color</div>
-              <div class="color-grid">
-                <button
-                  v-for="color in colors"
-                  :key="color"
-                  class="color-button"
-                  :class="{ selected: props.chatBubbleColor === color }"
-                  :style="{ backgroundColor: color }"
-                  @click="setChatBubbleColor(color)"
-                />
-              </div>
-            </div>
-            
-            <div class="color-section">
               <div class="color-picker-title">Background Themes</div>
               <div class="theme-grid">
                 <button
@@ -58,6 +44,8 @@
           </div>
         </Transition>
       </div>
+
+
 
       <!-- Voice Status Indicator -->
       <button 
@@ -84,7 +72,7 @@
         <VoiceBubble 
           :voice-state="voiceState"
           :external-audio-level="audioLevel"
-          :size="72"
+          :size="64"
         />
       </div>
     </div>
@@ -179,7 +167,7 @@ const props = defineProps({
   selectedVoice: String
 })
 
-const emit = defineEmits(['toggle-theme', 'color-change', 'toggle-voice', 'theme-change', 'settings-open', 'voice-change'])
+const emit = defineEmits(['toggle-theme', 'color-change', 'toggle-voice', 'theme-change', 'voice-change', 'settings-open'])
 
 const showColorPicker = ref(false)
 const showSettings = ref(false)
@@ -271,6 +259,8 @@ const voiceOptions = [
   }
 ]
 
+
+
 const voiceStatusLabel = computed(() => {
   const state = props.voiceState
   if (props.isConnecting) return 'Connecting...'
@@ -284,40 +274,33 @@ const voiceStatusLabel = computed(() => {
 })
 
 function toggleTheme() {
-  console.log('Theme toggle clicked');
   emit('toggle-theme')
 }
 
 function setChatBubbleColor(color) {
-  console.log('Color button clicked:', color);
   emit('color-change', color)
   showColorPicker.value = false
 }
 
 function setBackgroundTheme(theme) {
-  console.log('Background theme clicked:', theme.name);
   emit('theme-change', theme)
   showColorPicker.value = false
 }
 
 function toggleVoice() {
-  console.log('Voice toggle clicked');
   emit('toggle-voice')
 }
 
 function openSettings() {
-  console.log('Settings button clicked');
   showSettings.value = true
   emit('settings-open')
 }
 
 function closeSettings() {
-  console.log('Settings modal closing');
   showSettings.value = false
 }
 
 function selectVoice(voice) {
-  console.log('Voice selected:', voice.name);
   emit('voice-change', voice)
 }
 
@@ -327,17 +310,7 @@ function previewVoice(voice) {
   
   console.log(`🎤 Preview voice ${voice.name}: ${sampleText}`);
   
-  // Provide visual feedback
-  const button = event.target.closest('.voice-option');
-  if (button) {
-    button.style.background = 'rgba(59, 130, 246, 0.2)';
-    setTimeout(() => {
-      button.style.background = '';
-    }, 2000);
-  }
-  
   // In a real implementation, this would call the TTS API
-  // For now, we'll emit the voice change to show selection and provide feedback
   emit('voice-change', voice);
   
   // Show user feedback
@@ -357,15 +330,18 @@ function previewVoice(voice) {
 .pill-nav {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.25rem;
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 50px;
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem 0.5rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   min-height: 72px;
+  width: fit-content;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 /* Dark mode override */
@@ -379,10 +355,10 @@ function previewVoice(voice) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem 0.375rem;
   border: none;
   background: transparent;
-  border-radius: 16px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
   color: #334155;
@@ -438,12 +414,12 @@ function previewVoice(voice) {
 }
 
 .nav-label {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: 500;
   white-space: nowrap;
-  min-width: 90px;
-  max-width: 90px;
-  width: 90px;
+  min-width: 55px;
+  max-width: 55px;
+  width: 55px;
   text-align: center;
   box-sizing: border-box;
   overflow: hidden;
@@ -588,11 +564,12 @@ function previewVoice(voice) {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 0.75rem;
-  padding-left: 0.75rem;
+  margin-left: 0.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.25rem;
   border-left: 1px solid rgba(0, 0, 0, 0.1);
-  min-width: 72px;
-  min-height: 72px;
+  min-width: 80px;
+  min-height: 64px;
 }
 
 .dark .voice-bubble-section {
@@ -602,21 +579,27 @@ function previewVoice(voice) {
 /* Responsive Design */
 @media (max-width: 768px) {
   .pill-nav {
-    padding: 0.5rem 0.75rem;
-    gap: 0.25rem;
+    padding: 0.5rem 0.375rem;
+    gap: 0.125rem;
+    max-width: 400px;
   }
   
   .nav-button {
-    padding: 0.375rem 0.5rem;
+    padding: 0.375rem 0.25rem;
   }
   
   .nav-label {
-    font-size: 0.625rem;
+    font-size: 0.55rem;
+    min-width: 40px;
+    max-width: 40px;
+    width: 40px;
   }
   
   .voice-bubble-section {
-    margin-left: 0.25rem;
-    padding-left: 0.25rem;
+    margin-left: 0.125rem;
+    padding-left: 0.125rem;
+    min-width: 48px;
+    min-height: 48px;
   }
 }
 
@@ -675,6 +658,8 @@ function previewVoice(voice) {
   align-items: center;
   justify-content: center;
   z-index: 2000;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
 .settings-modal {
@@ -683,9 +668,9 @@ function previewVoice(voice) {
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 24px;
   padding: 2rem;
-  max-width: 600px;
-  width: 90%;
-  max-height: 80vh;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
   overflow-y: auto;
   box-shadow: 
     0 20px 48px rgba(0, 0, 0, 0.3),
@@ -937,10 +922,15 @@ function previewVoice(voice) {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .settings-overlay {
+    padding: 0.5rem;
+  }
+  
   .settings-modal {
     padding: 1.5rem;
-    width: 95%;
-    margin: 1rem;
+    max-height: 90vh;
+    max-width: 95%;
+    border-radius: 16px;
   }
   
   .voice-grid {
