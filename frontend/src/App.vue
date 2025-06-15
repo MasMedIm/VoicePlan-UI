@@ -37,6 +37,20 @@
         <div class="board-stats">
           <span class="stat">{{ items.length }} item{{ items.length !== 1 ? 's' : '' }}</span>
         </div>
+<<<<<<< HEAD
+=======
+      <!-- Mic container with button, state pill, and orb overlay -->
+      <div class="mic-container" :class="btnState">
+        <button
+          :class="['connect-btn', btnState]"
+          @click="toggleConnection"
+          :disabled="rtcStatus === 'connecting'"
+        >
+          <Mic class="mic-icon" />
+          <div v-if="btnState === 'state-user'" class="orb-overlay"></div>
+        </button>
+        <span class="state-pill" :class="btnState">{{ stateLabel }}</span>
+>>>>>>> main
       </div>
       <div class="mosaic-grid">
         <component
@@ -112,7 +126,11 @@ const { audioLevel } = useVoiceDetection({
 });
 
 // ---------------------------------------------------------------------------
+<<<<<<< HEAD
 // Voice Status Labels
+=======
+// Logo selection based on theme
+>>>>>>> main
 // ---------------------------------------------------------------------------
 const stateTitle = computed(() => {
   const state = btnState.value;
@@ -125,6 +143,7 @@ const stateTitle = computed(() => {
   }[state] || 'Voice Assistant';
 });
 
+<<<<<<< HEAD
 const stateLabel = computed(() => {
   const state = btnState.value;
   return {
@@ -143,6 +162,21 @@ const toggleButtonText = computed(() => {
   return 'Connect';
 });
 
+=======
+// ---------------------------------------------------------------------------
+// Voice state for navigation component
+// ---------------------------------------------------------------------------
+const voiceNavState = computed(() => {
+  if (rtcStatus.value === 'connecting') return 'connecting';
+  if (rtcStatus.value === 'live') {
+    if (talking.value === 'user') return 'listening';
+    if (talking.value === 'assistant') return 'speaking';
+    return 'live';
+  }
+  return 'idle';
+});
+
+>>>>>>> main
 // ---------------------------------------------------------------------------
 // Conservative Mosaic Layout - Content-first sizing for efficient packing
 // ---------------------------------------------------------------------------

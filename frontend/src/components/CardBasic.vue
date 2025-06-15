@@ -59,9 +59,12 @@ function open() { emit('open'); }
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 .header-left { display:flex; align-items:center; gap:10px; }
 .icon { width:18px; height:18px; color:#ff8800; flex-shrink:0; }
 =======
+=======
+>>>>>>> main
 .header-left { 
   display: flex; 
   align-items: center; 
@@ -69,6 +72,7 @@ function open() { emit('open'); }
   min-width: 0;
 }
 
+<<<<<<< HEAD
 .icon { 
   width: 1rem; 
   height: 1rem; 
@@ -76,6 +80,10 @@ function open() { emit('open'); }
   flex-shrink: 0; 
 }
 >>>>>>> 0ac4be3 ( Implement Dynamic Mosaic UI System with 12-column grid, 8 card sizes, content-aware sizing, enhanced voice bubble, and responsive design across all devices)
+=======
+.header-left { display:flex; align-items:center; gap:10px; }
+.icon { width:18px; height:18px; color:#ff8800; flex-shrink:0; }
+>>>>>>> main
 
 .title {
   font-size: 0.875rem;
