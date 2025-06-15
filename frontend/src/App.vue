@@ -50,13 +50,20 @@
         </button>
         <span class="state-pill" :class="btnState">{{ stateLabel }}</span>
       </div>
-      <div class="mosaic-grid">
+      <div class="radial-container">
         <component
           v-for="(it, index) in items"
           :key="it.id"
           :is="componentMap[it.kind] || 'div'"
           :card="it.props"
           :class="['mosaic-item', `mosaic-item-${determineCardSize(it.props)}`]"
+          :style="cardPositions.get(it.id) ? {
+            position: 'absolute',
+            left: `${cardPositions.get(it.id).x}%`,
+            top: `${cardPositions.get(it.id).y}%`,
+            transform: cardPositions.get(it.id).transform,
+            zIndex: index === 0 ? 100 : 50 + index
+          } : {}"
           @open="openItem(it)"
         />
       </div>
@@ -247,7 +254,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed, nextTick, onUnmounted } from "vue";
+import { ref, watch, onMounted, computed, nextTick, onUnmounted, watchEffect } from "vue";
 import logoBlack from "../assets/gullie-black-logo.png";
 import logoWhite from "../assets/gullie-white-logo.png";
 import { useRealtime } from "./composables/useRealtime.js";
@@ -773,6 +780,70 @@ function formatTime(timestamp) {
 // Reactive list of cards (updated by realtime hook)
 const { items } = useUiStore();
 
+// ===== NEW: Radial Card Positioning System =====
+const cardPositions = ref(new Map());
+const containerDimensions = ref({ width: 0, height: 0 });
+
+// Golden angle for natural spiral distribution
+const GOLDEN_ANGLE = 137.5 * (Math.PI / 180);
+const BASE_RADIUS = 120; // Base distance from center
+const RADIUS_INCREMENT = 80; // How much radius increases per card
+
+// Calculate radial position for each card
+const calculateCardPosition = (index, cardSize, totalCards) => {
+  if (index === 0) {
+    // First card: center of screen
+    return {
+      x: 50, // 50% from left
+      y: 50, // 50% from top
+      transform: 'translate(-50%, -50%)'
+    };
+  }
+  
+  // Subsequent cards: spiral outward
+  const angle = index * GOLDEN_ANGLE;
+  const radius = BASE_RADIUS + (Math.sqrt(index) * RADIUS_INCREMENT);
+  
+  // Convert polar to cartesian coordinates
+  const x = Math.cos(angle) * radius;
+  const y = Math.sin(angle) * radius;
+  
+  // Convert to percentage-based positioning (relative to viewport center)
+  const xPercent = 50 + (x / containerDimensions.value.width) * 100;
+  const yPercent = 50 + (y / containerDimensions.value.height) * 100;
+  
+  // Clamp to viewport bounds with margin
+  const clampedX = Math.max(5, Math.min(95, xPercent));
+  const clampedY = Math.max(5, Math.min(95, yPercent));
+  
+  return {
+    x: clampedX,
+    y: clampedY,
+    transform: 'translate(-50%, -50%)'
+  };
+};
+
+// Update card positions when items change
+watchEffect(() => {
+  const newPositions = new Map();
+  
+  items.value.forEach((item, index) => {
+    const cardSize = determineCardSize(item.props);
+    const position = calculateCardPosition(index, cardSize, items.value.length);
+    newPositions.set(item.id, position);
+  });
+  
+  cardPositions.value = newPositions;
+});
+
+// Update container dimensions on resize
+const updateContainerDimensions = () => {
+  containerDimensions.value = {
+    width: window.innerWidth,
+    height: window.innerHeight
+  };
+};
+
 // ---------------------------------------------------------------------------
 // Theme toggle (dark / light)
 // ---------------------------------------------------------------------------
@@ -835,9 +906,13 @@ onMounted(() => {
     applyBackgroundTheme();
   }, 100);
   
+  // Initialize container dimensions for radial layout
+  updateContainerDimensions();
+  
   // Add event listeners
   window.addEventListener('keydown', handleFocusModalKeydown);
   window.addEventListener('resize', scrollFocusChatToLatest);
+  window.addEventListener('resize', updateContainerDimensions);
   window.addEventListener('keydown', trapFocusInModal);
 });
 
@@ -845,6 +920,7 @@ onUnmounted(() => {
   document.body.style.overflow = '';
   window.removeEventListener('keydown', handleFocusModalKeydown);
   window.removeEventListener('resize', scrollFocusChatToLatest);
+  window.removeEventListener('resize', updateContainerDimensions);
   window.removeEventListener('keydown', trapFocusInModal);
 });
 
@@ -1308,34 +1384,29 @@ html, body, #app {
   }
 }
 
-/* ===== Enhanced Mosaic Grid Layout - Tightly Packed ===== */
-.mosaic-grid {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr); /* Reduced from 16 to 8 columns for tighter packing */
-  gap: 0.75rem; /* Reduced gap for closer cards */
-  grid-auto-rows: minmax(80px, auto); /* Flexible row sizing */
-  grid-auto-flow: row dense; /* Dense packing to fill gaps */
-  align-items: start;
-  justify-items: stretch;
-  width: 100%;
+/* ===== NEW: Radial Container Layout ===== */
+.radial-container {
   position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 600px;
+  overflow: hidden;
   padding: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
 }
 
 .mosaic-item {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 12px;
   overflow: hidden;
-  position: relative;
+  position: absolute;
   display: flex;
   flex-direction: column;
   background: var(--card-bg);
   border: 1px solid var(--card-border-color);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  height: fit-content;
-  align-self: start;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(8px);
+  will-change: transform, opacity;
 }
 
 .mosaic-item:hover {
@@ -1355,181 +1426,104 @@ html, body, #app {
   padding: 0;
 }
 
-/* ===== Tightly Packed Size System (8-column grid) ===== */
-/* Micro - Smallest indicators (1 column) */
+/* ===== Fixed Size System for Radial Layout ===== */
+/* Micro - Smallest indicators */
 .mosaic-item-micro {
-  grid-column: span 1;
-  grid-row: span 1;
-  min-height: 80px;
+  width: 120px;
+  height: 80px;
 }
 
-/* Tiny - Small cards (2 columns) */
+/* Tiny - Small cards */
 .mosaic-item-tiny {
-  grid-column: span 2;
-  grid-row: span 1;
-  min-height: 100px;
+  width: 160px;
+  height: 100px;
 }
 
-/* Small - Compact cards (2 columns, 2 rows) */
+/* Small - Compact cards */
 .mosaic-item-small {
-  grid-column: span 2;
-  grid-row: span 2;
-  min-height: 160px;
+  width: 180px;
+  height: 160px;
 }
 
-/* Medium - Standard cards (3 columns, 2 rows) */
+/* Medium - Standard cards */
 .mosaic-item-medium {
-  grid-column: span 3;
-  grid-row: span 2;
-  min-height: 180px;
+  width: 240px;
+  height: 180px;
 }
 
-/* Wide - Horizontal cards (4 columns, 1 row) */
+/* Wide - Horizontal cards */
 .mosaic-item-wide {
-  grid-column: span 4;
-  grid-row: span 1;
-  min-height: 120px;
+  width: 320px;
+  height: 120px;
 }
 
-/* Square - Balanced cards (3 columns, 3 rows) */
+/* Square - Balanced cards */
 .mosaic-item-square {
-  grid-column: span 3;
-  grid-row: span 3;
-  min-height: 240px;
+  width: 220px;
+  height: 220px;
 }
 
-/* Tall - Vertical cards (2 columns, 3 rows) */
+/* Tall - Vertical cards */
 .mosaic-item-tall {
-  grid-column: span 2;
-  grid-row: span 3;
-  min-height: 260px;
+  width: 160px;
+  height: 260px;
 }
 
-/* Large - Feature cards (4 columns, 2 rows) */
+/* Large - Feature cards */
 .mosaic-item-large {
-  grid-column: span 4;
-  grid-row: span 2;
-  min-height: 200px;
+  width: 300px;
+  height: 200px;
 }
 
-/* Extra Large - Hero cards (4 columns, 3 rows) */
+/* Extra Large - Hero cards */
 .mosaic-item-xl {
-  grid-column: span 4;
-  grid-row: span 3;
-  min-height: 280px;
+  width: 360px;
+  height: 280px;
 }
 
-/* ===== Ultra-Responsive Design ===== */
-
-/* Large screens - Full 20-column grid */
-@media (min-width: 1400px) {
-  .mosaic-grid {
-    grid-template-columns: repeat(20, 1fr);
-    gap: 0.1rem;
-    grid-auto-rows: minmax(50px, auto);
-  }
+/* ===== Responsive Card Sizes for Radial Layout ===== */
+@media (max-width: 768px) {
+  .mosaic-item-micro { width: 100px; height: 70px; }
+  .mosaic-item-tiny { width: 140px; height: 90px; }
+  .mosaic-item-small { width: 160px; height: 140px; }
+  .mosaic-item-medium { width: 200px; height: 160px; }
+  .mosaic-item-wide { width: 280px; height: 100px; }
+  .mosaic-item-square { width: 180px; height: 180px; }
+  .mosaic-item-tall { width: 140px; height: 220px; }
+  .mosaic-item-large { width: 260px; height: 180px; }
+  .mosaic-item-xl { width: 300px; height: 240px; }
 }
 
-/* Standard screens - 16-column grid */
-@media (max-width: 1399px) and (min-width: 1024px) {
-  .mosaic-grid {
-    grid-template-columns: repeat(16, 1fr);
-    gap: 0.075rem;
-    grid-auto-rows: minmax(45px, auto);
-  }
-  
-  .mosaic-item-micro { grid-column: span 2; }
-  .mosaic-item-tiny { grid-column: span 2; }
-  .mosaic-item-small { grid-column: span 3; }
-  .mosaic-item-medium { grid-column: span 5; }
-  .mosaic-item-large { grid-column: span 6; }
-  .mosaic-item-wide { grid-column: span 8; }
-  .mosaic-item-tall { grid-column: span 3; grid-row: span 3; }
-  .mosaic-item-xl { grid-column: span 8; }
-  .mosaic-item-square { grid-column: span 5; }
-}
-
-/* Medium screens - 12-column grid */
-@media (max-width: 1023px) and (min-width: 768px) {
-  .mosaic-grid {
-    grid-template-columns: repeat(12, 1fr);
-    gap: 0.1rem;
-    grid-auto-rows: minmax(50px, auto);
-  }
-  
-  .mosaic-item-micro { grid-column: span 2; }
-  .mosaic-item-tiny { grid-column: span 2; }
-  .mosaic-item-small { grid-column: span 3; }
-  .mosaic-item-medium { grid-column: span 4; }
-  .mosaic-item-large { grid-column: span 6; }
-  .mosaic-item-wide { grid-column: span 8; }
-  .mosaic-item-tall { grid-column: span 3; grid-row: span 3; }
-  .mosaic-item-xl { grid-column: span 8; }
-  .mosaic-item-square { grid-column: span 4; }
-}
-
-/* Small screens - 8-column grid */
-@media (max-width: 767px) {
-  .mosaic-grid {
-    grid-template-columns: repeat(8, 1fr);
-    gap: 0.05rem;
-    grid-auto-rows: minmax(45px, auto);
-    padding: 0.125rem;
-  }
-  
-  .mosaic-item-micro { grid-column: span 2; }
-  .mosaic-item-tiny { grid-column: span 2; }
-  .mosaic-item-small { grid-column: span 2; }
-  .mosaic-item-medium { grid-column: span 4; }
-  .mosaic-item-large { grid-column: span 6; }
-  .mosaic-item-wide { grid-column: span 6; }
-  .mosaic-item-tall { grid-column: span 2; grid-row: span 2; }
-  .mosaic-item-xl { grid-column: span 8; }
-  .mosaic-item-square { grid-column: span 4; }
-}
-
-/* Extra small screens - 6-column grid */
 @media (max-width: 480px) {
-  .mosaic-grid {
-    grid-template-columns: repeat(6, 1fr);
-    gap: 0.025rem;
-    grid-auto-rows: minmax(40px, auto);
-    padding: 0.1rem;
-  }
-  
-  .mosaic-item-micro { grid-column: span 2; }
-  .mosaic-item-tiny { grid-column: span 2; }
-  .mosaic-item-small { grid-column: span 3; }
-  .mosaic-item-medium { grid-column: span 3; }
-  .mosaic-item-large { grid-column: span 6; }
-  .mosaic-item-wide { grid-column: span 6; }
-  .mosaic-item-tall { grid-column: span 3; grid-row: span 2; }
-  .mosaic-item-xl { grid-column: span 6; }
-  .mosaic-item-square { grid-column: span 3; }
+  .mosaic-item-micro { width: 90px; height: 60px; }
+  .mosaic-item-tiny { width: 120px; height: 80px; }
+  .mosaic-item-small { width: 140px; height: 120px; }
+  .mosaic-item-medium { width: 160px; height: 140px; }
+  .mosaic-item-wide { width: 240px; height: 90px; }
+  .mosaic-item-square { width: 140px; height: 140px; }
+  .mosaic-item-tall { width: 120px; height: 180px; }
+  .mosaic-item-large { width: 200px; height: 160px; }
+  .mosaic-item-xl { width: 240px; height: 200px; }
 }
 
-/* ===== Enhanced Visual Polish ===== */
+/* ===== Radial Layout Visual Polish ===== */
 
-/* Improved backdrop for visual cohesion */
-.mosaic-grid::before {
+/* Enhanced backdrop for radial layout */
+.radial-container::before {
   content: '';
   position: absolute;
-  top: -0.5rem;
-  left: -0.5rem;
-  right: -0.5rem;
-  bottom: -0.5rem;
-  background: linear-gradient(
-    135deg, 
-    transparent 0%, 
-    rgba(59, 130, 246, 0.02) 25%,
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at 50% 50%, 
+    rgba(59, 130, 246, 0.03) 0%, 
     rgba(139, 92, 246, 0.02) 50%,
-    rgba(236, 72, 153, 0.02) 75%,
     transparent 100%
   );
-  border-radius: 16px;
   pointer-events: none;
-  z-index: -1;
-  opacity: 0.8;
+  z-index: 0;
 }
 
 /* Faster, smoother card entrance animation */
@@ -1587,50 +1581,16 @@ html, body, #app {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
-/* Responsive Design - Mobile First */
-@media screen and (max-width: 768px) {
-  .mosaic-grid {
-    grid-template-columns: repeat(4, 1fr); /* Fewer columns on mobile */
-    gap: 0.5rem;
-    padding: 0.5rem;
-  }
-  
-  /* Adjust sizes for mobile */
-  .mosaic-item-wide,
-  .mosaic-item-large,
-  .mosaic-item-xl {
-    grid-column: span 4; /* Full width on mobile */
-  }
-  
-  .mosaic-item-medium {
-    grid-column: span 3;
-  }
-  
-  .mosaic-item-small,
-  .mosaic-item-square,
-  .mosaic-item-tall {
-    grid-column: span 2;
-  }
+/* Radial Layout Enhancements */
+.mosaic-item:nth-child(1) {
+  z-index: 100 !important;
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
 }
 
-@media screen and (max-width: 480px) {
-  .mosaic-grid {
-    grid-template-columns: repeat(2, 1fr); /* Even simpler on small mobile */
-    gap: 0.5rem;
-    padding: 0.5rem;
-  }
-  
-  .mosaic-item-wide,
-  .mosaic-item-large,
-  .mosaic-item-xl,
-  .mosaic-item-medium {
-    grid-column: span 2; /* Full width */
-    grid-row: span 1; /* Single row to avoid too much height */
-  }
-  
-  .mosaic-item-tall {
-    grid-row: span 2; /* Limit tall cards */
-  }
+.mosaic-item:hover {
+  transform: translate(-50%, -50%) scale(1.05) !important;
+  z-index: 200 !important;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
 }
 
 /* ===== Enhanced Focus Modal System ===== */

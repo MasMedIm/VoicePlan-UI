@@ -18,7 +18,7 @@
       
       <!-- Expand button with chevron icon -->
       <button class="expand-btn" @click="toggleCollapse" title="Click to expand full navigation">
-        <ChevronUp class="expand-icon" />
+        <span class="expand-icon">&gt;</span>
       </button>
     </div>
 
@@ -27,7 +27,7 @@
       <!-- Collapse button with chevron icon -->
       <button class="nav-button collapse-btn" @click="toggleCollapse" title="Collapse navigation">
         <div class="icon-container">
-          <ChevronDown class="collapse-icon" />
+          <span class="collapse-icon">&lt;</span>
         </div>
         <span class="nav-label">Collapse</span>
       </button>
@@ -170,7 +170,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import VoiceBubble from './VoiceBubble.vue'
-import { X, Play, ChevronUp, ChevronDown } from 'lucide-vue-next'
+import { X, Play } from 'lucide-vue-next'
 
 const props = defineProps({
   isDark: Boolean,
@@ -539,16 +539,17 @@ onUnmounted(() => {
 }
 
 .expand-icon {
-  width: 1.25rem;
-  height: 1.25rem;
+  font-size: 1.25rem;
   color: white;
+  font-weight: bold;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  transition: all 0.3s ease;
 }
 
 .collapse-icon {
-  width: 1.25rem;
-  height: 1.25rem;
-  transition: transform 0.3s ease;
+  font-size: 1.25rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
 }
 
 @keyframes expand-pulse {
