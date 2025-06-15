@@ -90,6 +90,8 @@
               <button @click="closeModal" class="close-btn" aria-label="Close focus modal">
                 <X class="icon" />
               </button>
+              <button @click="copyCardLink" class="copy-link-btn" aria-label="Copy card link"><Link class="icon" /></button>
+              <button @click="closeModal" class="back-btn" aria-label="Back to board"><ArrowLeft class="icon" /></button>
             </div>
           </header>
           
@@ -281,7 +283,7 @@ import VoiceWaveform from "./components/VoiceWaveform.vue";
 import VoiceHints from "./components/VoiceHints.vue";
 import { 
   Mic, Target, MessageSquare, X, Calendar, Hash, Bot, 
-  Edit3, Copy, Trash2, Send 
+  Edit3, Copy, Trash2, Send, Link, ArrowLeft 
 } from 'lucide-vue-next';
 
 const email = ref('');
@@ -488,19 +490,36 @@ function playSound(name) {
   audio.play();
 }
 
+// Persistent chat history helpers
+function getCardChatHistory(cardId) {
+  try {
+    const raw = localStorage.getItem('vpui-chat-' + cardId);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+function setCardChatHistory(cardId, history) {
+  try {
+    localStorage.setItem('vpui-chat-' + cardId, JSON.stringify(history));
+  } catch {}
+}
+
 function openItem(item) {
   selected.value = item;
   focusedCard.value = { ...item.props };
-  
-  // Initialize focus chat
-  focusChatHistory.value = [
-    {
-      id: Date.now(),
-      type: 'assistant',
-      text: `Hi! I'm now focused on your "${item.props.title || 'card'}" ${item.kind?.replace('card.', '') || 'card'}. I can help you modify it through voice or text commands.`,
-      timestamp: Date.now()
-    }
-  ];
+  // Restore chat history if exists
+  const saved = getCardChatHistory(item.id);
+  if (saved && Array.isArray(saved) && saved.length) {
+    focusChatHistory.value = saved;
+  } else {
+    focusChatHistory.value = [
+      {
+        id: Date.now(),
+        type: 'assistant',
+        text: `Hi! I'm now focused on your "${item.props.title || 'card'}" ${item.kind?.replace('card.', '') || 'card'}. I can help you modify it through voice or text commands.`,
+        timestamp: Date.now()
+      }
+    ];
+  }
   
   // Reset focus state
   isFocusChatMode.value = false;
@@ -899,6 +918,37 @@ function trapFocusInModal(e) {
     first.focus();
     e.preventDefault();
   }
+}
+
+// Save chat history on every message
+watch(focusChatHistory, (val) => {
+  if (selected.value && selected.value.id) {
+    setCardChatHistory(selected.value.id, val);
+  }
+}, { deep: true });
+
+const ariaLiveText = ref('');
+const ariaLiveRegion = ref(null);
+// Watch for assistant chat messages and card updates
+watch(focusChatHistory, (val) => {
+  const last = val[val.length - 1];
+  if (last && last.type === 'assistant') {
+    ariaLiveText.value = last.text;
+  }
+}, { deep: true });
+watch(focusedCard, (val) => {
+  if (val && selected.value) {
+    ariaLiveText.value = `Card updated: ${val.title || 'Card'}`;
+  }
+}, { deep: true });
+
+const copyTooltip = ref('Copy link');
+function copyCardLink() {
+  if (!selected.value) return;
+  const url = `${window.location.origin}${window.location.pathname}#card-${selected.value.id}`;
+  navigator.clipboard.writeText(url);
+  copyTooltip.value = 'Copied!';
+  setTimeout(() => { copyTooltip.value = 'Copy link'; }, 1200);
 }
 </script>
 
@@ -2845,6 +2895,12 @@ html, body, #app {
     padding-bottom: 12rem; /* Extra space for mobile voice components */
   }
 }
+
+.sr-only { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.copy-link-btn, .back-btn { background: none; border: none; color: var(--text-color); cursor: pointer; margin-right: 0.5rem; position: relative; }
+.copy-link-btn .icon, .back-btn .icon { width: 1.1rem; height: 1.1rem; }
+.copy-link-btn:hover::after { content: attr(data-tooltip); position: absolute; top: -1.5rem; left: 50%; transform: translateX(-50%); background: #222; color: #fff; font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 6px; white-space: nowrap; pointer-events: none; opacity: 0.95; }
 </style>
 
 <style>

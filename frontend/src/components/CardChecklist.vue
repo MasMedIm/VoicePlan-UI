@@ -78,11 +78,13 @@
     <div class="action-indicator">
       <ChevronRight class="chevron" />
     </div>
+
+    <canvas v-show="showConfetti" ref="confettiCanvas" class="confetti-canvas"></canvas>
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, nextTick } from 'vue';
 import { ListTodo, ChevronRight } from 'lucide-vue-next';
 
 const props = defineProps({
@@ -135,6 +137,54 @@ const isCompleted = computed(() => {
   return counts.value.total > 0 && counts.value.done === counts.value.total;
 });
 
+const showConfetti = ref(false);
+const confettiCanvas = ref(null);
+
+function launchConfetti() {
+  showConfetti.value = true;
+  nextTick(() => {
+    const canvas = confettiCanvas.value;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width = canvas.offsetWidth;
+    const H = canvas.height = canvas.offsetHeight;
+    const particles = Array.from({length: 48}, () => ({
+      x: W/2,
+      y: H/2,
+      r: 6 + Math.random()*6,
+      d: Math.random()*360,
+      color: `hsl(${Math.random()*360},90%,60%)`,
+      tilt: Math.random()*10-5,
+      tiltAngle: 0,
+      tiltAngleInc: Math.random()*0.07+0.05,
+      vx: Math.random()*6-3,
+      vy: Math.random()*-8-4
+    }));
+    let frame = 0;
+    function draw() {
+      ctx.clearRect(0,0,W,H);
+      for (const p of particles) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, 2*Math.PI);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = 0.8;
+        ctx.fill();
+        ctx.restore();
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.25;
+        p.tiltAngle += p.tiltAngleInc;
+        p.x += Math.sin(p.tiltAngle);
+      }
+      frame++;
+      if (frame < 60) requestAnimationFrame(draw);
+      else showConfetti.value = false;
+    }
+    draw();
+  });
+}
+
 const onItemToggle = () => {
   // Add a small delay for animation
   setTimeout(() => {
@@ -145,6 +195,7 @@ const onItemToggle = () => {
       setTimeout(() => {
         card?.classList.remove('celebration');
       }, 600);
+      launchConfetti();
     }
   }, 100);
 };
@@ -709,5 +760,51 @@ function open() {
     rgba(34, 197, 94, 0.1) 0%, 
     rgba(16, 185, 129, 0.08) 100%
   );
+}
+
+.confetti-canvas {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Button tap ripple effect for checkboxes and action indicator */
+.checkbox-custom, .action-indicator {
+  position: relative;
+  overflow: hidden;
+}
+.checkbox-custom:active::after, .action-indicator:active::after {
+  content: '';
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 0; height: 0;
+  background: rgba(16,185,129,0.18);
+  border-radius: 50%;
+  transform: translate(-50%,-50%);
+  animation: ripple 0.5s linear;
+  pointer-events: none;
+}
+@keyframes ripple {
+  to {
+    width: 200%; height: 200%; opacity: 0;
+  }
+}
+
+/* Card hover sparkles */
+.checklist-card::after {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="2" fill="%23fff" opacity="0.7"/><circle cx="80" cy="40" r="1.5" fill="%23fff" opacity="0.5"/><circle cx="60" cy="80" r="1.2" fill="%23fff" opacity="0.4"/><circle cx="40" cy="60" r="1.8" fill="%23fff" opacity="0.6"/></svg>');
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 10;
+}
+.checklist-card:hover::after {
+  opacity: 0.7;
 }
 </style>
