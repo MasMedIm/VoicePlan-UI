@@ -175,12 +175,15 @@ const voiceNavState = computed(() => {
 
 >>>>>>> main
 // ---------------------------------------------------------------------------
-// Conservative Mosaic Layout - Content-first sizing for efficient packing
+// Aggressive Mosaic Layout - Tight packing with dynamic sizing
 // ---------------------------------------------------------------------------
 const getMosaicSize = (index, item) => {
   if (!item) {
-    // Simple, predictable pattern that favors smaller sizes
-    const patterns = ['tiny', 'small', 'tiny', 'small', 'medium', 'tiny'];
+    // Ultra-tight mosaic patterns with occasional variety
+    const patterns = [
+      'tiny', 'tiny', 'tiny', 'small', 'tiny', 'tiny', 'small', 'tiny',
+      'tiny', 'medium', 'tiny', 'small', 'tiny', 'tiny', 'wide', 'tiny'
+    ];
     return patterns[index % patterns.length];
   }
 
@@ -190,51 +193,53 @@ const getMosaicSize = (index, item) => {
   const itemCount = item.props?.items?.length || item.props?.steps?.length || 0;
   const hasTitle = item.props?.title?.length > 0;
   
-  // Calculate actual content density
-  const isContentHeavy = contentLength > 150 || itemCount > 8;
-  const isMediumContent = contentLength > 50 || itemCount > 4;
-  const isLightContent = contentLength < 30 && itemCount < 3;
+  // Calculate actual content density - be more aggressive about smaller sizes
+  const isContentHeavy = contentLength > 200 || itemCount > 12;
+  const isMediumContent = contentLength > 80 || itemCount > 6;
+  const isLightContent = contentLength < 50 && itemCount < 4;
   
-  // Content-first sizing - be conservative!
+  // More aggressive sizing - prioritize smaller cards for tighter mosaic
   switch(cardType) {
     case 'weather':
+      // Weather cards stay compact unless they have tons of data
+      return isContentHeavy ? 'medium' : 'small';
+    
     case 'map':
-      // Weather/maps need horizontal space but don't go crazy
-      return hasImage ? 'wide' : 'medium';
+      // Maps need some width but keep them reasonable
+      return isContentHeavy ? 'wide' : 'medium';
     
     case 'checklist':
     case 'progress':
-      // Size based on actual item count, not assumptions
-      if (itemCount <= 3) return 'tiny';
-      if (itemCount <= 6) return 'small';  // Like the train snacks example
-      if (itemCount <= 10) return 'medium';
-      return 'tall'; // Only for truly long lists
+      // Be more aggressive with checklist sizing
+      if (itemCount <= 2) return 'tiny';
+      if (itemCount <= 4) return 'small';  
+      if (itemCount <= 8) return 'medium';
+      return 'tall'; // Only for very long lists (>8 items)
     
     case 'metric':
-      // Metrics should always be compact
+      // Metrics are always tiny for tight packing
       return 'tiny';
     
     case 'image':
-      // Images get more space only if they actually have images
-      if (hasImage && isContentHeavy) return 'large';
-      if (hasImage) return 'medium';
-      return 'small';
+      // Images - be selective about when they get large
+      if (hasImage && isContentHeavy) return 'medium'; // Reduced from 'large'
+      if (hasImage) return 'small';
+      return 'tiny';
     
     case 'date':
-      // Dates are always brief
+      // Dates are always tiny
       return 'tiny';
     
     case 'link':
-      // Links are minimal
+      // Links stay minimal
       return 'tiny';
     
     case 'basic':
     default:
-      // Basic cards based on actual content amount
-      if (isLightContent) return 'tiny';
-      if (isMediumContent) return 'small';
+      // Basic cards - be much more conservative
       if (isContentHeavy) return 'medium';
-      return 'small'; // Default to small, not medium
+      if (isMediumContent) return 'small';
+      return 'tiny'; // Default to tiny for tight packing
   }
 };
 
@@ -405,22 +410,25 @@ html, body, #app {
   border: 1px solid var(--card-border-color);
 }
 
-/* ===== Compact Mosaic Grid Layout ===== */
+/* ===== Ultra-Tight Mosaic Grid Layout ===== */
 .mosaic-grid {
   display: grid;
-  grid-template-columns: repeat(12, 1fr); /* 12-column precision grid */
-  gap: 0.25rem; /* Very tight spacing for true mosaic feel */
-  grid-auto-rows: 80px; /* Smaller row height for better packing */
-  grid-auto-flow: row; /* Ensure proper left-to-right flow */
+  grid-template-columns: repeat(16, 1fr); /* Increased to 16 columns for finer control */
+  gap: 0.125rem; /* Ultra-tight spacing for true mosaic feel */
+  grid-auto-rows: 60px; /* Smaller row height for denser packing */
+  grid-auto-flow: row dense; /* Dense packing to fill gaps automatically */
   align-items: stretch;
+  justify-items: stretch;
   width: 100%;
   position: relative;
-  padding: 0.25rem;
+  padding: 0.125rem;
+  /* Ensure smooth layout transitions */
+  transition: all 0.3s ease;
 }
 
 .mosaic-item {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 12px;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px; /* Slightly smaller radius for tighter look */
   overflow: hidden;
   position: relative;
   display: flex;
@@ -429,14 +437,14 @@ html, body, #app {
   max-height: 100%;
   background: var(--card-bg);
   border: 1px solid var(--card-border-color);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 .mosaic-item:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-0.5px) scale(1.01); /* Subtle scale for tight layout */
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
   z-index: 10;
-  border-color: rgba(59, 130, 246, 0.3);
+  border-color: rgba(59, 130, 246, 0.4);
 }
 
 /* Child component styling */
@@ -449,7 +457,7 @@ html, body, #app {
   padding: 0; /* Let child components handle their own padding */
 }
 
-/* ===== Precision Mosaic Size System ===== */
+/* ===== Ultra-Tight Mosaic Size System (16-column grid) ===== */
 /* Tiny - Perfect for metrics, quick info */
 .mosaic-item-tiny {
   grid-column: span 2;
@@ -488,44 +496,47 @@ html, body, #app {
 
 /* Extra Large - Hero cards */
 .mosaic-item-xl {
-  grid-column: span 6;
-  grid-row: span 3;
+  grid-column: span 8;
+  grid-row: span 2;
 }
 
 /* Square - Balanced proportions */
 .mosaic-item-square {
-  grid-column: span 4;
-  grid-row: span 3;
+  grid-column: span 5;
+  grid-row: span 2;
 }
 
-/* ===== Responsive Mosaic Design ===== */
+/* ===== Responsive Ultra-Tight Mosaic Design ===== */
 
-/* Large screens - Full 12-column grid */
+/* Large screens - Full 16-column grid */
 @media (min-width: 1200px) {
   .mosaic-grid {
-    gap: 0.375rem; /* Keep tight spacing even on large screens */
+    gap: 0.15rem; /* Even tighter on large screens */
+    grid-auto-rows: 70px; /* Slightly taller for better readability */
   }
 }
 
-/* Medium screens - 8-column grid */
+/* Medium screens - 12-column grid */
 @media (max-width: 1199px) and (min-width: 769px) {
   .mosaic-grid {
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(12, 1fr);
+    gap: 0.1rem;
+    grid-auto-rows: 65px;
   }
   
-  .mosaic-item-wide { grid-column: span 6; }
-  .mosaic-item-xl { grid-column: span 4; grid-row: span 2; }
-  .mosaic-item-large { grid-column: span 4; }
-  .mosaic-item-square { grid-column: span 3; grid-row: span 2; }
+  .mosaic-item-wide { grid-column: span 8; }
+  .mosaic-item-xl { grid-column: span 6; grid-row: span 2; }
+  .mosaic-item-large { grid-column: span 5; }
+  .mosaic-item-square { grid-column: span 4; grid-row: span 2; }
 }
 
-/* Small screens - 6-column grid */
+/* Small screens - 8-column grid */
 @media (max-width: 768px) {
   .mosaic-grid {
-    grid-template-columns: repeat(6, 1fr);
-    gap: 0.2rem;
-    grid-auto-rows: 70px;
-    padding: 0.2rem;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 0.08rem;
+    grid-auto-rows: 60px;
+    padding: 0.1rem;
   }
   
   .mosaic-item-tiny { grid-column: span 2; }
@@ -538,69 +549,70 @@ html, body, #app {
   .mosaic-item-square { grid-column: span 3; grid-row: span 2; }
 }
 
-/* Extra small screens - 4-column grid */
+/* Extra small screens - 6-column grid */
 @media (max-width: 480px) {
   .mosaic-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.15rem;
-    grid-auto-rows: 60px;
-    padding: 0.15rem;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.05rem;
+    grid-auto-rows: 55px;
+    padding: 0.05rem;
   }
   
   .mosaic-item-tiny { grid-column: span 2; }
   .mosaic-item-small { grid-column: span 2; }
-  .mosaic-item-medium { grid-column: span 2; grid-row: span 2; }
+  .mosaic-item-medium { grid-column: span 3; grid-row: span 2; }
   .mosaic-item-large { grid-column: span 4; grid-row: span 2; }
-  .mosaic-item-wide { grid-column: span 4; grid-row: span 1; }
+  .mosaic-item-wide { grid-column: span 6; grid-row: span 1; }
   .mosaic-item-tall { grid-column: span 2; grid-row: span 2; }
-  .mosaic-item-xl { grid-column: span 4; grid-row: span 2; }
-  .mosaic-item-square { grid-column: span 2; grid-row: span 2; }
+  .mosaic-item-xl { grid-column: span 6; grid-row: span 2; }
+  .mosaic-item-square { grid-column: span 3; grid-row: span 2; }
 }
 
-/* ===== Visual Polish for Mosaic Layout ===== */
+/* ===== Enhanced Visual Polish for Ultra-Tight Mosaic ===== */
 
 /* Subtle backdrop for visual cohesion */
 .mosaic-grid::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: -0.5rem;
+  left: -0.5rem;
+  right: -0.5rem;
+  bottom: -0.5rem;
   background: linear-gradient(
     135deg, 
     transparent 0%, 
-    rgba(59, 130, 246, 0.01) 25%,
-    rgba(139, 92, 246, 0.01) 50%,
-    rgba(236, 72, 153, 0.01) 75%,
+    rgba(59, 130, 246, 0.02) 25%,
+    rgba(139, 92, 246, 0.02) 50%,
+    rgba(236, 72, 153, 0.02) 75%,
     transparent 100%
   );
-  border-radius: 16px;
+  border-radius: 20px;
   pointer-events: none;
   z-index: -1;
+  opacity: 0.6;
 }
 
-/* Enhanced card entrance animation */
+/* Enhanced card entrance animation for tight mosaic */
 .mosaic-item {
-  animation: mosaicEnter 0.3s ease-out;
+  animation: mosaicEnter 0.25s ease-out;
   animation-fill-mode: both;
 }
 
-/* Staggered animation for multiple cards */
+/* Faster staggered animation for tight packing */
 .mosaic-item:nth-child(1) { animation-delay: 0ms; }
-.mosaic-item:nth-child(2) { animation-delay: 50ms; }
-.mosaic-item:nth-child(3) { animation-delay: 100ms; }
-.mosaic-item:nth-child(4) { animation-delay: 150ms; }
-.mosaic-item:nth-child(5) { animation-delay: 200ms; }
-.mosaic-item:nth-child(6) { animation-delay: 250ms; }
-.mosaic-item:nth-child(7) { animation-delay: 300ms; }
-.mosaic-item:nth-child(8) { animation-delay: 350ms; }
-.mosaic-item:nth-child(n+9) { animation-delay: 400ms; }
+.mosaic-item:nth-child(2) { animation-delay: 25ms; }
+.mosaic-item:nth-child(3) { animation-delay: 50ms; }
+.mosaic-item:nth-child(4) { animation-delay: 75ms; }
+.mosaic-item:nth-child(5) { animation-delay: 100ms; }
+.mosaic-item:nth-child(6) { animation-delay: 125ms; }
+.mosaic-item:nth-child(7) { animation-delay: 150ms; }
+.mosaic-item:nth-child(8) { animation-delay: 175ms; }
+.mosaic-item:nth-child(n+9) { animation-delay: 200ms; }
 
 @keyframes mosaicEnter {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.98);
+    transform: translateY(5px) scale(0.99);
   }
   to {
     opacity: 1;
@@ -617,13 +629,13 @@ html, body, #app {
   right: 0;
   bottom: 0;
   background-image: 
-    linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
-  background-size: calc(100% / 12) 100px;
+    linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+  background-size: calc(100% / 16) 60px; /* Updated for 16-column grid */
   pointer-events: none;
   z-index: -1;
   opacity: 0;
-  animation: gridReveal 0.5s ease-out forwards;
+  animation: gridReveal 0.3s ease-out forwards;
 }
 
 @keyframes gridReveal {
