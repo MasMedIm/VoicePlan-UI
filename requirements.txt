@@ -6,4 +6,5 @@ PyYAML
 uvicorn
 fastapi
 pydantic
+fastapi-mcp
 
