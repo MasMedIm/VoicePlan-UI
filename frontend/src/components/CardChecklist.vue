@@ -2,11 +2,8 @@
   <div class="card checklist-card" @click="open">
     <header class="card-header">
       <div class="header-left">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-          <polyline points="9 11 12 14 22 4" />
-        </svg>
-        <h3 class="title">{{ card.title }}</h3>
+        <ListTodo class="icon" />
+                <h3 class="title">{{ card.title }}</h3>
       </div>
       <span v-if="progressText" class="progress">{{ progressText }}</span>
     </header>

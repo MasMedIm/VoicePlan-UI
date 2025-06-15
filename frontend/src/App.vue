@@ -37,7 +37,7 @@
           @click="toggleConnection"
           :disabled="rtcStatus === 'connecting'"
         >
-          <span class="mic-icon">🎙️</span>
+          <Mic class="mic-icon" />
           <div v-if="btnState === 'state-user'" class="orb-overlay"></div>
         </button>
         <span class="state-pill" :class="btnState">{{ stateLabel }}</span>

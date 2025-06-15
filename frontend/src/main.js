@@ -1,4 +1,8 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 
-createApp(App).mount("#app");
+import installIcons from "./plugins/lucide.js";
+
+const app = createApp(App);
+installIcons(app);
+app.mount("#app");
