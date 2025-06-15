@@ -47,16 +47,19 @@
 
 
 
-      <!-- Voice Status Indicator -->
+      <!-- Voice Status Indicator with Integrated Bubble -->
       <button 
-        class="nav-button voice-indicator" 
+        class="nav-button voice-indicator-bubble" 
         :class="voiceState"
         :disabled="isConnecting"
         @click="toggleVoice"
       >
-        <div class="icon-container">
-          <div class="voice-icon" :class="voiceState" :style="{ color: voiceState === 'listening' ? props.chatBubbleColor : undefined }">🎙️</div>
-          <div v-if="voiceState === 'listening'" class="listening-pulse" :style="{ borderColor: props.chatBubbleColor }" />
+        <div class="voice-bubble-container">
+          <VoiceBubble 
+            :voice-state="voiceState"
+            :external-audio-level="audioLevel"
+            :size="48"
+          />
         </div>
         <span class="nav-label">{{ voiceStatusLabel }}</span>
       </button>
@@ -66,15 +69,6 @@
         <div class="icon-container">⚙️</div>
         <span class="nav-label">Settings</span>
       </button>
-
-      <!-- Voice Bubble -->
-      <div class="voice-bubble-section">
-        <VoiceBubble 
-          :voice-state="voiceState"
-          :external-audio-level="audioLevel"
-          :size="64"
-        />
-      </div>
     </div>
 
     <!-- Settings Modal -->
@@ -426,39 +420,38 @@ function previewVoice(voice) {
   text-overflow: ellipsis;
 }
 
-/* Voice Indicator States */
-.voice-indicator:disabled {
+/* Voice Indicator with Bubble */
+.voice-indicator-bubble {
+  position: relative;
+  padding: 0.5rem 0.75rem !important;
+  min-width: 70px;
+}
+
+.voice-indicator-bubble:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.voice-indicator.connecting .voice-icon {
+.voice-indicator-bubble .voice-bubble-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+  transform: scale(0.8);
+  transition: transform 0.3s ease;
+}
+
+.voice-indicator-bubble:hover .voice-bubble-container {
+  transform: scale(0.85);
+}
+
+.voice-indicator-bubble.connecting .voice-bubble-container {
   animation: pulse 1.5s infinite;
 }
 
-.voice-indicator.listening .voice-icon {
-  color: #3b82f6;
-}
-
-.voice-indicator.speaking .voice-icon {
-  color: #8b5cf6;
-  animation: speaking-glow 1.8s ease-in-out infinite;
-}
-
-.voice-indicator.live .voice-icon {
-  color: #10b981;
-}
-
-.voice-indicator.idle .voice-icon {
-  color: #6b7280;
-}
-
-.listening-pulse {
-  position: absolute;
-  inset: -4px;
-  border: 2px solid #3b82f6;
-  border-radius: 50%;
-  animation: listening-ring 2s linear infinite;
+.voice-indicator-bubble .nav-label {
+  font-size: 0.6rem;
+  margin-top: 0.125rem;
 }
 
 /* Color Picker */
@@ -559,22 +552,7 @@ function previewVoice(voice) {
   100% { transform: scale(1.4); opacity: 0; }
 }
 
-/* Voice Bubble Section */
-.voice-bubble-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 0.5rem;
-  padding-left: 0.5rem;
-  padding-right: 0.25rem;
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
-  min-width: 80px;
-  min-height: 64px;
-}
 
-.dark .voice-bubble-section {
-  border-color: rgba(255, 255, 255, 0.1);
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -595,11 +573,17 @@ function previewVoice(voice) {
     width: 40px;
   }
   
-  .voice-bubble-section {
-    margin-left: 0.125rem;
-    padding-left: 0.125rem;
-    min-width: 48px;
-    min-height: 48px;
+  .voice-indicator-bubble {
+    padding: 0.375rem 0.5rem !important;
+    min-width: 60px;
+  }
+  
+  .voice-indicator-bubble .voice-bubble-container {
+    transform: scale(0.7);
+  }
+  
+  .voice-indicator-bubble:hover .voice-bubble-container {
+    transform: scale(0.75);
   }
 }
 
@@ -650,15 +634,15 @@ function previewVoice(voice) {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
-  padding: 1rem 1rem 8rem 1rem;
+  z-index: 9999;
+  padding: 2rem 1rem 6rem 1rem;
   box-sizing: border-box;
   overflow-y: auto;
 }
@@ -925,15 +909,15 @@ function previewVoice(voice) {
 /* Responsive Design */
 @media (max-width: 768px) {
   .settings-overlay {
-    padding: 0.5rem 0.5rem 6rem 0.5rem;
+    padding: 1rem 0.5rem 5rem 0.5rem;
   }
   
   .settings-modal {
     padding: 1.25rem;
-    max-height: calc(100vh - 7rem);
+    max-height: calc(100vh - 6rem);
     max-width: 95%;
     border-radius: 16px;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
   }
   
   .settings-header {
@@ -966,14 +950,14 @@ function previewVoice(voice) {
 /* Extra small devices */
 @media (max-width: 480px) {
   .settings-overlay {
-    padding: 0.25rem 0.25rem 5.5rem 0.25rem;
+    padding: 0.5rem 0.25rem 4.5rem 0.25rem;
   }
   
   .settings-modal {
     padding: 1rem;
-    max-height: calc(100vh - 6rem);
+    max-height: calc(100vh - 5rem);
     max-width: 98%;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
   }
   
   .settings-title {
