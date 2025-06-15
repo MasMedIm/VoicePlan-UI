@@ -73,6 +73,7 @@ function open() { emit('open'); }
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 .icon { 
   width: 1rem; 
   height: 1rem; 
@@ -84,6 +85,10 @@ function open() { emit('open'); }
 .header-left { display:flex; align-items:center; gap:10px; }
 .icon { width:18px; height:18px; color:#ff8800; flex-shrink:0; }
 >>>>>>> main
+=======
+.header-left { display:flex; align-items:center; gap:10px; }
+.icon { width:18px; height:18px; color:#ff8800; flex-shrink:0; }
+>>>>>>> 2ba452d (conflict)
 
 .title {
   font-size: 0.875rem;

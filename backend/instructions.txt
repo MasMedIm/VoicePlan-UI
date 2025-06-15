@@ -31,9 +31,12 @@ Pick the one that best fits the user's request:
    • Event types: `card.link.create`, `card.link.update`
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 >>>>>>> main
+=======
+>>>>>>> 2ba452d (conflict)
 6. Metric card – displays numbers, statistics, and changes.
    • Event types: `card.metric.create`, `card.metric.update`
    • Special fields: value, unit, change (percentage)
@@ -52,14 +55,20 @@ Pick the one that best fits the user's request:
 
 Shared fields for all card kinds:
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 2ba452d (conflict)
 =======
 6. Meeting card – schedule a meeting via date-time picker.
    • Event types: `card.meeting.create`, `card.meeting.update`
 
 Shared fields for both kinds:
 >>>>>>> 0ebd3eb (style: update card icon colors and header spacing in components)
+<<<<<<< HEAD
 >>>>>>> main
+=======
+>>>>>>> 2ba452d (conflict)
 
 • id          – unique identifier (string).  Generate one if missing.
 • title       – short heading.
@@ -81,9 +90,12 @@ Additional field examples by card type:
 • url         – HTTPS URL to open when clicked.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 >>>>>>> main
+=======
+>>>>>>> 2ba452d (conflict)
 **Metric cards:**
 • value       – number to display prominently
 • unit        – string unit (e.g., "km", "$", "days")
@@ -132,14 +144,20 @@ Choose card types strategically:
 - Use **link cards** for booking sites, resources
 - Use **basic cards** for simple notes, reminders
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 2ba452d (conflict)
 =======
 Additional field for *meeting* cards:
 • meeting_date – ISO 8601 date-time string (e.g. 2025-06-20T15:00)
 
 If the user mentions showing / attaching a picture, prefer an *image* card; otherwise use *basic*.
 >>>>>>> 0ebd3eb (style: update card icon colors and header spacing in components)
+<<<<<<< HEAD
 >>>>>>> main
+=======
+>>>>>>> 2ba452d (conflict)
 
 ---------------------------------------------------------------------
 Available tool
