@@ -363,12 +363,13 @@ html, body, #app {
   text-align: center;
   border-radius: 9999px;
   min-width: auto;
-  background: var(--card-bg, #fff);
-  color: var(--text-color, #111);
-  font-size: 0.45rem;
-  padding: 4px 8px;
-  border-radius: 9999px;
-  box-shadow: 0 0 2px rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.04); /* lighter translucent gray */
+  color: #111;
+  font-size: 0.75rem;
+}
+.dark .state-pill {
+  background: var(--card-bg, #1f2937);
+  color: #f9fafb;
 }
 
 @keyframes spin {
