@@ -36,7 +36,7 @@ const props = defineProps({
   },
   size: {
     type: Number,
-    default: 40
+    default: 72
   },
   externalAudioLevel: {
     type: Number,
@@ -74,41 +74,41 @@ const dynamicColor = computed(() => {
   }
 })
 
-// Enhanced dynamic properties
+// Enhanced dynamic properties with more pronounced effects
 const dynamicSpeed = computed(() => {
   const baseSpeed = {
-    idle: 0.3,
-    connecting: 1.0,
-    live: 0.5,
-    listening: 0.8,
-    speaking: 1.2
+    idle: 0.4,
+    connecting: 1.5,
+    live: 0.7,
+    listening: 1.2,
+    speaking: 2.0
   }[props.voiceState] || 0.5
   
-  return baseSpeed + safeAudioLevel.value * 2.0
+  return baseSpeed + safeAudioLevel.value * 3.0
 })
 
 const dynamicAmplitude = computed(() => {
   const baseAmplitude = {
-    idle: 0.05,
-    connecting: 0.15,
-    live: 0.08,
-    listening: 0.12,
-    speaking: 0.18
+    idle: 0.06,
+    connecting: 0.20,
+    live: 0.10,
+    listening: 0.18,
+    speaking: 0.30
   }[props.voiceState] || 0.1
   
-  return baseAmplitude + safeAudioLevel.value * 0.4
+  return baseAmplitude + safeAudioLevel.value * 0.6
 })
 
 const bubbleScale = computed(() => {
   const baseScale = {
     idle: 1.0,
-    connecting: 1.05,
-    live: 1.02,
-    listening: 1.08,
-    speaking: 1.12
+    connecting: 1.08,
+    live: 1.05,
+    listening: 1.15,
+    speaking: 1.25
   }[props.voiceState] || 1.0
   
-  return baseScale + safeAudioLevel.value * 0.15
+  return baseScale + safeAudioLevel.value * 0.25
 })
 
 const bubbleClass = computed(() => {
@@ -135,6 +135,7 @@ const bubbleClass = computed(() => {
   border-radius: 50%;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
+  box-shadow: 0 0 32px 8px rgba(59,130,246,0.15), 0 0 0 12px rgba(139,92,246,0.10);
 }
 
 .bubble-effect {
@@ -157,66 +158,115 @@ const bubbleClass = computed(() => {
 }
 
 .glow-background.listening {
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.5) 0%, rgba(59, 130, 246, 0.2) 50%, transparent 100%);
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.7) 0%, rgba(59, 130, 246, 0.3) 50%, transparent 100%);
+  animation: listening-background-glow 1s ease-in-out infinite;
 }
 
 .glow-background.speaking {
-  background: radial-gradient(circle, rgba(236, 72, 153, 0.5) 0%, rgba(236, 72, 153, 0.2) 50%, transparent 100%);
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.7) 0%, rgba(236, 72, 153, 0.3) 50%, transparent 100%);
+  animation: speaking-background-glow 0.8s ease-in-out infinite;
 }
 
-/* Voice state specific styles */
+/* Voice state specific styles with enhanced effects */
 .voice-state-idle {
-  opacity: 0.7;
+  opacity: 0.8;
+  transform: scale(1);
 }
 
 .voice-state-connecting {
-  animation: connecting-pulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 48px 12px rgba(251,191,36,0.25), 0 0 0 20px rgba(251,191,36,0.12);
+  animation: connecting-pulse-enhanced 1s ease-in-out infinite;
 }
 
 .voice-state-live {
-  opacity: 0.9;
-  box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 48px 12px rgba(16,185,129,0.25), 0 0 0 20px rgba(16,185,129,0.12);
+  animation: live-glow 2s ease-in-out infinite;
 }
 
 .voice-state-listening {
-  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
-  animation: listening-glow 2s ease-in-out infinite;
+  box-shadow: 0 0 48px 12px rgba(59,130,246,0.35), 0 0 0 24px rgba(59,130,246,0.15);
+  animation: listening-glow-enhanced 1s ease-in-out infinite;
 }
 
 .voice-state-speaking {
-  box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
-  animation: speaking-glow 1.8s ease-in-out infinite;
+  box-shadow: 0 0 48px 12px rgba(236,72,153,0.35), 0 0 0 24px rgba(236,72,153,0.15);
+  animation: speaking-glow-enhanced 0.8s ease-in-out infinite;
 }
 
 .voice-active {
-  filter: brightness(1.1) saturate(1.2);
+  filter: brightness(1.2) saturate(1.4);
+  transform: scale(1.05);
 }
 
 .voice-intense {
-  filter: brightness(1.2) saturate(1.4);
+  filter: brightness(1.4) saturate(1.6);
+  transform: scale(1.1);
 }
 
-/* Animations */
-@keyframes connecting-pulse {
-  0%, 100% { opacity: 0.7; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
-}
-
-@keyframes listening-glow {
+/* Enhanced Animations */
+@keyframes connecting-pulse-enhanced {
   0%, 100% { 
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    opacity: 0.8; 
+    transform: scale(1);
+    box-shadow: 0 0 48px 12px rgba(251,191,36,0.25), 0 0 0 20px rgba(251,191,36,0.12);
   }
   50% { 
-    box-shadow: 0 0 25px rgba(59, 130, 246, 0.7);
+    opacity: 1; 
+    transform: scale(1.08);
+    box-shadow: 0 0 64px 16px rgba(251,191,36,0.40), 0 0 0 28px rgba(251,191,36,0.20);
   }
 }
 
-@keyframes speaking-glow {
+@keyframes live-glow {
   0%, 100% { 
-    box-shadow: 0 0 15px rgba(236, 72, 153, 0.4);
+    box-shadow: 0 0 48px 12px rgba(16,185,129,0.25), 0 0 0 20px rgba(16,185,129,0.12);
   }
   50% { 
-    box-shadow: 0 0 25px rgba(236, 72, 153, 0.7);
+    box-shadow: 0 0 56px 14px rgba(16,185,129,0.35), 0 0 0 24px rgba(16,185,129,0.18);
+  }
+}
+
+@keyframes listening-glow-enhanced {
+  0%, 100% { 
+    box-shadow: 0 0 48px 12px rgba(59,130,246,0.35), 0 0 0 24px rgba(59,130,246,0.15);
+  }
+  50% { 
+    box-shadow: 0 0 72px 18px rgba(59,130,246,0.50), 0 0 0 32px rgba(59,130,246,0.25);
+  }
+}
+
+@keyframes speaking-glow-enhanced {
+  0%, 100% { 
+    box-shadow: 0 0 48px 12px rgba(236,72,153,0.35), 0 0 0 24px rgba(236,72,153,0.15);
+  }
+  50% { 
+    box-shadow: 0 0 72px 18px rgba(236,72,153,0.50), 0 0 0 32px rgba(236,72,153,0.25);
+  }
+}
+
+@keyframes listening-background-glow {
+  0%, 100% { 
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes speaking-background-glow {
+  0%, 100% { 
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  33% { 
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  66% { 
+    opacity: 0.9;
+    transform: scale(1.12);
   }
 }
 </style> 

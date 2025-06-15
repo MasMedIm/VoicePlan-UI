@@ -84,7 +84,7 @@
         <VoiceBubble 
           :voice-state="voiceState"
           :external-audio-level="audioLevel"
-          :size="48"
+          :size="72"
         />
       </div>
     </div>
@@ -284,33 +284,40 @@ const voiceStatusLabel = computed(() => {
 })
 
 function toggleTheme() {
+  console.log('Theme toggle clicked');
   emit('toggle-theme')
 }
 
 function setChatBubbleColor(color) {
+  console.log('Color button clicked:', color);
   emit('color-change', color)
   showColorPicker.value = false
 }
 
 function setBackgroundTheme(theme) {
+  console.log('Background theme clicked:', theme.name);
   emit('theme-change', theme)
   showColorPicker.value = false
 }
 
 function toggleVoice() {
+  console.log('Voice toggle clicked');
   emit('toggle-voice')
 }
 
 function openSettings() {
+  console.log('Settings button clicked');
   showSettings.value = true
   emit('settings-open')
 }
 
 function closeSettings() {
+  console.log('Settings modal closing');
   showSettings.value = false
 }
 
 function selectVoice(voice) {
+  console.log('Voice selected:', voice.name);
   emit('voice-change', voice)
 }
 
@@ -318,11 +325,23 @@ function previewVoice(voice) {
   // Play a sample text with the selected voice
   const sampleText = `Hello! I'm ${voice.name}, your ${voice.description.toLowerCase()}. I'll be helping you with your travel planning today.`;
   
-  // In a real implementation, this would call the TTS API
-  console.log(`Preview voice ${voice.name}: ${sampleText}`);
+  console.log(`🎤 Preview voice ${voice.name}: ${sampleText}`);
   
-  // For now, we'll emit the voice change to show selection
+  // Provide visual feedback
+  const button = event.target.closest('.voice-option');
+  if (button) {
+    button.style.background = 'rgba(59, 130, 246, 0.2)';
+    setTimeout(() => {
+      button.style.background = '';
+    }, 2000);
+  }
+  
+  // In a real implementation, this would call the TTS API
+  // For now, we'll emit the voice change to show selection and provide feedback
   emit('voice-change', voice);
+  
+  // Show user feedback
+  alert(`Voice preview: ${voice.name} selected! ${voice.description}`);
 }
 </script>
 
@@ -339,14 +358,20 @@ function previewVoice(voice) {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: var(--card-bg);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(20px);
-  border: 1px solid var(--card-border-color);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 50px;
   padding: 0.75rem 1.25rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   min-height: 72px;
+}
+
+/* Dark mode override */
+.dark .pill-nav {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .nav-button {
@@ -360,20 +385,29 @@ function previewVoice(voice) {
   border-radius: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: var(--text-color);
+  color: #334155;
   opacity: 0.7;
   position: relative;
 }
 
+/* Dark mode button colors */
+.dark .nav-button {
+  color: #f1f5f9;
+}
+
 .nav-button:hover {
   opacity: 1;
-  background: var(--card-border-color);
+  background: rgba(0, 0, 0, 0.05);
   transform: translateY(-1px);
+}
+
+.dark .nav-button:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .nav-button.active {
   opacity: 1;
-  background: var(--card-border-color);
+  background: rgba(59, 130, 246, 0.1);
   color: #3b82f6;
 }
 
@@ -407,6 +441,13 @@ function previewVoice(voice) {
   font-size: 0.75rem;
   font-weight: 500;
   white-space: nowrap;
+  min-width: 90px;
+  max-width: 90px;
+  width: 90px;
+  text-align: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Voice Indicator States */
@@ -455,13 +496,20 @@ function previewVoice(voice) {
   left: 50%;
   transform: translateX(-50%);
   margin-bottom: 0.5rem;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border-color);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 16px;
   padding: 1rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(20px);
-  min-width: 200px;
+  min-width: 250px;
+  z-index: 1001;
+}
+
+/* Dark mode for color picker */
+.dark .color-picker-dropdown {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .color-section {
@@ -471,10 +519,14 @@ function previewVoice(voice) {
 .color-picker-title {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-color);
+  color: #334155;
   opacity: 0.7;
   margin-bottom: 0.75rem;
   text-align: center;
+}
+
+.dark .color-picker-title {
+  color: #f1f5f9;
 }
 
 .color-grid {
@@ -498,8 +550,9 @@ function previewVoice(voice) {
 }
 
 .color-button.selected {
-  border-color: var(--text-color);
+  border-color: #3b82f6;
   transform: scale(1.1);
+  box-shadow: 0 0 0 2px #3b82f6;
 }
 
 /* Transitions */
@@ -537,9 +590,13 @@ function previewVoice(voice) {
   justify-content: center;
   margin-left: 0.75rem;
   padding-left: 0.75rem;
-  border-left: 1px solid var(--card-border-color);
-  min-width: 56px; /* Ensure proper space for larger bubble */
-  min-height: 56px;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  min-width: 72px;
+  min-height: 72px;
+}
+
+.dark .voice-bubble-section {
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Responsive Design */
@@ -588,9 +645,9 @@ function previewVoice(voice) {
 }
 
 .theme-button.selected {
-  border-color: var(--text-color);
+  border-color: #3b82f6;
   transform: scale(1.05);
-  box-shadow: 0 0 0 2px var(--text-color);
+  box-shadow: 0 0 0 2px #3b82f6;
 }
 
 .theme-name {

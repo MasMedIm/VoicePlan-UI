@@ -37,6 +37,7 @@
         <div class="board-stats">
           <span class="stat">{{ items.length }} item{{ items.length !== 1 ? 's' : '' }}</span>
         </div>
+      </div>
       <!-- Mic container with button, state pill, and orb overlay -->
       <div class="mic-container" :class="btnState">
         <button
@@ -358,68 +359,88 @@ const voiceNavState = computed(() => {
   return 'idle';
 });
 
-// ====== Dynamic Mosaic Sizing - Ultra-Aggressive for Tight Packing ======
+// ====== Tightly Packed Mosaic Sizing - Smart & Compact ======
 const determineCardSize = (card) => {
   const cardType = card.kind ? card.kind.split('.')[1] : 'basic';
   
-  // Content analysis
+  // Enhanced content analysis
   const itemCount = card.items?.length || 0;
   const hasImage = !!card.image_url;
   const descLength = (card.description || '').length;
   const titleLength = (card.title || '').length;
+  const hasSubtitle = !!(card.subtitle || card.location || card.date);
+  const hasMetrics = !!(card.value || card.percentage || card.number);
   
-  // More aggressive content thresholds for ultra-tight packing
-  const isMinimalContent = descLength <= 30 && titleLength <= 25 && itemCount <= 1;
-  const isLightContent = descLength <= 60 && titleLength <= 40 && itemCount <= 3;
-  const isMediumContent = descLength <= 120 && titleLength <= 60 && itemCount <= 6;
+  // Compact content scoring system (biased toward smaller sizes)
+  const contentScore = (
+    Math.min(descLength / 150, 1) * 25 +  // Reduced weight for descriptions
+    Math.min(titleLength / 60, 1) * 15 +   // Reduced title weight  
+    Math.min(itemCount / 8, 1) * 30 +      // Items are main size factor
+    (hasImage ? 15 : 0) +                  // Reduced image bonus
+    (hasSubtitle ? 8 : 0) +                // Reduced subtitle bonus
+    (hasMetrics ? 12 : 0)                  // Reduced metrics bonus
+  );
   
-  // Ultra-aggressive sizing - bias heavily toward micro/tiny for dense layout
+  // Tightly packed sizing - bias heavily toward micro/tiny/small
   switch(cardType) {
     case 'metric':
-      // Metrics are always micro for maximum density
-      return 'micro';
+      // Keep metrics compact
+      if (hasMetrics && descLength > 50) return 'small';
+      return itemCount <= 1 ? 'micro' : 'tiny';
     
     case 'date':
-      // Dates are micro unless they have descriptions
-      return descLength > 0 ? 'tiny' : 'micro';
+    case 'countdown':
+      // Most dates should be tiny unless complex
+      if (contentScore > 60) return 'small';
+      if (contentScore > 30) return 'tiny';
+      return 'micro';
     
-    case 'link':
-      // Links stay minimal for tight packing
-      return isMinimalContent ? 'micro' : 'tiny';
-    
-    case 'basic':
-      // Basic cards - be extremely conservative
-      if (isMinimalContent) return 'micro';
-      if (isLightContent) return 'tiny';
-      if (isMediumContent) return 'small';
-      return 'medium'; // Only for substantial content
-    
-    case 'image':
-      // Images can be slightly larger but still controlled
-      if (!hasImage) return 'micro';
-      if (isMinimalContent) return 'tiny';
-      if (isLightContent) return 'small';
-      return 'medium'; // Max size for images
+    case 'progress':
+      // Progress cards sized conservatively
+      if (itemCount > 12) return 'tall';
+      if (itemCount > 8) return 'medium';
+      if (itemCount > 4) return 'small';
+      return 'tiny';
     
     case 'checklist':
-    case 'progress':
-      // Checklists sized by item count
-      if (itemCount <= 1) return 'micro';
-      if (itemCount <= 2) return 'tiny';
-      if (itemCount <= 4) return 'small';
-      if (itemCount <= 7) return 'medium';
-      return 'tall'; // Only for very long lists
+      // Checklists sized by item count but kept compact
+      if (itemCount > 15) return 'tall';
+      if (itemCount > 10) return 'medium';
+      if (itemCount > 6) return 'small';
+      if (itemCount > 3) return 'tiny';
+      return 'micro';
     
     case 'weather':
-      // Weather cards stay compact
-      return isMediumContent ? 'medium' : 'small';
+      // Weather cards should be standard size, not too big
+      return contentScore > 70 ? 'medium' : 'small';
     
     case 'map':
-      // Maps need some width but keep controlled
-      return isMediumContent ? 'wide' : 'medium';
+      // Maps need width but keep reasonable
+      if (contentScore > 80) return 'large';
+      if (contentScore > 40) return 'wide';
+      return 'medium';
+      
+    case 'image':
+      // Images sized conservatively
+      if (!hasImage) return 'tiny';
+      if (contentScore > 80) return 'large';
+      if (contentScore > 50) return 'medium';
+      if (contentScore > 25) return 'small';
+      return 'tiny';
     
+    case 'link':
+      // Links stay very compact
+      if (contentScore > 60) return 'small';
+      if (contentScore > 30) return 'tiny';
+      return 'micro';
+    
+    case 'basic':
     default:
-      // Default to micro for unknown types
+      // Basic cards - heavily biased toward smaller sizes
+      if (contentScore > 85) return 'medium';  // Raised threshold
+      if (contentScore > 60) return 'small';   // Raised threshold
+      if (contentScore > 35) return 'tiny';    // Raised threshold
+      if (contentScore > 15) return 'micro';   // Most will be micro
       return 'micro';
   }
 };
@@ -775,25 +796,45 @@ const backgroundTheme = ref({
 });
 
 onMounted(() => {
-  isDark.value = localStorage.getItem('theme') === 'dark';
+  // Initialize theme from localStorage
+  const savedDarkMode = localStorage.getItem('theme') === 'dark';
+  isDark.value = savedDarkMode;
+  
+  // Initialize colors
   chatBubbleColor.value = localStorage.getItem('chatBubbleColor') || '#3b82f6';
   selectedVoice.value = localStorage.getItem('selectedVoice') || 'alloy';
+  
+  // Initialize background theme
   const savedTheme = localStorage.getItem('backgroundTheme');
   if (savedTheme) {
     try {
       backgroundTheme.value = JSON.parse(savedTheme);
       currentTheme.value = backgroundTheme.value.name;
     } catch (e) {
-      console.warn('Failed to parse saved theme');
+      console.warn('Failed to parse saved theme, using default');
+      // Set default theme if parsing fails
+      backgroundTheme.value = {
+        name: 'Ocean Blue', 
+        primary: '#0f172a', 
+        secondary: '#1e293b',
+        accent: '#3b82f6',
+        gradient: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)'
+      };
+      currentTheme.value = 'Ocean Blue';
     }
   }
-  applyBackgroundTheme();
-  // Add global keydown listener for modal
+  
+  // Apply theme immediately after setup
+  setTimeout(() => {
+    applyBackgroundTheme();
+  }, 100);
+  
+  // Add event listeners
   window.addEventListener('keydown', handleFocusModalKeydown);
-  // In onMounted, add window resize listener for chat scroll
   window.addEventListener('resize', scrollFocusChatToLatest);
-  // Add focus trap for modal accessibility
   window.addEventListener('keydown', trapFocusInModal);
+  
+  console.log('App mounted - Dark mode:', isDark.value, 'Theme:', currentTheme.value);
 });
 
 onUnmounted(() => {
@@ -805,6 +846,7 @@ onUnmounted(() => {
 
 watch(isDark, (val) => {
   localStorage.setItem('theme', val ? 'dark' : 'light');
+  applyBackgroundTheme(); // Apply theme when dark mode changes
 });
 
 function toggleTheme() {
@@ -812,12 +854,14 @@ function toggleTheme() {
 }
 
 function onColorChange(color) {
+  console.log('Color change triggered:', color);
   chatBubbleColor.value = color;
   localStorage.setItem('chatBubbleColor', color);
   console.log('Chat bubble color changed to:', color);
 }
 
 function onThemeChange(theme) {
+  console.log('Theme change triggered:', theme);
   backgroundTheme.value = theme;
   currentTheme.value = theme.name;
   localStorage.setItem('backgroundTheme', JSON.stringify(theme));
@@ -827,10 +871,37 @@ function onThemeChange(theme) {
 
 function applyBackgroundTheme() {
   const root = document.documentElement;
+  
+  // Apply theme colors as CSS custom properties
   root.style.setProperty('--bg-gradient', backgroundTheme.value.gradient);
   root.style.setProperty('--theme-primary', backgroundTheme.value.primary);
   root.style.setProperty('--theme-secondary', backgroundTheme.value.secondary);
   root.style.setProperty('--theme-accent', backgroundTheme.value.accent);
+  
+  // Apply the gradient directly to the app container
+  root.style.setProperty('--dynamic-bg', backgroundTheme.value.gradient);
+  
+  // Helper function to convert hex to rgba
+  function hexToRgba(hex, alpha) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+  
+  // Update card colors based on theme using compatible CSS
+  if (isDark.value) {
+    root.style.setProperty('--bg-color', backgroundTheme.value.primary);
+    root.style.setProperty('--card-bg', hexToRgba(backgroundTheme.value.secondary, 0.8));
+    root.style.setProperty('--card-border-color', hexToRgba(backgroundTheme.value.accent, 0.3));
+  } else {
+    // Light mode adjustments
+    root.style.setProperty('--bg-color', '#f8fafc');
+    root.style.setProperty('--card-bg', 'rgba(255, 255, 255, 0.9)');
+    root.style.setProperty('--card-border-color', 'rgba(226, 232, 240, 0.8)');
+  }
+  
+  console.log('Applied background theme:', backgroundTheme.value.name);
 }
 
 function toggleConnection() {
@@ -857,16 +928,41 @@ async function onLogin() {
 }
 
 function onVoiceChange(voice) {
+  console.log('Voice change triggered:', voice);
   selectedVoice.value = voice.id;
   localStorage.setItem('selectedVoice', voice.id);
-  console.log('Voice changed to:', voice.name);
+  console.log('Voice changed to:', voice.name, `(${voice.id})`);
   
-  // In a real implementation, this would update the backend voice settings
-  // For now, we'll just store it locally
+  // If currently connected, reconnect with new voice
+  if (rtcStatus.value === 'live') {
+    console.log('Reconnecting with new voice...');
+    rtc.disconnect();
+    setTimeout(() => {
+      rtc.connect({ voice: voice.id });
+    }, 500);
+  }
+  
+  // Update the realtime session configuration
+  updateVoiceConfiguration(voice.id);
+}
+
+async function updateVoiceConfiguration(voiceId) {
+  try {
+    // This would typically call the backend to update voice settings
+    console.log('Updating voice configuration to:', voiceId);
+    
+    // In a real implementation, you might want to:
+    // 1. Call the backend API to update user preferences
+    // 2. Update the realtime session with new voice
+    // For now, we store it for the next connection
+    
+  } catch (error) {
+    console.error('Failed to update voice configuration:', error);
+  }
 }
 
 function onSettingsOpen() {
-  console.log('Settings opened');
+  console.log('Settings modal should open - Current voice:', selectedVoice.value);
 }
 
 function onSpeakHint(hint) {
@@ -990,7 +1086,7 @@ html, body, #app {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background: var(--bg-gradient, var(--bg-color));
+  background: var(--dynamic-bg, var(--bg-gradient, var(--bg-color)));
   color: var(--text-color);
   position: relative;
 }
@@ -1002,8 +1098,9 @@ html, body, #app {
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--bg-gradient);
+  background: var(--dynamic-bg, var(--bg-gradient, var(--bg-color)));
   z-index: 0;
+  transition: background 0.5s ease;
 }
 
 .app-container > * {
@@ -1146,8 +1243,13 @@ html, body, #app {
   font-weight: 600;
   color: white;
   text-align: center;
-  min-width: 100px;
+  min-width: 120px; /* Increased to fit longest label */
+  max-width: 120px;
+  width: 120px;
   transition: all 0.3s ease;
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .state-pill.state-idle {
@@ -1221,46 +1323,44 @@ html, body, #app {
   }
 }
 
-/* ===== Ultra-Tight Mosaic Grid Layout ===== */
+/* ===== Enhanced Mosaic Grid Layout - Tightly Packed ===== */
 .mosaic-grid {
   display: grid;
-  grid-template-columns: repeat(20, 1fr); /* Increased to 20 columns for ultra-fine control */
-  gap: 0.075rem; /* Even tighter spacing */
-  grid-auto-rows: minmax(45px, auto); /* Dynamic row sizing based on content */
-  grid-auto-flow: row dense; /* Dense packing fills gaps automatically */
-  align-items: stretch;
+  grid-template-columns: repeat(8, 1fr); /* Reduced from 16 to 8 columns for tighter packing */
+  gap: 0.75rem; /* Reduced gap for closer cards */
+  grid-auto-rows: minmax(80px, auto); /* Flexible row sizing */
+  grid-auto-flow: row dense; /* Dense packing to fill gaps */
+  align-items: start;
   justify-items: stretch;
   width: 100%;
   position: relative;
-  padding: 0.25rem;
-  /* Ensure smooth layout transitions */
-  transition: all 0.3s ease;
+  padding: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .mosaic-item {
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 6px; /* Smaller radius for tighter look */
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
   overflow: hidden;
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 0;
   background: var(--card-bg);
   border: 1px solid var(--card-border-color);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  /* Content-based height */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   height: fit-content;
   align-self: start;
+  backdrop-filter: blur(8px);
 }
 
 .mosaic-item:hover {
-  transform: translateY(-1px) scale(1.02);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   z-index: 10;
-  border-color: rgba(59, 130, 246, 0.5);
+  border-color: var(--theme-accent, rgba(59, 130, 246, 0.5));
 }
 
-/* Child component styling - remove default padding */
+/* Child component styling */
 .mosaic-item > * {
   flex: 1;
   display: flex;
@@ -1270,59 +1370,68 @@ html, body, #app {
   padding: 0;
 }
 
-/* ===== Refined Content-Aware Size System (20-column grid) ===== */
-/* Micro - For tiny metrics and indicators */
+/* ===== Tightly Packed Size System (8-column grid) ===== */
+/* Micro - Smallest indicators (1 column) */
 .mosaic-item-micro {
+  grid-column: span 1;
+  grid-row: span 1;
+  min-height: 80px;
+}
+
+/* Tiny - Small cards (2 columns) */
+.mosaic-item-tiny {
   grid-column: span 2;
   grid-row: span 1;
+  min-height: 100px;
 }
 
-/* Tiny - Perfect for metrics, quick info */
-.mosaic-item-tiny {
-  grid-column: span 3;
-  grid-row: span 1;
-}
-
-/* Small - Basic cards, links */
+/* Small - Compact cards (2 columns, 2 rows) */
 .mosaic-item-small {
+  grid-column: span 2;
+  grid-row: span 2;
+  min-height: 160px;
+}
+
+/* Medium - Standard cards (3 columns, 2 rows) */
+.mosaic-item-medium {
+  grid-column: span 3;
+  grid-row: span 2;
+  min-height: 180px;
+}
+
+/* Wide - Horizontal cards (4 columns, 1 row) */
+.mosaic-item-wide {
   grid-column: span 4;
   grid-row: span 1;
+  min-height: 120px;
 }
 
-/* Medium - Standard content cards */
-.mosaic-item-medium {
-  grid-column: span 6;
-  grid-row: span 2;
+/* Square - Balanced cards (3 columns, 3 rows) */
+.mosaic-item-square {
+  grid-column: span 3;
+  grid-row: span 3;
+  min-height: 240px;
 }
 
-/* Large - Featured content */
-.mosaic-item-large {
-  grid-column: span 8;
-  grid-row: span 2;
-}
-
-/* Wide - Horizontal content like weather, maps */
-.mosaic-item-wide {
-  grid-column: span 10;
-  grid-row: span 1;
-}
-
-/* Tall - Vertical content like checklists */
+/* Tall - Vertical cards (2 columns, 3 rows) */
 .mosaic-item-tall {
+  grid-column: span 2;
+  grid-row: span 3;
+  min-height: 260px;
+}
+
+/* Large - Feature cards (4 columns, 2 rows) */
+.mosaic-item-large {
+  grid-column: span 4;
+  grid-row: span 2;
+  min-height: 200px;
+}
+
+/* Extra Large - Hero cards (4 columns, 3 rows) */
+.mosaic-item-xl {
   grid-column: span 4;
   grid-row: span 3;
-}
-
-/* Extra Large - Hero cards */
-.mosaic-item-xl {
-  grid-column: span 10;
-  grid-row: span 2;
-}
-
-/* Square - Balanced proportions */
-.mosaic-item-square {
-  grid-column: span 6;
-  grid-row: span 2;
+  min-height: 280px;
 }
 
 /* ===== Ultra-Responsive Design ===== */
@@ -1427,9 +1536,9 @@ html, body, #app {
   background: linear-gradient(
     135deg, 
     transparent 0%, 
-    rgba(59, 130, 246, 0.015) 25%,
-    rgba(139, 92, 246, 0.015) 50%,
-    rgba(236, 72, 153, 0.015) 75%,
+    rgba(59, 130, 246, 0.02) 25%,
+    rgba(139, 92, 246, 0.02) 50%,
+    rgba(236, 72, 153, 0.02) 75%,
     transparent 100%
   );
   border-radius: 16px;
@@ -1440,25 +1549,25 @@ html, body, #app {
 
 /* Faster, smoother card entrance animation */
 .mosaic-item {
-  animation: mosaicFadeIn 0.2s ease-out;
+  animation: mosaicFadeIn 0.3s ease-out;
   animation-fill-mode: both;
 }
 
 /* Optimized staggered animation timing */
 .mosaic-item:nth-child(1) { animation-delay: 0ms; }
-.mosaic-item:nth-child(2) { animation-delay: 15ms; }
-.mosaic-item:nth-child(3) { animation-delay: 30ms; }
-.mosaic-item:nth-child(4) { animation-delay: 45ms; }
-.mosaic-item:nth-child(5) { animation-delay: 60ms; }
-.mosaic-item:nth-child(6) { animation-delay: 75ms; }
-.mosaic-item:nth-child(7) { animation-delay: 90ms; }
-.mosaic-item:nth-child(8) { animation-delay: 105ms; }
-.mosaic-item:nth-child(n+9) { animation-delay: 120ms; }
+.mosaic-item:nth-child(2) { animation-delay: 50ms; }
+.mosaic-item:nth-child(3) { animation-delay: 100ms; }
+.mosaic-item:nth-child(4) { animation-delay: 150ms; }
+.mosaic-item:nth-child(5) { animation-delay: 200ms; }
+.mosaic-item:nth-child(6) { animation-delay: 250ms; }
+.mosaic-item:nth-child(7) { animation-delay: 300ms; }
+.mosaic-item:nth-child(8) { animation-delay: 350ms; }
+.mosaic-item:nth-child(n+9) { animation-delay: 400ms; }
 
 @keyframes mosaicFadeIn {
   from {
     opacity: 0;
-    transform: translateY(3px) scale(0.98);
+    transform: translateY(8px) scale(0.95);
   }
   to {
     opacity: 1;
@@ -1469,122 +1578,74 @@ html, body, #app {
 /* Micro-interactions */
 .mosaic-item:active {
   transform: translateY(0) scale(0.98);
-  transition: transform 0.08s ease-out;
+  transition: transform 0.1s ease-out;
 }
 
 /* Progressive enhancement for different sizes */
 .mosaic-item-micro {
   border-width: 1px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .mosaic-item-tiny, .mosaic-item-small {
   border-width: 1px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .mosaic-item-medium, .mosaic-item-square {
   border-width: 1px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
 }
 
-.mosaic-item-large, .mosaic-item-wide, .mosaic-item-tall {
+.mosaic-item-large, .mosaic-item-wide, .mosaic-item-tall, .mosaic-item-xl {
   border-width: 1px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
-.mosaic-item-xl {
-  border-width: 2px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+/* Responsive Design - Mobile First */
+@media screen and (max-width: 768px) {
+  .mosaic-grid {
+    grid-template-columns: repeat(4, 1fr); /* Fewer columns on mobile */
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+  
+  /* Adjust sizes for mobile */
+  .mosaic-item-wide,
+  .mosaic-item-large,
+  .mosaic-item-xl {
+    grid-column: span 4; /* Full width on mobile */
+  }
+  
+  .mosaic-item-medium {
+    grid-column: span 3;
+  }
+  
+  .mosaic-item-small,
+  .mosaic-item-square,
+  .mosaic-item-tall {
+    grid-column: span 2;
+  }
 }
 
-/* Enhanced hover effects */
-.mosaic-item-xl:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-}
-
-/* Grid visualization on hover (optional) */
-.mosaic-grid:hover::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
-    linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
-  background-size: calc(100% / 20) 45px;
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0;
-  animation: gridReveal 0.2s ease-out forwards;
-}
-
-@keyframes gridReveal {
-  to { opacity: 1; }
-}
-
-/* ===== Login Container (unchanged) ===== */
-.login-container {
-  width: 100%;
-  max-width: 400px;
-  padding: 2.5rem;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-}
-
-.login-container h2 {
-  font-size: 1.75rem;
-  color: #1a1a1a;
-  margin-bottom: 2rem;
-  font-weight: 600;
-  text-align: left;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-  text-align: left;
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.875rem 1rem;
-  font-size: 1rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: #6e8efb;
-  box-shadow: 0 0 0 3px rgba(110, 142, 251, 0.2);
-}
-
-.login-button {
-  width: 100%;
-  padding: 0.875rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: white;
-  background-color: #1a1a1a;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.login-button:hover {
-  background-color: #333;
-}
-
-.error {
-  color: #e74c3c;
-  margin-top: 1rem;
-  font-size: 0.875rem;
-  text-align: center;
+@media screen and (max-width: 480px) {
+  .mosaic-grid {
+    grid-template-columns: repeat(2, 1fr); /* Even simpler on small mobile */
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+  
+  .mosaic-item-wide,
+  .mosaic-item-large,
+  .mosaic-item-xl,
+  .mosaic-item-medium {
+    grid-column: span 2; /* Full width */
+    grid-row: span 1; /* Single row to avoid too much height */
+  }
+  
+  .mosaic-item-tall {
+    grid-row: span 2; /* Limit tall cards */
+  }
 }
 
 /* ===== Enhanced Focus Modal System ===== */
